@@ -8,7 +8,7 @@ import tn.insat.pfe.searchservice.dtos.SearchDto;
 public interface ISearchService {
     SearchDto find(String query, Pageable pageable);
     boolean save(FileSaveDto fileSaveDTo);
-//    boolean deleteByTimestamp(String timestamp);
-    boolean deleteByBulkOperationUuid(String bulkOperationUuid);
+//    boolean deleteByBulkSaveOperationTimestamp(String bulkSaveOperationTimestamp);
+    boolean deleteByBulkSaveOperationUuid(String bulkSaveOperationUuid);
     boolean update(String id, FileUpdateDto fileUpdateDto);
 }

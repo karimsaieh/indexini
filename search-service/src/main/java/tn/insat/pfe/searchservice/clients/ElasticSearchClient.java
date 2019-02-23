@@ -72,7 +72,7 @@ public class ElasticSearchClient implements IElasticSearchClient {
     @Override
     public boolean save(FileSaveDto fileSaveDto) {
         IndexRequest request = new IndexRequest(this.elasticSearchProvider.getIndex())
-                .id(String.format("%s-%s-%s", fileSaveDto.getTimestamp(), fileSaveDto.getBulkOperationUuid(),fileSaveDto.getFileName()))
+                .id(String.format("%s-%s-%s", fileSaveDto.getBulkSaveOperationTimestamp(), fileSaveDto.getBulkSaveOperationUuid(),fileSaveDto.getFileName()))
                 .type(this.elasticSearchProvider.getType())
                 .source(fileSaveDto.toMap()
                 )
@@ -87,9 +87,9 @@ public class ElasticSearchClient implements IElasticSearchClient {
     }
 //
 //    @Override
-//    public boolean deleteByTimestamp(String timestamp) {
+//    public boolean deleteByBulkSaveOperationTimestamp(String bulkSaveOperationTimestamp) {
 //        DeleteByQueryRequest request = new DeleteByQueryRequest(this.elasticSearchProvider.getIndex());
-//        request.setQuery(new TermQueryBuilder("timestamp", timestamp));
+//        request.setQuery(new TermQueryBuilder("bulkSaveOperationTimestamp", bulkSaveOperationTimestamp));
 //
 //        try {
 //            BulkByScrollResponse bulkResponse =
@@ -97,14 +97,14 @@ public class ElasticSearchClient implements IElasticSearchClient {
 //            return true;
 //        } catch (IOException e) {
 //            e.printStackTrace();
-//            throw new RuntimeException("ElasticSearchClient.deleteByTimestamp: Elastic search not working properly");
+//            throw new RuntimeException("ElasticSearchClient.deleteByBulkSaveOperationTimestamp: Elastic search not working properly");
 //        }
 //    }
 
     @Override
-    public boolean deleteByBulkOperationUuid(String bulkOperationUuid) {
+    public boolean deleteByBulkSaveOperationUuid(String bulkSaveOperationUuid) {
         DeleteByQueryRequest request = new DeleteByQueryRequest(this.elasticSearchProvider.getIndex());
-        request.setQuery(new TermQueryBuilder("bulkOperationUuid", bulkOperationUuid));
+        request.setQuery(new TermQueryBuilder("bulkSaveOperationUuid", bulkSaveOperationUuid));
 
         try {
             BulkByScrollResponse bulkResponse =
@@ -112,7 +112,7 @@ public class ElasticSearchClient implements IElasticSearchClient {
             return true;
         } catch (IOException e) {
             e.printStackTrace();
-            throw new RuntimeException("ElasticSearchClient.deleteByTimestamp: Elastic search not working properly");
+            throw new RuntimeException("ElasticSearchClient.deleteByBulkSaveOperationTimestamp: Elastic search not working properly");
         }
     }
 

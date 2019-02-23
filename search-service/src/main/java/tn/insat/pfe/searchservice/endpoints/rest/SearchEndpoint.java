@@ -27,9 +27,9 @@ public class SearchEndpoint {
     public boolean save(@RequestBody @Valid FileSaveDto fileSaveDto) {
         return this.searchService.save(fileSaveDto);
     }
-    @DeleteMapping("/{bulkOperationUuid}")
-    public boolean deleteByBulkOperationUuid(@PathVariable String bulkOperationUuid) {
-        return this.searchService.deleteByBulkOperationUuid(bulkOperationUuid);
+    @DeleteMapping("/{bulkSaveOperationUuid}")
+    public boolean deleteByBulkSaveOperationUuid(@PathVariable String bulkSaveOperationUuid) {
+        return this.searchService.deleteByBulkSaveOperationUuid(bulkSaveOperationUuid);
     }
     @PutMapping("/{id}")
     public boolean update(@PathVariable String id, @RequestBody @Valid FileUpdateDto fileUpdateDto) {

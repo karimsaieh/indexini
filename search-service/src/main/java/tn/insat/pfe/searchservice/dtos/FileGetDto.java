@@ -2,33 +2,33 @@ package tn.insat.pfe.searchservice.dtos;
 
 public class FileGetDto {
     private String id;
-    private String bulkOperationUuid;
+    private String bulkSaveOperationUuid;
     private String text;
     private String summary;
     private String thumbnailUrl;
-    private String timestamp;
+    private String bulkSaveOperationTimestamp;
     private String fileName;
     private float score;
     // private String worldCloudUrl;
 
 
-    public FileGetDto(String id, String bulkOperationUuid, String text, String summary, String thumbnailUrl, String timestamp, String fileName, float score) {
+    public FileGetDto(String id, String bulkSaveOperationUuid, String text, String summary, String thumbnailUrl, String bulkSaveOperationTimestamp, String fileName, float score) {
         this.id = id;
-        this.bulkOperationUuid = bulkOperationUuid;
+        this.bulkSaveOperationUuid = bulkSaveOperationUuid;
         this.text = text;
         this.summary = summary;
         this.thumbnailUrl = thumbnailUrl;
-        this.timestamp = timestamp;
+        this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
         this.fileName = fileName;
         this.score = score;
     }
 
-    public String getBulkOperationUuid() {
-        return bulkOperationUuid;
+    public String getBulkSaveOperationUuid() {
+        return bulkSaveOperationUuid;
     }
 
-    public void setBulkOperationUuid(String bulkOperationUuid) {
-        this.bulkOperationUuid = bulkOperationUuid;
+    public void setBulkSaveOperationUuid(String bulkSaveOperationUuid) {
+        this.bulkSaveOperationUuid = bulkSaveOperationUuid;
     }
 
     public String getId() {
@@ -63,12 +63,12 @@ public class FileGetDto {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public String getTimestamp() {
-        return timestamp;
+    public String getBulkSaveOperationTimestamp() {
+        return bulkSaveOperationTimestamp;
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setBulkSaveOperationTimestamp(String bulkSaveOperationTimestamp) {
+        this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
     }
 
     public String getFileName() {
@@ -91,11 +91,11 @@ public class FileGetDto {
     public String toString() {
         return "FileGetDto{" +
                 "id='" + id + '\'' +
-                ", bulkOperationUuid='" + bulkOperationUuid + '\'' +
+                ", bulkSaveOperationUuid='" + bulkSaveOperationUuid + '\'' +
                 ", text='" + text + '\'' +
                 ", summary='" + summary + '\'' +
                 ", thumbnailUrl='" + thumbnailUrl + '\'' +
-                ", timestamp='" + timestamp + '\'' +
+                ", bulkSaveOperationTimestamp='" + bulkSaveOperationTimestamp + '\'' +
                 ", fileName='" + fileName + '\'' +
                 ", score=" + score +
                 '}';

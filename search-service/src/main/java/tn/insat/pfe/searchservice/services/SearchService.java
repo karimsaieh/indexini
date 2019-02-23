@@ -40,14 +40,14 @@ public class SearchService implements ISearchService {
         for (SearchHit hit : searchHits) {
             Map<String, Object> sourceAsMap = hit.getSourceAsMap();
             String id = hit.getId();
-            String bulkOperationUuid = (String) sourceAsMap.get("bulkOperationUuid");
+            String bulkSaveOperationUuid = (String) sourceAsMap.get("bulkSaveOperationUuid");
             String text = (String) sourceAsMap.get("text");
             String summary = (String) sourceAsMap.get("summary");
             String thumbnailUrl = (String) sourceAsMap.get("thumbnailUrl");
-            String timestamp = (String) sourceAsMap.get("timestamp");
+            String bulkSaveOperationTimestamp = (String) sourceAsMap.get("bulkSaveOperationTimestamp");
             String fileName = (String) sourceAsMap.get("fileName");
             float  score = hit.getScore();
-            fileGetDtosList.add(new FileGetDto(bulkOperationUuid, id, text, summary, thumbnailUrl, timestamp, fileName, score));
+            fileGetDtosList.add(new FileGetDto(id, bulkSaveOperationUuid, text, summary, thumbnailUrl, bulkSaveOperationTimestamp, fileName, score));
         }
         Suggest suggest = searchResponse.getSuggest();
         TermSuggestion termSuggestion = suggest.getSuggestion("suggest_text");
@@ -69,13 +69,13 @@ public class SearchService implements ISearchService {
     }
 //
 //    @Override
-//    public boolean deleteByTimestamp(String timestamp) {
-//        return this.elasticSearchClient.deleteByTimestamp(timestamp);
+//    public boolean deleteByBulkSaveOperationTimestamp(String bulkSaveOperationTimestamp) {
+//        return this.elasticSearchClient.deleteByBulkSaveOperationTimestamp(bulkSaveOperationTimestamp);
 //    }
 //
     @Override
-    public boolean deleteByBulkOperationUuid(String bulkOperationUuid) {
-        return this.elasticSearchClient.deleteByBulkOperationUuid(bulkOperationUuid);
+    public boolean deleteByBulkSaveOperationUuid(String bulkSaveOperationUuid) {
+        return this.elasticSearchClient.deleteByBulkSaveOperationUuid(bulkSaveOperationUuid);
     }
 
     @Override

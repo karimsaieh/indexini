@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class FileSaveDto {
     @NotNull
-    private String bulkOperationUuid;
+    private String bulkSaveOperationUuid;
     @NotNull
     private String text;
     @NotNull
@@ -16,38 +16,38 @@ public class FileSaveDto {
     @NotNull
 //    @Size(min = 13, max = 13)
 //    @Digits(integer=13, fraction = 0)
-    private String timestamp;
+    private String bulkSaveOperationTimestamp;
     @NotNull
     private String fileName;
 
 
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
-        map.put("bulkOperationUuid", this.getBulkOperationUuid());
+        map.put("bulkSaveOperationUuid", this.getBulkSaveOperationUuid());
         map.put("text", this.getText());
         map.put("summary", this.getSummary());
         map.put("thumbnailUrl", this.getThumbnailUrl());
         map.put("fileName", this.getFileName());
-        map.put("timestamp", this.getTimestamp());
+        map.put("bulkSaveOperationTimestamp", this.getBulkSaveOperationTimestamp());
         return map;
     }
 
 
-    public FileSaveDto(@NotNull String bulkOperationUuid, @NotNull String text, @NotNull String summary, @NotNull String thumbnailUrl, @NotNull String timestamp, @NotNull String fileName) {
-        this.bulkOperationUuid = bulkOperationUuid;
+    public FileSaveDto(@NotNull String bulkSaveOperationUuid, @NotNull String text, @NotNull String summary, @NotNull String thumbnailUrl, @NotNull String bulkSaveOperationTimestamp, @NotNull String fileName) {
+        this.bulkSaveOperationUuid = bulkSaveOperationUuid;
         this.text = text;
         this.summary = summary;
         this.thumbnailUrl = thumbnailUrl;
-        this.timestamp = timestamp;
+        this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
         this.fileName = fileName;
     }
 
-    public String getBulkOperationUuid() {
-        return bulkOperationUuid;
+    public String getBulkSaveOperationUuid() {
+        return bulkSaveOperationUuid;
     }
 
-    public void setBulkOperationUuid(String bulkOperationUuid) {
-        this.bulkOperationUuid = bulkOperationUuid;
+    public void setBulkSaveOperationUuid(String bulkSaveOperationUuid) {
+        this.bulkSaveOperationUuid = bulkSaveOperationUuid;
     }
 
     public String getText() {
@@ -74,12 +74,12 @@ public class FileSaveDto {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public String getTimestamp() {
-        return timestamp;
+    public String getBulkSaveOperationTimestamp() {
+        return bulkSaveOperationTimestamp;
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setBulkSaveOperationTimestamp(String bulkSaveOperationTimestamp) {
+        this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
     }
 
     public String getFileName() {
@@ -93,11 +93,11 @@ public class FileSaveDto {
     @Override
     public String toString() {
         return "FileSaveDto{" +
-                "bulkOperationUuid='" + bulkOperationUuid + '\'' +
+                "bulkSaveOperationUuid='" + bulkSaveOperationUuid + '\'' +
                 ", text='" + text + '\'' +
                 ", summary='" + summary + '\'' +
                 ", thumbnailUrl='" + thumbnailUrl + '\'' +
-                ", timestamp='" + timestamp + '\'' +
+                ", bulkSaveOperationTimestamp='" + bulkSaveOperationTimestamp + '\'' +
                 ", fileName='" + fileName + '\'' +
                 '}';
     }
