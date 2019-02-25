@@ -6,6 +6,6 @@ import tn.insat.pfe.filemanagementservice.entities.File;
 import java.util.Optional;
 
 public interface IFileRepository extends JpaRepository<File, Long> {
-    Optional<File> findByName(String name);
+//    Optional<File> findByName(String name);
     //query dsl
 }

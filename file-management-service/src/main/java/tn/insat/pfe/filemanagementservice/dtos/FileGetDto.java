@@ -4,7 +4,6 @@ public class FileGetDto {
 
     private long id;
     private boolean isIndexed;
-    private String metadata;
     private String name;
     private String modifiedAt;
     // ADD
@@ -14,10 +13,9 @@ public class FileGetDto {
     public FileGetDto() {
     }
 
-    public FileGetDto(long id, boolean isIndexed, String metadata, String name, String modifiedAt) {
+    public FileGetDto(long id, boolean isIndexed,String name, String modifiedAt) {
         this.id = id;
         this.isIndexed = isIndexed;
-        this.metadata = metadata;
         this.name = name;
         this.modifiedAt = modifiedAt;
     }
@@ -28,14 +26,6 @@ public class FileGetDto {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
     }
 
     public boolean isIndexed() {

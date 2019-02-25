@@ -4,33 +4,39 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import tn.insat.pfe.filemanagementservice.conf.IHdfsProvider;
+
 import javax.annotation.PostConstruct;
 import java.io.*;
 
 @Component
 public class FileHdfsClient implements IFileHdfsClient{
-    @Value("${hdfs.path}")
-    private String hdfsPath;
-    @Value("${hdfs.save-directory}")
-    private String saveDirectory;
+
     private Configuration conf;
+    private IHdfsProvider hdfsProvider;
+    @Autowired
+    public FileHdfsClient(IHdfsProvider hdfsProvider) {
+        this.hdfsProvider = hdfsProvider;
+    }
+
     @PostConstruct
     public void init() {
-        this.conf = new Configuration();
-        this.conf.set("fs.default.name", this.hdfsPath);
+        this.conf  = this.hdfsProvider.getConf();
     }
 
     @Override
-    public void addFile(InputStream fileInputStream, String fileName) throws IOException {
+    public void addFile(InputStream fileInputStream, String fileName, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) throws IOException {
         FileSystem fileSystem = FileSystem.get(conf);
         //create save directory if it doesn't exist
-        Path saveDirectoryPath = new Path(this.saveDirectory);
-        if (fileSystem.exists(saveDirectoryPath)) {
-            this.mkdir(this.saveDirectory);
+        String saveDirectoryPathString = String.format("%s/%s/%s/", this.hdfsProvider.getSaveDirectory(), bulkSaveOperationTimestamp, bulkSaveOperationUuid);
+        Path saveDirectoryPath = new Path(saveDirectoryPathString);
+        if (!fileSystem.exists(saveDirectoryPath)) {
+            this.mkdir(this.hdfsProvider.getSaveDirectory());
         }
-        FSDataOutputStream out = fileSystem.create(new Path(this.saveDirectory + fileName));
+        FSDataOutputStream out = fileSystem.create(new Path(saveDirectoryPathString + fileName));
         InputStream in = new BufferedInputStream(fileInputStream);
         byte[] b = new byte[1024];
         int numBytes = 0;

@@ -33,8 +33,19 @@ public class FileEndpoint {
          return this.fileService.findById(id).orElseThrow(ResourceNotFoundException::new);
     }
 
+    //TODO: change methods names
     @PostMapping
-    public FileGetDto save(@RequestParam(value = "file", required = true) MultipartFile file, @Valid FileSaveDto fileSaveDto) throws IOException {
-        return fileService.save(file, fileSaveDto);
+    public boolean saveMultipartFiles(@RequestParam(value = "multipartFiles") MultipartFile[] multipartFiles) throws IOException {
+        return this.fileService.saveMultipartFiles(multipartFiles);
+    }
+
+    //TODO: mapping conflict ?
+//    @PostMapping
+//    public boolean submitWebScrappingRequest(String pageUrl, boolean entireWebsite, String[] fileTypes) throws IOException {
+//        return this.fileService.submitWebScrappingRequest(pageUrl, entireWebsite, fileTypes);
+//    }
+    @GetMapping("/downloadfiletest")
+    public boolean download() throws IOException {
+        return this.fileService.downloadAndSaveFile("https://artifacts.elastic.co/downloads/elasticsearch-hadoop/elasticsearch-hadoop-6.6.0.zip");
     }
 }

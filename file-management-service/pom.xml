@@ -62,6 +62,13 @@
 			<!--<artifactId>spring-boot-devtools</artifactId>-->
 			<!--<scope>runtime</scope>-->
 		<!--</dependency>-->
+		<!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit -->
+
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+			<version>2.1.4.RELEASE</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
