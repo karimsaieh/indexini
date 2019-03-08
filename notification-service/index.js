@@ -7,18 +7,18 @@ var amqp = require('amqplib/callback_api');
 app.use(sse)
 app.use(cors)
 
-app.get('/stream', function (req, res) {
+app.get('/stream/:routing_key', function (req, res) {
     res.sseSetup()
     //TODO: localhost in env variable
     amqp.connect('amqp://localhost', function (err, conn) {
         conn.createChannel(function (err, ch) {
             var ex = 'notifications_exchange';
 
-            ch.assertExchange(ex, 'fanout', { durable: false });
+            ch.assertExchange(ex, 'topic', { durable: false });
 
             ch.assertQueue('', { exclusive: true }, function (err, q) {
                 console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q.queue);
-                ch.bindQueue(q.queue, ex, '');
+                ch.bindQueue(q.queue, ex, req.params.routing_key);
 
                 ch.consume(q.queue, function (msg) {
                     if (msg.content) {
