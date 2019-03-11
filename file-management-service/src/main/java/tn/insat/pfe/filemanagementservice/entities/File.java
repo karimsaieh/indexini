@@ -13,6 +13,10 @@ public class File implements Serializable {
     @Column(nullable = false)
     private boolean isIndexed;
     @Column(nullable = false)
+    private String name;
+    @Column(nullable = false)
+    private String contentType;
+    @Column(nullable = false)
     private String bulkSaveOperationTimestamp;
     @Column(nullable = false)
     private String bulkSaveOperationUuid;
@@ -31,7 +35,9 @@ public class File implements Serializable {
         this.deleteFlag = false;
     }
 
-    public File(String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
+    public File(String name, String contentType, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
+        this.name = name;
+        this.contentType = contentType;
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
     }
@@ -43,8 +49,6 @@ public class File implements Serializable {
 
     public File() {
     }
-
-
 
     public long getId() {
         return id;
@@ -60,6 +64,22 @@ public class File implements Serializable {
 
     public void setIndexed(boolean indexed) {
         isIndexed = indexed;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     public String getBulkSaveOperationUuid() {

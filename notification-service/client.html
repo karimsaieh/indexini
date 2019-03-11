@@ -9,7 +9,7 @@
 <body>
     SSE test
     <script>
-        const eventSource = new EventSource('http://localhost:3000/stream/timestamp-uuid');
+        const eventSource = new EventSource('http://localhost:3000/stream/1552301899744-936420de-fbb2-475b-b0c3-5439ce7712a7');
         eventSource.addEventListener('message', (e) => {
         console.log(e);
         });

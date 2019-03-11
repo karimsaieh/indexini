@@ -1,7 +1,0 @@
-{
-  "file_types": [".pdf", ".jpg", ".png", ".doc", ".docx", ".xml", ".txt", ".tar.gz", ".rar", ".zip"],
-  "depth": 1,
-  "page_url": "http://eric.univ-lyon2.fr/~ricco/cours/supports_data_mining.html",
-  "bulk_save_operation_timestamp": "timestamp",
-  "bulk_save_operation_uuid": "uuid"
-}

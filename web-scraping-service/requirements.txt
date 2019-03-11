@@ -1,0 +1,4 @@
+pika==0.13.0
+beautifulsoup4==4.7.1
+requests==2.21.0
+lxml==4.3.2
