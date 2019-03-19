@@ -65,6 +65,7 @@ public class FileService implements IFileService{
     @Override
     public boolean saveFile(InputStream inputStream, String fileName,String contentType, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) throws IOException {
         // save to hdfs
+        //TODO: not so important but file path should be created here btw
         this.fileHdfsClient.addFile(inputStream, fileName, bulkSaveOperationTimestamp, bulkSaveOperationUuid);
         //save to db
         this.fileRepository.save(new File(fileName, contentType,bulkSaveOperationTimestamp, bulkSaveOperationUuid));
@@ -104,6 +105,11 @@ public class FileService implements IFileService{
         String routingKey =filePayload.getBulkSaveOperationTimestamp() + "-" + filePayload.getBulkSaveOperationUuid();
         this.notificationProducer.produce(routingKey, "a notnification recieved");
         return true;
+    }
+
+    @Override
+    public InputStream readFile(String url) throws IOException {
+        return this.fileHdfsClient.readFile(url);
     }
 
 }

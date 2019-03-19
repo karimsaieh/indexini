@@ -1,6 +1,7 @@
 package tn.insat.pfe.filemanagementservice.clients;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -49,8 +50,17 @@ public class FileHdfsClient implements IFileHdfsClient{
     }
 
     @Override
-    public void readFile(String file) {
-        System.out.println("--------------- read");
+    public InputStream readFile(String url) throws IOException {
+        FileSystem fileSystem = FileSystem.get(conf);
+
+        Path path = new Path(url);
+        if (!fileSystem.exists(path)) {
+            System.out.println("File " + url + " does not exists");
+            return null;
+        }
+
+        FSDataInputStream in = fileSystem.open(path);
+        return in.getWrappedStream();
     }
 
     @Override

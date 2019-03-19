@@ -17,6 +17,8 @@ public interface IFileService {
     boolean saveFile(InputStream inputStream, String fileName, String contentType, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) throws IOException;
     BulkSaveOperationDto submitWebScrapingRequest(WebScrapingRequestDto webScrapingRequestDto) throws IOException;
     boolean downloadAndSaveFile(FilePayload filePayload) throws IOException;
+    InputStream readFile(String url) throws IOException;
+
     //    Page<FileGetDto> findAll(Predicate predicate, Pageable pageable);
     //    FileGetDto update(Long fileId, fileSaveDto fileSaveDto);
     //    void deleteById(Long id);

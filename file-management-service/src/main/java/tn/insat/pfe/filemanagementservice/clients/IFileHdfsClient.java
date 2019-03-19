@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 public interface IFileHdfsClient {
     void addFile(InputStream fileInputStream,String fileName,  String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) throws IOException;
-    void readFile(String file);
+    InputStream readFile(String url) throws IOException;
     void deleteFile(String file);
     void mkdir(String dir);
 }
