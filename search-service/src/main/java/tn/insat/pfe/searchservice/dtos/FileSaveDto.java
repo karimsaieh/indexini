@@ -21,6 +21,7 @@ public class FileSaveDto {
     private String fileName;
 
 
+    // use fatser xml object mapper instead
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("bulkSaveOperationUuid", this.getBulkSaveOperationUuid());

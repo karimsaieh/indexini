@@ -23,16 +23,16 @@ public class SearchEndpoint {
     public SearchDto find(@RequestParam String query, @RequestParam int page,  @RequestParam int size) {
 ;        return this.searchService.find(query, PageRequest.of(page, size));
     }
-    @PostMapping
-    public boolean save(@RequestBody @Valid FileSaveDto fileSaveDto) {
-        return this.searchService.save(fileSaveDto);
-    }
-    @DeleteMapping("/{bulkSaveOperationUuid}")
-    public boolean deleteByBulkSaveOperationUuid(@PathVariable String bulkSaveOperationUuid) {
-        return this.searchService.deleteByBulkSaveOperationUuid(bulkSaveOperationUuid);
-    }
-    @PutMapping("/{id}")
-    public boolean update(@PathVariable String id, @RequestBody @Valid FileUpdateDto fileUpdateDto) {
-        return this.searchService.update(id, fileUpdateDto);
-    }
+//    @PostMapping
+//    public boolean save(@RequestBody @Valid FileSaveDto fileSaveDto) {
+//        return this.searchService.save(fileSaveDto);
+//    }
+//    @DeleteMapping("/{bulkSaveOperationUuid}")
+//    public boolean deleteByBulkSaveOperationUuid(@PathVariable String bulkSaveOperationUuid) {
+//        return this.searchService.deleteByBulkSaveOperationUuid(bulkSaveOperationUuid);
+//    }
+//    @PutMapping("/{id}")
+//    public boolean update(@PathVariable String id, @RequestBody @Valid FileUpdateDto fileUpdateDto) {
+//        return this.searchService.update(id, fileUpdateDto);
+//    }
 }

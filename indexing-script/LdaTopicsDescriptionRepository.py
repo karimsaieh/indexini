@@ -13,7 +13,6 @@ class LdaTopicsDescriptionRepository:
             topic_dic["id"] = index
             topic_dic["description"] = topics_descriptions[index]
             payload.append(topic_dic)
-            # TODO: in spring, these should override existing topics
         lda_topics_description_producer.publish(json.dumps(payload))
         lda_topics_description_producer.close_connection()
 

@@ -17,6 +17,7 @@ public class FileUpdateDto {
         this.summary = summary;
         this.thumbnailUrl = thumbnailUrl;
     }
+    // use fatser xml object mapper instead
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("text", this.getText());

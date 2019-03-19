@@ -1,7 +1,7 @@
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize, sent_tokenize
-
+import re
 
 class TextSummarizer:
 
@@ -48,6 +48,7 @@ class TextSummarizer:
             if sentence[:100] in sentence_value and sentence_value[sentence[:100]] > threshold:
                 summary += " " + sentence
                 sentence_count += 1
+        summary = re.sub(r'\n\s*\n', '\n', summary)
         return summary
 
     def get_summary(self, file):

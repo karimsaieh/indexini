@@ -6,10 +6,10 @@ class LdaTopicsDescriptionProducer:
     def __init__(self):
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["HOST"]))
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue='lda_topics_queue')
+        self.channel.queue_declare(queue='lda_topics_description_queue')
 
     def publish(self, message):
-        self.channel.basic_publish(exchange='', routing_key='lda_topics_queue', body=message)
+        self.channel.basic_publish(exchange='', routing_key='lda_topics_description_queue', body=message)
 
     def close_connection(self):
         self.connection.close()

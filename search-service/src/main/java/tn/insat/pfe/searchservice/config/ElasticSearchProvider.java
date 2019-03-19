@@ -15,10 +15,6 @@ public class ElasticSearchProvider implements IElasticSearchProvider {
     private String hostname;
     @Value("${elasticsearch.port}")
     private int port;
-    @Value("${elasticsearch.index}")
-    private String index;
-    @Value("${elasticsearch.type}")
-    private String type;
 
     private RestHighLevelClient restHighLevelClient;
 
@@ -30,20 +26,7 @@ public class ElasticSearchProvider implements IElasticSearchProvider {
                 )
         );
     }
-
     public RestHighLevelClient getRestHighLevelClient() {
         return this.restHighLevelClient;
-    }
-
-    public String getIndex() {
-        return this.index;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }
