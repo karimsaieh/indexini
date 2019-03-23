@@ -2,7 +2,8 @@
   <div class="dashboard-editor-container">
 
     <github-corner style="position: absolute; top: 0px; border: 0; right: 0;" />
-
+    <!-- <router-link :to="{ name: 'Dashboard', query: { plan: 'private' }, params: { disableTransition: true }}">Go to Bar 111</router-link>
+    <router-link :to="{ name: 'Dashboard', query: { plan: 'privjjjate' }, params: { disableTransition: true }}">Go to Bar 222</router-link> -->
     <panel-group @handleSetLineChartData="handleSetLineChartData" />
 
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
