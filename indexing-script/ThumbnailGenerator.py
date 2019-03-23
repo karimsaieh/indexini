@@ -6,12 +6,10 @@ import base64
 
 class ThumbnailGenerator:
 
-    def get_thumbnail(self, file):
-        content_type = file[3]
+    def get_thumbnail(self, binary, content_type):
         base64_string = ""
-        file_binary = file[1]
         if content_type == "application/pdf":
-            file_binary_stream = io.BytesIO(file_binary)
+            file_binary_stream = io.BytesIO(binary)
             src_pdf = PyPDF2.PdfFileReader(file_binary_stream)
             dst_pdf = PyPDF2.PdfFileWriter()
             dst_pdf.addPage(src_pdf.getPage(0))
@@ -25,12 +23,12 @@ class ThumbnailGenerator:
             base64_string = base64.b64encode(im_bytes.getvalue()).decode()
         elif content_type == "image/jpeg":
             # TODO: reduce image size jpeg
-            base64_string = base64.b64encode(file_binary).decode()
+            base64_string = base64.b64encode(binary).decode()
         elif content_type == "image/png":
             # TODO: reduce image size png
-            base64_string = base64.b64encode(file_binary).decode()
+            base64_string = base64.b64encode(binary).decode()
         base64_string = "dummy thumbnail, set in thumbnail generator in spark script"
-        return file[0], file[2], base64_string, file[3]
+        return base64_string
         # value = "<img src=data:image/png;base64," + base64.b64encode(im_bytes.getvalue()).decode() + "></img>"
         # with open("i.html", "w") as text_file:
         #     print("{}".format(value), file=text_file)

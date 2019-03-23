@@ -69,9 +69,8 @@ class TextPreProcessor:
         pre_processed_text = ' '.join(x for x in words)
         return words, pre_processed_text
 
-    def preprocess_text(self, file):
-        raw_text = file[1]
-        words, pre_processed_text = self.normalize(self.tokenize(raw_text))
-        return file[0], words, pre_processed_text, file[2], file[3], file[4]
+    def preprocess_text(self, content):
+        words, pre_processed_text = self.normalize(self.tokenize(content))
+        return words, pre_processed_text
 
 

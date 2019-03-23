@@ -51,13 +51,12 @@ class TextSummarizer:
         summary = re.sub(r'\n\s*\n', '\n', summary)
         return summary
 
-    def get_summary(self, file):
-        text = file[1]
+    def get_summary(self, content):
         summary = ""
-        if text:
-            freq_table = self.create_frequency_table(text.lower())
-            sentences = sent_tokenize(text)
+        if content:
+            freq_table = self.create_frequency_table(content.lower())
+            sentences = sent_tokenize(content)
             sentence_scores = self.score_sentences(sentences, freq_table)
             threshold = self.find_average_score(sentence_scores)
             summary = self.generate_summary(sentences, sentence_scores, 1.2 * threshold)
-        return file[0], file[1], summary, file[2], file[3]
+        return summary
