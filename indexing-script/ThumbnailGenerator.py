@@ -20,7 +20,7 @@ class ThumbnailGenerator:
             images = convert_from_bytes(pdf_bytes.read(),  dpi=100)
             im_bytes = io.BytesIO()
             images[0].save(im_bytes, format='PNG')
-            base64_string = base64.b64encode(im_bytes.getvalue()).decode()
+            base64_string = "data:image/png;base64," + base64.b64encode(im_bytes.getvalue()).decode()
         elif content_type == "image/jpeg":
             # TODO: reduce image size jpeg
             base64_string = base64.b64encode(binary).decode()

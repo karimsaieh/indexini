@@ -21,6 +21,12 @@ import './mock' // simulation data
 
 import * as filters from './filters' // global filters
 
+// karim: my libs
+import VueApexCharts from 'vue-apexcharts'
+
+Vue.use(VueApexCharts)
+Vue.component('apexchart', VueApexCharts)
+
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium', // set element-ui default size
   i18n: (key, value) => i18n.t(key, value)
