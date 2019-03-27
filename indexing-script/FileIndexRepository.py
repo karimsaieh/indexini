@@ -10,7 +10,7 @@ class FileIndexRepository:
     def save_partition(self, partition):
         file_index_producer = FileIndexProducer()
         for file_index in partition:
-            print(file_index)
+            print("saving to ES" + file_index["url"])
             file_index = file_index.asDict()
             payload = {
                 "id": file_index["url"],

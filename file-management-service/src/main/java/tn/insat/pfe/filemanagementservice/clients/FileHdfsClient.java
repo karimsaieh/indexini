@@ -18,26 +18,27 @@ public class FileHdfsClient implements IFileHdfsClient{
 
     private Configuration conf;
     private IHdfsProvider hdfsProvider;
+    private FileSystem fileSystem;
     @Autowired
     public FileHdfsClient(IHdfsProvider hdfsProvider) {
         this.hdfsProvider = hdfsProvider;
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws IOException {
         this.conf  = this.hdfsProvider.getConf();
+        this.fileSystem = FileSystem.get(conf);
     }
 
     @Override
     public void addFile(InputStream fileInputStream, String fileName, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) throws IOException {
-        FileSystem fileSystem = FileSystem.get(conf);
         //create save directory if it doesn't exist
         String saveDirectoryPathString = String.format("%s/%s/%s/", this.hdfsProvider.getSaveDirectory(), bulkSaveOperationTimestamp, bulkSaveOperationUuid);
         Path saveDirectoryPath = new Path(saveDirectoryPathString);
-        if (!fileSystem.exists(saveDirectoryPath)) {
+        if (!this.fileSystem.exists(saveDirectoryPath)) {
             this.mkdir(this.hdfsProvider.getSaveDirectory());
         }
-        FSDataOutputStream out = fileSystem.create(new Path(saveDirectoryPathString + fileName));
+        FSDataOutputStream out = this.fileSystem.create(new Path(saveDirectoryPathString + fileName));
         InputStream in = new BufferedInputStream(fileInputStream);
         byte[] b = new byte[1024];
         int numBytes = 0;
@@ -46,20 +47,17 @@ public class FileHdfsClient implements IFileHdfsClient{
         }
         in.close();
         out.close();
-        fileSystem.close();
     }
 
     @Override
     public InputStream readFile(String url) throws IOException {
-        FileSystem fileSystem = FileSystem.get(conf);
-
         Path path = new Path(url);
-        if (!fileSystem.exists(path)) {
+        if (!this.fileSystem.exists(path)) {
             System.out.println("File " + url + " does not exists");
             return null;
         }
 
-        FSDataInputStream in = fileSystem.open(path);
+        FSDataInputStream in = this.fileSystem.open(path);
         return in.getWrappedStream();
     }
 

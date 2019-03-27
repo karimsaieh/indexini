@@ -1,0 +1,9 @@
+docker run --name hadoop-yarn-spark -p 8020:8020  -p 8042:8042 -p 4040:4040 -p 50070:50070 -p 8088:8088 -it karimsaieh/hadoop-docker-node
+docker cp . hadoop-yarn-spark:/
+export TIKA_HOST=172.17.0.3
+export ENV=staging
+export RABBITMQ_HOST=172.17.0.2
+spark-submit --master yarn --total-executor-cores 2 --conf spark.executorEnv.TIKA_HOST=$TIKA_HOST --conf spark.executorEnv.RABBITMQ_HOST=$RABBITMQ_HOST --conf spark.executorEnv.ENV=$ENV /main.py 
+spark-submit --master local[2] /main.py
+WARNING: stop-yarn.sh && stop-dfs.sh  
+NB: WAit a little bit after startup so you dont get an error (safe mode etc ...)

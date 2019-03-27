@@ -1,6 +1,6 @@
 <template>
   <div id="chart">
-    <apexchart type="radar" style="border: 1px solid" :options="chartOptions" :series="series" />
+    <apexchart type="radar" :options="chartOptions" :series="series" />
   </div>
 </template>
 

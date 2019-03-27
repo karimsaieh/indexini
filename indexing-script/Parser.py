@@ -1,6 +1,5 @@
-import tika
 from tika import parser
-
+import os
 
 class Parser:
     def __init__(self, ):
@@ -8,7 +7,7 @@ class Parser:
         None
 
     def parse_file(self, binary):
-        parsed = parser.from_buffer(binary, "http://localhost:9998/tika")
+        parsed = parser.from_buffer(binary, "http://" + os.environ["TIKA_HOST"] + ":9998/tika")
         content_type = parsed["metadata"]["Content-Type"]
         content_type = content_type[1] if isinstance(content_type, list) else content_type
         # TODO: what to do in elastic search & in the ui when the index is empty ?

@@ -1,7 +1,9 @@
 <template>
   <div :style="image">
-    <img :style="icon" :src="iconSrc">
+    <img :src="imageSrc" style="visibility: hidden;width:100%">
+
   </div>
+
 </template>
 
 <script>
@@ -9,10 +11,7 @@
 export default {
   name: 'FilePreview',
   props: {
-    imageWidth: {
-      type: String,
-      default: '0'
-    },
+
     imageHeight: {
       type: String,
       default: '0'
@@ -30,11 +29,11 @@ export default {
     image: function() {
       return {
         backgroundImage: `url(\'${this.imageSrc}\')`,
+        backgroundPositionY: 'top',
+        backgroundPositionX: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center',
         backgroundSize: 'contain',
-        width: this.imageWidth + 'px',
-        height: this.imageHeight + 'px',
+        width: '100%',
         overflow: 'hidden',
         position: 'relative',
         cursor: 'pointer'

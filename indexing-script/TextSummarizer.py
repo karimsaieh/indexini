@@ -1,13 +1,17 @@
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize, sent_tokenize
+import nltk
 import re
 
 class TextSummarizer:
 
+    def __init__(self):
+        self.english_stopwords = stopwords.words('english')
+
     def create_frequency_table(self, text_string) -> dict:
         #TODO: change language to french ?
-        stop_words = set(stopwords.words("english"))
+        stop_words = set(self.english_stopwords)
         words = word_tokenize(text_string)
         ps = PorterStemmer()
         freq_table = dict()

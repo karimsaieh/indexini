@@ -19,6 +19,5 @@ export default {
 <style scoped>
 .summary {
   word-break: break-all;
-  border: 1px solid
 }
 </style>

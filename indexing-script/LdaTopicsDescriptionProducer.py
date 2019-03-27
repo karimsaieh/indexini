@@ -4,7 +4,7 @@ import os
 
 class LdaTopicsDescriptionProducer:
     def __init__(self):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["HOST"]))
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["RABBITMQ_HOST"]))
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue='lda_topics_description_queue')
 

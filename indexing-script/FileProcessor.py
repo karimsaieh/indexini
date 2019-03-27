@@ -4,6 +4,7 @@ from ThumbnailGenerator import ThumbnailGenerator
 from TextSummarizer import TextSummarizer
 from TextMostCommonWordsExtractor import TextMostCommonWordsExtractor
 from FileUrlProcessor import FileUrlProcessor
+import nltk
 
 
 class FileProcessor:
@@ -16,6 +17,10 @@ class FileProcessor:
         self.file_url_processor = FileUrlProcessor()
 
     def process(self, file):
+        # necessary dependencies for the executor
+        nltk.download('punkt')
+        nltk.download('wordnet')
+
         url = file[0]
         binary = file[1]
         print("file path -> " + url)

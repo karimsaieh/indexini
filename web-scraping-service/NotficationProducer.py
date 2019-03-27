@@ -4,7 +4,7 @@ import os
 
 class NotificationProducer:
     def __init__(self):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["HOST"]))
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["RABBITMQ_HOST"]))
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange='notifications_exchange', exchange_type='topic')
 

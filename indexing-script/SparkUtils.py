@@ -1,12 +1,29 @@
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
 from pyspark.sql.functions import col
+import os
 
 
 class SparkUtils:
     def __init__(self, master, app_name):
-        # TODO: master stays local even when executing in a cluster ?
-        self.sc = SparkContext(master=master, appName=app_name)
+        if os.environ["ENV"] != "dev":
+            self.sc = SparkContext(appName=app_name)
+            self.sc.addFile('/FileProcessor.py')
+            self.sc.addFile('/FileIndexProducer.py')
+            self.sc.addFile('/FileIndexRepository.py')
+            self.sc.addFile('/FileUrlProcessor.py')
+            self.sc.addFile('/LdaTopicsDescriptionProducer.py')
+            self.sc.addFile('/LdaTopicsDescriptionRepository.py')
+            self.sc.addFile('/Parser.py')
+            self.sc.addFile('/SparkProcessor.py')
+            self.sc.addFile('/SparkUtils.py')
+            self.sc.addFile('/TextMostCommonWordsExtractor.py')
+            self.sc.addFile('/TextPreProcessor.py')
+            self.sc.addFile('/TextSummarizer.py')
+            self.sc.addFile('/thumbnail_temp.py')
+            self.sc.addFile('/ThumbnailGenerator.py')
+        else:
+            self.sc = SparkContext(master=master, appName=app_name)
         self.sql_context = SQLContext(self.sc)
 
     # output rdd:(url, b'content")

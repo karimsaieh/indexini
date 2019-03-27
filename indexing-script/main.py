@@ -3,7 +3,7 @@ from FileProcessor import FileProcessor
 from SparkProcessor import SparkProcessor
 from FileIndexRepository import FileIndexRepository
 from LdaTopicsDescriptionRepository import LdaTopicsDescriptionRepository
-
+import os
 import time
 start = time. time()
 
@@ -11,9 +11,11 @@ file_processor = FileProcessor()
 spark_processor = SparkProcessor()
 file_index_repository = FileIndexRepository()
 lda_topics_description_repository = LdaTopicsDescriptionRepository()
-spark_utils = SparkUtils("local", "indexing-script-app")
+spark_utils = SparkUtils("local[2]", "indexing-script-app")
+# TO READ FROM HDFS: hdfs://localhost/pfe/data/save/1552298224747/d12bd6b1-1d67-46e9-9491-adb0e9dca818/*
+# else data/*/*
 
-files_rdd = spark_utils.read_files("data/*/*")
+files_rdd = spark_utils.read_files("hdfs://localhost/pfe/data/save/*/*/*")
 files_rdd = files_rdd.map(lambda file: file_processor.process(file))
 
 try:
@@ -38,8 +40,8 @@ try:
                  ["url", "file_name", "timestamp", "uuid", "pre_processed_text", "summary", "most_common", "thumbnail", "content_type", "kmeans_prediction", "bisecting_kmeans_prediction"],
                  ["lda_topics"])
 
-
-    result_df.show(n=200)
+    if os.environ["ENV"] == "dev":
+        result_df.show(n=200)
     # print(topics_descriptions)
 
     # saving lda topics should be before saving index files, cause they might be unavailable for ui
@@ -49,13 +51,16 @@ try:
 
     #stats rdd
     file_types_stats_df = files_df.groupBy("content_type").count()
-    file_types_stats_df.show(n=220) # 2nd column is named "count"
+    if os.environ["ENV"] == "dev":
+        file_types_stats_df.show(n=220) # 2nd column is named "count"
     # TODO: save stats to elasticsearch
 
 except ValueError as e:
     s = str(e)
     if s == "RDD is empty":
         print("RDD is empty & do nothing ?")
+except Exception as e:
+    print("exception in main py ==> " + str(e))
 
 end = time. time()
 print(end-start)
