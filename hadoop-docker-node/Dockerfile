@@ -19,6 +19,13 @@ RUN tar -xzvf spark-2.4.0-bin-hadoop2.6.tgz
 RUN mv spark-2.4.0-bin-hadoop2.6 /usr/local/spark
 RUN rm spark-2.4.0-bin-hadoop2.6.tgz
 
+
+RUN wget https://www-eu.apache.org/dist/incubator/livy/0.5.0-incubating/livy-0.5.0-incubating-bin.zip
+RUN apt-get -y install unzip
+RUN unzip livy-0.5.0-incubating-bin.zip
+RUN mv livy-0.5.0-incubating-bin /usr/local/livy
+RUN rm livy-0.5.0-incubating-bin.zip
+
 COPY config/* /tmp/
 
 
@@ -46,6 +53,7 @@ RUN mv /tmp/ssh_config ~/.ssh/config && \
     mv /tmp/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml && \
     mv /tmp/hadoop-env.sh $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
     mv /tmp/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml && \
+    mv /tmp/livy.conf /usr/local/livy/conf/livy.conf && \
     mv /tmp/spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
 
 RUN mkdir -p /usr/local/hadoop_store/hdfs/namenode
@@ -54,6 +62,8 @@ RUN mkdir -p /usr/local/hadoop_store/hdfs/datanode
 RUN hadoop namenode -format
 
 RUN chmod 600 ~/.ssh/config
+
+
 
 RUN apt-get install -y curl net-tools iputils-ping
 
@@ -66,12 +76,23 @@ RUN python3 -m nltk.downloader stopwords
 
 RUN apt-get install -y poppler-utils
 
-RUN mv /tmp/startup.sh /startup.sh
-
 #TODO: set TIKA_HOST, ENV, RABBITMQ_HOST
 
 #TODO:copy indexing-script project into /, but from where ? github ?
 
-EXPOSE 8020 50070 4040
+#TODO: delete requirments.txt & use the one that comes with the project
 
-CMD [ "sh", "-c", "service ssh start; /tmp/startup.sh && bash"]
+
+#livy
+
+ENV ENV=staging
+ENV RABBITMQ_HOST=172.17.0.2
+ENV TIKA_HOST=172.17.0.3
+
+ENV LIVY_CONF_DIR=/usr/local/livy/conf/
+
+RUN mv /tmp/startup.sh /startup.sh
+
+EXPOSE 8020 50070 4040 8998
+
+CMD [ "sh", "-c", "service ssh start; /startup.sh && bash"]
