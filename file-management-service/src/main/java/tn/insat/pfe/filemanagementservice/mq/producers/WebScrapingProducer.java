@@ -32,9 +32,4 @@ public class WebScrapingProducer implements IRabbitProducer{
             this.rabbitTemplate.convertAndSend(this.queue.getName(), payload);
     }
 
-    @Override
-    public void produce(String routingKey, String payload) {
-        throw new UnsupportedOperationException("WebScrapingProducer.produce(String routingKey, String pyaload)");
-    }
-
 }

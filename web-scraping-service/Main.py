@@ -11,9 +11,9 @@ class Main:
         self.file_producer = None
         self.notification_producer = None
 
-    def publish_method(self, routing_key, file_payload, notification_payload):
+    def publish_method(self, file_payload, notification_payload):
         self.file_producer.publish(json.dumps(file_payload))
-        self.notification_producer.publish(routing_key, json.dumps(notification_payload))
+        self.notification_producer.publish(json.dumps(notification_payload))
 
     def web_scraping_request_callback(self, ch, method, properties, body):
         print(" [x] Received %r" % body)

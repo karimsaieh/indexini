@@ -5,13 +5,14 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import tn.insat.pfe.filemanagementservice.mq.Constants;
 import tn.insat.pfe.filemanagementservice.mq.payloads.FilePayload;
 import tn.insat.pfe.filemanagementservice.services.FileService;
 
 import java.io.IOException;
 
 @Component
-@RabbitListener(queues = "files_queue")
+@RabbitListener(queues = Constants.FILES_QUEUE)
 public class FileConsumer implements IRabbitConsumer{
 
     private final FileService fileService;

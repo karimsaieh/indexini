@@ -3,8 +3,20 @@ from FileProcessor import FileProcessor
 from SparkProcessor import SparkProcessor
 from FileIndexRepository import FileIndexRepository
 from LdaTopicsDescriptionRepository import LdaTopicsDescriptionRepository
+from NotficationProducer import NotificationProducer
+import NotificationConstants
 import os
 import time
+import json
+
+notification_producer = NotificationProducer()
+notification_payload = {
+    "event": NotificationConstants.PROCESSING_STARTED
+}
+notification_producer.publish(json.dumps(notification_payload))
+notification_producer.close_connection()
+
+
 start = time. time()
 
 file_processor = FileProcessor()
@@ -16,7 +28,7 @@ spark_utils = SparkUtils("local[2]", "indexing-script-app")
 # else data/*/*
 
 files_rdd = spark_utils.read_files("hdfs://localhost/pfe/data/save/*/*/*")
-files_rdd = files_rdd.map(lambda file: file_processor.process(file))
+files_rdd = files_rdd.map(lambda file: file_processor.process(file)).cache()
 
 try:
     # Machine Learning
@@ -64,3 +76,10 @@ except Exception as e:
 
 end = time. time()
 print(end-start)
+
+notification_producer = NotificationProducer()
+notification_payload = {
+    "event": NotificationConstants.PROCESSING_ENDED
+}
+notification_producer.publish(json.dumps(notification_payload))
+notification_producer.close_connection()

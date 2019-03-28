@@ -29,5 +29,3 @@ class FileIndexRepository:
             file_index_producer.publish(json.dumps(payload))
         file_index_producer.close_connection()
 
-
-

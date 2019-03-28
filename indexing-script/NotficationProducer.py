@@ -1,6 +1,6 @@
 import pika
 import os
-from constants import RabbitMqConstants
+import RabbitMqConstants
 
 
 class NotificationProducer:

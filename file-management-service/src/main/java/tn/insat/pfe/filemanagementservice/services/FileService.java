@@ -12,7 +12,9 @@ import tn.insat.pfe.filemanagementservice.dtos.FileGetDto;
 import tn.insat.pfe.filemanagementservice.dtos.WebScrapingRequestDto;
 import tn.insat.pfe.filemanagementservice.dtos.mappers.FileMapper;
 import tn.insat.pfe.filemanagementservice.entities.File;
+import tn.insat.pfe.filemanagementservice.mq.Constants;
 import tn.insat.pfe.filemanagementservice.mq.payloads.FilePayload;
+import tn.insat.pfe.filemanagementservice.mq.payloads.NotificationPayload;
 import tn.insat.pfe.filemanagementservice.mq.payloads.WebscrapingRequestPayload;
 import tn.insat.pfe.filemanagementservice.mq.producers.IRabbitProducer;
 import tn.insat.pfe.filemanagementservice.repositories.IFileRepository;
@@ -102,8 +104,10 @@ public class FileService implements IFileService{
                 filePayload.getBulkSaveOperationTimestamp(),filePayload.getBulkSaveOperationUuid());
         // delete downloaded file from fs
         temporaryfile.delete();
-        String routingKey =filePayload.getBulkSaveOperationTimestamp() + "-" + filePayload.getBulkSaveOperationUuid();
-        this.notificationProducer.produce(routingKey, "a notnification recieved");
+        NotificationPayload notificationPayload = new NotificationPayload(Constants.FILE_DOWNLOADED, filePayload.getUrl(),filePayload.getName());
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String jsonPayload = ow.writeValueAsString(notificationPayload);
+        this.notificationProducer.produce(jsonPayload);
         return true;
     }
 

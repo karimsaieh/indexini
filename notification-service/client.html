@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Page Title</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
     SSE test
     <script>
-        const eventSource = new EventSource('http://localhost:3000/stream/1552301899744-936420de-fbb2-475b-b0c3-5439ce7712a7');
-        eventSource.addEventListener('message', (e) => {
-        console.log(e);
-        });
+      const eventSource = new EventSource("http://localhost:3000/stream/");
+      eventSource.addEventListener("message", e => {
+        debugger;
+        console.log(JSON.parse(e.data));
+      });
     </script>
-</body>
+  </body>
 </html>

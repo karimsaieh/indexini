@@ -22,6 +22,8 @@ class SparkUtils:
             self.sc.addFile('/TextSummarizer.py')
             self.sc.addFile('/thumbnail_temp.py')
             self.sc.addFile('/ThumbnailGenerator.py')
+            self.sc.addFile('/NotificationConstants.py')
+            self.sc.addFile('/RabbitMqConstants.py')
         else:
             self.sc = SparkContext(master=master, appName=app_name)
         self.sql_context = SQLContext(self.sc)

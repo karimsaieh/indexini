@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 from urllib.parse import urljoin
 import os
 from utils import change_file_name
+from constants import NotificationConstants
 
 
 class WebScraper:
@@ -14,7 +15,6 @@ class WebScraper:
         self.page_url = page_url
         self.bulk_save_operation_timestamp = bulk_save_operation_timestamp
         self.bulk_save_operation_uuid = bulk_save_operation_uuid
-        self.routing_key = self.bulk_save_operation_timestamp + "-" + self.bulk_save_operation_uuid
 
     def find_files(self,root_page_url, page_url, depth, file_types, visited_pages_urls, files_found):
 
@@ -37,7 +37,12 @@ class WebScraper:
                             "bulkSaveOperationTimestamp": self.bulk_save_operation_timestamp,
                             "bulkSaveOperationUuid": self.bulk_save_operation_uuid
                         }
-                        self.publish_method(self.routing_key, payload, payload)
+                        notification_payload = {
+                            "event": NotificationConstants.FILE_FOUND,
+                            "fileUrl": current_link,
+                            "fileName": new_file_name
+                        }
+                        self.publish_method(payload, notification_payload)
                 elif current_link not in visited_pages_urls:
                         visited_pages_urls.append(current_link)
                         html_page = requests.get(current_link).content

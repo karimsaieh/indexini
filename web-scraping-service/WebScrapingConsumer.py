@@ -1,5 +1,6 @@
 import os
 import pika
+from constants import RabbitMqConstants
 
 
 class WebScrapingConsumer:
@@ -10,6 +11,6 @@ class WebScrapingConsumer:
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["RABBITMQ_HOST"],
                                                                             heartbeat_interval=0))
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue='web_scraping_queue')
-        self.channel.basic_consume(self.callback, queue='web_scraping_queue', no_ack=True)
+        self.channel.queue_declare(queue=RabbitMqConstants.WEB_SCRAPING_QUEUE)
+        self.channel.basic_consume(self.callback, queue=RabbitMqConstants.WEB_SCRAPING_QUEUE, no_ack=True)
         self.channel.start_consuming()

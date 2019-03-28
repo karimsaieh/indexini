@@ -1,4 +1,5 @@
-package tn.insat.pfe.filemanagementservice.mq.payloads;
+package tn.insat.pfe.searchservice.mq.payloads;
+
 
 public class NotificationPayload {
     private String event;
@@ -38,3 +39,4 @@ public class NotificationPayload {
         this.fileName = fileName;
     }
 }
+

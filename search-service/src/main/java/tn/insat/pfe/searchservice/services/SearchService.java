@@ -1,12 +1,15 @@
 package tn.insat.pfe.searchservice.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.term.TermSuggestion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,8 +18,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import tn.insat.pfe.searchservice.clients.IElasticSearchClient;
 import tn.insat.pfe.searchservice.dtos.*;
+import tn.insat.pfe.searchservice.mq.Constants;
 import tn.insat.pfe.searchservice.mq.payloads.FileIndexPayload;
 import tn.insat.pfe.searchservice.mq.payloads.LdaTopicsDescriptionPayload;
+import tn.insat.pfe.searchservice.mq.payloads.NotificationPayload;
+import tn.insat.pfe.searchservice.mq.producers.IRabbitProducer;
+import tn.insat.pfe.searchservice.mq.producers.NotificationProducer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +41,12 @@ public class SearchService implements ISearchService {
     private String ldaTopicsIndex;
     @Value("${elasticsearch.index.lda-topics.type}")
     private String ldaTopicsIndexType;
-    private IElasticSearchClient elasticSearchClient;
+    private final IElasticSearchClient elasticSearchClient;
+    private final IRabbitProducer notificationProducer;
     @Autowired
-    public SearchService(IElasticSearchClient elasticSearchClient) {
+    public SearchService(IElasticSearchClient elasticSearchClient, @Qualifier("NotificationProducer") NotificationProducer notificationProducer) {
         this.elasticSearchClient = elasticSearchClient;
+        this.notificationProducer = notificationProducer;
     }
     @Override
     public SearchDto find(String query, Pageable pageable) {
@@ -93,9 +102,15 @@ public class SearchService implements ISearchService {
 //    }
 
     @Override
-    public boolean upsertFileIndex(FileIndexPayload fileIndexPayload) {
+    public boolean upsertFileIndex(FileIndexPayload fileIndexPayload) throws JsonProcessingException {
         Map fileIndexPayloadMap = fileIndexPayload.toMap();
-        return this.elasticSearchClient.upsert(this.fileIndex, this.fileIndexType, fileIndexPayloadMap);
+        boolean result = this.elasticSearchClient.upsert(this.fileIndex, this.fileIndexType, fileIndexPayloadMap);
+        //i know it's messy cause elastic may fail, but i got no time
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        NotificationPayload notificationPayload = new NotificationPayload(Constants.FILE_INDEXED, fileIndexPayload.getId(), fileIndexPayload.getFileName());
+        String jsonPayload = ow.writeValueAsString(notificationPayload);
+        this.notificationProducer.produce(jsonPayload);
+        return result;
     }
 
     @Override

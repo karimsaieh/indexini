@@ -1,6 +1,7 @@
 import ftplib
 from urllib.parse import urlsplit
 from utils import change_file_name
+from constants import NotificationConstants
 
 
 # TODO: SAME FILE NAME || keep directory as it is
@@ -12,7 +13,6 @@ class FtpExplorer:
         self.url = url
         self.bulk_save_operation_timestamp = bulk_save_operation_timestamp
         self.bulk_save_operation_uuid = bulk_save_operation_uuid
-        self.routing_key = self.bulk_save_operation_timestamp + "-" + self.bulk_save_operation_uuid
         self.hostname = "{0.netloc}".format(urlsplit(self.url))
 
     def traverse(self, ftp, depth, path, files_found):
@@ -39,7 +39,12 @@ class FtpExplorer:
                             "bulkSaveOperationTimestamp": self.bulk_save_operation_timestamp,
                             "bulkSaveOperationUuid": self.bulk_save_operation_uuid
                         }
-                        self.publish_method(self.routing_key, payload, payload)
+                        notification_payload = {
+                            "event": NotificationConstants.FILE_FOUND,
+                            "fileUrl": file_url,
+                            "fileName": new_file_name
+                        }
+                        self.publish_method(payload, notification_payload)
 
     def start(self):
         try:

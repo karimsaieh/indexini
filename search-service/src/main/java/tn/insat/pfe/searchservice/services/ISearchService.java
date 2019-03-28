@@ -1,5 +1,6 @@
 package tn.insat.pfe.searchservice.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Pageable;
 import tn.insat.pfe.searchservice.dtos.FileSaveDto;
 import tn.insat.pfe.searchservice.dtos.FileUpdateDto;
@@ -15,6 +16,6 @@ public interface ISearchService {
 //    boolean deleteByBulkSaveOperationTimestamp(String bulkSaveOperationTimestamp);
 //    boolean deleteByBulkSaveOperationUuid(String bulkSaveOperationUuid);
 //    boolean update(String id, FileUpdateDto fileUpdateDto);
-    boolean upsertFileIndex(FileIndexPayload fileIndexPayload);
+    boolean upsertFileIndex(FileIndexPayload fileIndexPayload) throws JsonProcessingException;
     boolean upsertLdaTopicsDescription(List<LdaTopicsDescriptionPayload> ldaTopicsDescriptionPayloadList);
 }
