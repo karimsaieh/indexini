@@ -1,8 +1,8 @@
 import json
-from WebScrapingConsumer import WebScrapingConsumer
+from FtpExplorerConsumer import FtpExplorerConsumer
 from FilesFoundProducer import FilesFoundProducer
 from NotificationProducer import NotificationProducer
-from WebScraper import WebScraper
+from FtpExplorer import FtpExplorer
 
 
 class Main:
@@ -19,14 +19,14 @@ class Main:
         self.files_found_producer = FilesFoundProducer()
         self.notification_producer = NotificationProducer()
         msg = json.loads(body.decode("utf-8"))
-        web_scrapper = WebScraper(self.publish_method, tuple(msg["fileTypes"]), msg["depth"], msg["url"], msg["bulkSaveOperationTimestamp"], msg["bulkSaveOperationUuid"])
-        web_scrapper.start()
+        ftp_explorer = FtpExplorer(self.publish_method, tuple(msg["fileTypes"]), msg["depth"], msg["url"], msg["bulkSaveOperationTimestamp"], msg["bulkSaveOperationUuid"])
+        ftp_explorer.start()
         print("Done")
         self.files_found_producer.close_connection()
         self.notification_producer.close_connection()
 
     def main(self):
-        web_scraping_consumer = WebScrapingConsumer(self.web_scraping_request_callback)
+        ftp_explorer_consumer = FtpExplorerConsumer(self.web_scraping_request_callback)
 
 
 main_object = Main()

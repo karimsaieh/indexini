@@ -10,26 +10,27 @@ import tn.insat.pfe.filemanagementservice.mq.queues.IRabbitQueue;
 import javax.annotation.PostConstruct;
 
 @Component
-@Qualifier("WebScrapingProducer")
-public class WebScrapingProducer implements IRabbitProducer{
+@Qualifier("FtpExplorerProducer")
+public class FtpExplorerProducer implements IRabbitProducer{
 
-    private final IRabbitQueue webScrapingQueue;
+    private final IRabbitQueue ftpExplorerQueue;
     private final RabbitTemplate rabbitTemplate;
     private Queue queue;
     @Autowired
-    public WebScrapingProducer(@Qualifier("WebScrapingQueue") IRabbitQueue webScrapingQueue,
+    public FtpExplorerProducer(@Qualifier("FtpExplorerQueue") IRabbitQueue ftpExplorerQueue,
                                RabbitTemplate rabbitTemplate) {
-        this.webScrapingQueue = webScrapingQueue;
+        this.ftpExplorerQueue = ftpExplorerQueue;
         this.rabbitTemplate = rabbitTemplate;
     }
 
     @PostConstruct
     public void init() {
-        this.queue = this.webScrapingQueue.getQueue();
+        this.queue = this.ftpExplorerQueue.getQueue();
     }
 
     @Override
     public void produce(String payload) {
         this.rabbitTemplate.convertAndSend(this.queue.getName(), payload);
     }
+
 }

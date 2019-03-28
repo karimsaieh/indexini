@@ -1,28 +1,28 @@
 package tn.insat.pfe.filemanagementservice.mq.payloads;
 
-import tn.insat.pfe.filemanagementservice.dtos.WebScrapingRequestDto;
+import tn.insat.pfe.filemanagementservice.dtos.IngestionRequestDto;
 
-public class WebscrapingRequestPayload {
-    private String pageUrl;
+public class IngestionRequestPayload {
+    private String url;
     private int depth;
     private String[] fileTypes;
     private String bulkSaveOperationTimestamp;
     private String bulkSaveOperationUuid;
 
-    public WebscrapingRequestPayload(WebScrapingRequestDto webScrapingRequestDto, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
-        this.pageUrl = webScrapingRequestDto.getPageUrl();
-        this.depth = webScrapingRequestDto.getDepth();
-        this.fileTypes = webScrapingRequestDto.getFileTypes();
+public IngestionRequestPayload(IngestionRequestDto ingestionRequestDto, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
+        this.url = ingestionRequestDto.getUrl();
+        this.depth = ingestionRequestDto.getDepth();
+        this.fileTypes = ingestionRequestDto.getFileTypes();
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
     }
 
-    public String getPageUrl() {
-        return pageUrl;
+    public String getUrl() {
+        return url;
     }
 
-    public void setPageUrl(String pageUrl) {
-        this.pageUrl = pageUrl;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public int getDepth() {

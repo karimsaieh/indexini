@@ -2,7 +2,7 @@ package tn.insat.pfe.filemanagementservice.mq.payloads;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class FilePayload {
+public class FileFoundPayload {
     @JsonProperty("name")
     private String name;
     @JsonProperty("url")
@@ -12,10 +12,10 @@ public class FilePayload {
     @JsonProperty("bulkSaveOperationUuid")
     private String bulkSaveOperationUuid;
 
-    public FilePayload() {
+    public FileFoundPayload() {
     }
 
-    public FilePayload(String name, String url, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
+    public FileFoundPayload(String name, String url, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
         this.name = name;
         this.url = url;
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;

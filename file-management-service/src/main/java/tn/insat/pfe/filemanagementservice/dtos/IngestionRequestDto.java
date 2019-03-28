@@ -5,25 +5,28 @@ import tn.insat.pfe.filemanagementservice.validators.ValidFileTypes;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Pattern;
 
-public class WebScrapingRequestDto {
-    private String pageUrl;
+public class IngestionRequestDto {
+    private String url;
     @Max(3)
     private int depth;
     @ValidFileTypes
     private String[] fileTypes;
 
-    public WebScrapingRequestDto(String pageUrl, int depth, String[] fileTypes) {
-        this.pageUrl = pageUrl;
+    public IngestionRequestDto() {
+    }
+
+    public IngestionRequestDto(String url, @Max(3) int depth, String[] fileTypes) {
+        this.url = url;
         this.depth = depth;
         this.fileTypes = fileTypes;
     }
 
-    public String getPageUrl() {
-        return pageUrl;
+    public String getUrl() {
+        return url;
     }
 
-    public void setPageUrl(String pageUrl) {
-        this.pageUrl = pageUrl;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public int getDepth() {
@@ -41,5 +44,4 @@ public class WebScrapingRequestDto {
     public void setFileTypes(String[] fileTypes) {
         this.fileTypes = fileTypes;
     }
-
 }

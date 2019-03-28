@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tn.insat.pfe.filemanagementservice.dtos.BulkSaveOperationDto;
 import tn.insat.pfe.filemanagementservice.dtos.FileGetDto;
-import tn.insat.pfe.filemanagementservice.dtos.WebScrapingRequestDto;
+import tn.insat.pfe.filemanagementservice.dtos.IngestionRequestDto;
 import tn.insat.pfe.filemanagementservice.endpoints.exceptions.ResourceNotFoundException;
 import tn.insat.pfe.filemanagementservice.services.IFileService;
 
@@ -48,8 +48,8 @@ public class FileEndpoint {
         return this.fileService.saveMultipartFiles(multipartFiles);
     }
 
-    @PostMapping("/func/submitWebScrapingRequest")
-    public BulkSaveOperationDto submitWebScrapingRequest(@RequestBody @Validated WebScrapingRequestDto webScrapingRequestDto) throws IOException {
-        return this.fileService.submitWebScrapingRequest(webScrapingRequestDto);
+    @PostMapping("/func/submitIngestionRequest")
+    public BulkSaveOperationDto submitWebScrapingRequest(@RequestBody @Validated IngestionRequestDto ingestionRequestDto) throws IOException {
+        return this.fileService.submitIngestionRequest(ingestionRequestDto);
     }
 }

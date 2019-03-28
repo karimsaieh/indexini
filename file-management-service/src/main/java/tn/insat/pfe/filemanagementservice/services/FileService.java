@@ -9,13 +9,13 @@ import org.springframework.web.multipart.MultipartFile;
 import tn.insat.pfe.filemanagementservice.clients.IFileHdfsClient;
 import tn.insat.pfe.filemanagementservice.dtos.BulkSaveOperationDto;
 import tn.insat.pfe.filemanagementservice.dtos.FileGetDto;
-import tn.insat.pfe.filemanagementservice.dtos.WebScrapingRequestDto;
+import tn.insat.pfe.filemanagementservice.dtos.IngestionRequestDto;
 import tn.insat.pfe.filemanagementservice.dtos.mappers.FileMapper;
 import tn.insat.pfe.filemanagementservice.entities.File;
 import tn.insat.pfe.filemanagementservice.mq.Constants;
-import tn.insat.pfe.filemanagementservice.mq.payloads.FilePayload;
+import tn.insat.pfe.filemanagementservice.mq.payloads.FileFoundPayload;
+import tn.insat.pfe.filemanagementservice.mq.payloads.IngestionRequestPayload;
 import tn.insat.pfe.filemanagementservice.mq.payloads.NotificationPayload;
-import tn.insat.pfe.filemanagementservice.mq.payloads.WebscrapingRequestPayload;
 import tn.insat.pfe.filemanagementservice.mq.producers.IRabbitProducer;
 import tn.insat.pfe.filemanagementservice.repositories.IFileRepository;
 
@@ -35,16 +35,19 @@ public class FileService implements IFileService{
     private final FileMapper fileMapper;
     private final IFileHdfsClient fileHdfsClient;
     private final IRabbitProducer webScrapingProducer;
+    private final IRabbitProducer ftpExplorerProducer;
     private final IRabbitProducer notificationProducer;
 
     @Autowired
     public FileService(IFileRepository fileRepository, FileMapper fileMapper, IFileHdfsClient fileHdfsClient,
-                       @Qualifier("webScrapingProducer") IRabbitProducer webScrapingProducer,
+                       @Qualifier("WebScrapingProducer") IRabbitProducer webScrapingProducer,
+                       @Qualifier("FtpExplorerProducer") IRabbitProducer ftpExplorerProducer,
                        @Qualifier("NotificationProducer") IRabbitProducer notificationProducer) {
         this.fileRepository = fileRepository;
         this.fileMapper = fileMapper;
         this.fileHdfsClient = fileHdfsClient;
         this.webScrapingProducer = webScrapingProducer;
+        this.ftpExplorerProducer = ftpExplorerProducer;
         this.notificationProducer = notificationProducer;
     }
 
@@ -75,36 +78,41 @@ public class FileService implements IFileService{
     }
 
     @Override
-    public BulkSaveOperationDto submitWebScrapingRequest(WebScrapingRequestDto webScrapingRequestDto) throws IOException {
+    public BulkSaveOperationDto submitIngestionRequest(IngestionRequestDto ingestionRequestDto) throws IOException {
         System.out.println("Submitting web scraping request");
         String bulkSaveOperationTimestamp = Long.toString(System.currentTimeMillis());
         String bulkSaveOperationUuid = UUID.randomUUID().toString();
-        WebscrapingRequestPayload webscrapingRequestPayload = new WebscrapingRequestPayload(
-                webScrapingRequestDto,
+        IngestionRequestPayload webscrapingRequestPayload = new IngestionRequestPayload(
+                ingestionRequestDto,
                 bulkSaveOperationTimestamp,
                 bulkSaveOperationUuid
         );
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String jsonPayload = ow.writeValueAsString(webscrapingRequestPayload);
+        if(webscrapingRequestPayload.getUrl().startsWith("ftp://")) {
+            this.ftpExplorerProducer.produce(jsonPayload);
+        } else {
+            this.webScrapingProducer.produce(jsonPayload);
+        }
         this.webScrapingProducer.produce(jsonPayload);
         return new BulkSaveOperationDto(bulkSaveOperationTimestamp,bulkSaveOperationUuid);
     }
 
     @Override
-    public boolean downloadAndSaveFile(FilePayload filePayload) throws IOException {
+    public boolean downloadAndSaveFile(FileFoundPayload fileFoundPayload) throws IOException {
         // download
-        URL url = new URL(filePayload.getUrl());
+        URL url = new URL(fileFoundPayload.getUrl());
         String uuid = UUID.randomUUID().toString();
         java.io.File temporaryfile = java.io.File.createTempFile(String.format("indexini-pfe-java-app-%s",uuid), "");
         ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
         FileOutputStream fileOutputStream = new FileOutputStream(temporaryfile);
         fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
         // save to HDFS & DB
-        this.saveFile(new FileInputStream(temporaryfile), filePayload.getName(), Files.probeContentType(temporaryfile.toPath()),
-                filePayload.getBulkSaveOperationTimestamp(),filePayload.getBulkSaveOperationUuid());
+        this.saveFile(new FileInputStream(temporaryfile), fileFoundPayload.getName(), Files.probeContentType(temporaryfile.toPath()),
+                fileFoundPayload.getBulkSaveOperationTimestamp(),fileFoundPayload.getBulkSaveOperationUuid());
         // delete downloaded file from fs
         temporaryfile.delete();
-        NotificationPayload notificationPayload = new NotificationPayload(Constants.FILE_DOWNLOADED, filePayload.getUrl(),filePayload.getName());
+        NotificationPayload notificationPayload = new NotificationPayload(Constants.FILE_DOWNLOADED, fileFoundPayload.getUrl(),fileFoundPayload.getName());
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String jsonPayload = ow.writeValueAsString(notificationPayload);
         this.notificationProducer.produce(jsonPayload);
