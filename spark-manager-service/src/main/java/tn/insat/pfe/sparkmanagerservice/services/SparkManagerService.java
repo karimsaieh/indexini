@@ -12,10 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import tn.insat.pfe.sparkmanagerservice.dtos.BatchesInfoDto;
 import tn.insat.pfe.sparkmanagerservice.dtos.JobInfoDto;
 import tn.insat.pfe.sparkmanagerservice.dtos.JobRequestDto;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,16 +37,8 @@ public class SparkManagerService implements ISparkManagerService {
     @Value("${LIVY_PORT}")
     private String livyPort;
 
-    // stateful variable, cause livy doesn't provide a methods that filters batches based on state
-    // only one job at a time
-    private int currentJobId;
-
     private final RestTemplate restTemplate;
 
-    @PostConstruct
-    public void init(){
-        this.currentJobId = -1;
-    }
     @Autowired
     public SparkManagerService(RestTemplate restTemplate){
         this.restTemplate = restTemplate;
@@ -52,22 +46,14 @@ public class SparkManagerService implements ISparkManagerService {
 
     @Override
     public boolean submitJob() throws JsonProcessingException {
-        if (this.currentJobId !=-1) {
-            String url = "http://" + this.livyHost + ":" + this.livyPort + "/batches/" + this.currentJobId;
-            // sometimes livy
-            String currentJobState="";
-            try{
-                ResponseEntity<JobInfoDto> response = this.restTemplate.getForEntity(url,JobInfoDto.class);
-                currentJobState = response.getBody().getState();
-                //livy returns a 404 when the session is deleted
-            }catch (HttpClientErrorException ex) {
-                currentJobState = "a dummy value";
-            }
-            if ( !currentJobState.equals("success") && !currentJobState.equals("dead") && !currentJobState.equals("error") ){
+        // livy sessions are deleted after a while, so batches won't have batches from 2005
+        String batches_url = "http://" + this.livyHost + ":" + this.livyPort + "/batches/";
+        ResponseEntity<BatchesInfoDto> batches_response = this.restTemplate.getForEntity(batches_url, BatchesInfoDto.class);
+        for (JobInfoDto jobInfoDto: batches_response.getBody().getSessions()) {
+            if(Arrays.asList("starting","idle","busy", "shutting_down", "running").contains(jobInfoDto.getState())) {
                 return false;
             }
         }
-
         Map conf = new HashMap<String, Object>();
         conf.put("spark.yarn.appMasterEnv.RABBITMQ_HOST", this.rabbitMqHost);
         conf.put("spark.executorEnv.RABBITMQ_HOST", this.rabbitMqHost);
@@ -76,14 +62,11 @@ public class SparkManagerService implements ISparkManagerService {
         conf.put("driverCores",1);
         conf.put("executorCores",2);
         JobRequestDto  jobRequestDto = new JobRequestDto(this.mainFile, conf);
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String json = ow.writeValueAsString(jobRequestDto);
         String url = "http://" + this.livyHost + ":" + this.livyPort + "/batches";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = new HttpEntity<String>(json, headers);
-        ResponseEntity<JobInfoDto> response = this.restTemplate.postForEntity(url,request, JobInfoDto.class);
-        this.currentJobId =response.getBody().getId();
+        HttpEntity<JobRequestDto> request = new HttpEntity<>(jobRequestDto, headers);
+        this.restTemplate.postForEntity(url,request, JobInfoDto.class);
         return true;
     }
 }
