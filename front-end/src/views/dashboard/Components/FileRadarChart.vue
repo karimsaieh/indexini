@@ -10,19 +10,25 @@ export default {
   props: {
     seriesData: {
       type: Array,
-      default: function() { return [] }
+      default: function() {
+        return []
+      }
     },
-    ldaTopicsDescritpion: {
+    ldaTopicsDescription: {
       type: Array,
-      default: function() { return [] }
+      default: function() {
+        return []
+      }
     }
   },
   data: function() {
     return {
-      series: [{
-        name: 'Topics',
-        data: this.generatePourcentages()
-      }],
+      series: [
+        {
+          name: 'Topics',
+          data: this.generatePourcentages()
+        }
+      ],
       chartOptions: {
         labels: this.generateLabels(),
         dataLabels: {
@@ -38,12 +44,12 @@ export default {
           },
           y: {
             show: false,
-            formatter: (val) => val + '%',
+            formatter: val => val + '%',
             title: {
               formatter: (seriesName, series) => {
                 // TODO : enhancement:  could use cache
                 const index = series.dataPointIndex
-                const topic = this.ldaTopicsDescritpion.find((topic) => +topic.id === index)
+                const topic = this.ldaTopicsDescription[index]
                 console.log(topic.description)
                 return topic.description.join(', ')
               }
@@ -68,6 +74,5 @@ export default {
 }
 </script>
 <style scoped>
-
 </style>
 

@@ -36,5 +36,7 @@ class FileProcessor:
 
         timestamp, uuid, file_name = self.file_url_processor.get_timestamp_and_uuid(url)
 
+        url = self.file_url_processor.normalizeUrl(url)
+
         return url, file_name, timestamp, uuid, words, preprocessed_text, summary, most_common, thumbnail, content_type
 

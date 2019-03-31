@@ -27,7 +27,7 @@
           <file-word-cloud :words="words" style="height:300px;" />
         </el-col>
         <el-col :span="10">
-          <file-radar-chart :series-data="seriesData" :lda-topics-descritpion="ldaTopicsDescritpion" />
+          <file-radar-chart :series-data="seriesData" :lda-topics-description="ldaTopicsDescription" />
         </el-col>
       </el-row>
 
@@ -57,7 +57,7 @@ export default {
     return {
       words: [['gogo', 19], ['frr', 10], ['action', 100], ['horror', 3], ['racing', 7], ['adventure', 3]],
       seriesData: [0.10, 0.505, 0.95, 0.5, 0.8],
-      ldaTopicsDescritpion: [
+      ldaTopicsDescription: [
         {
           'id': '0',
           'description': [

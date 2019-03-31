@@ -6,10 +6,10 @@ public class IngestionRequestPayload {
     private String url;
     private int depth;
     private String[] fileTypes;
-    private String bulkSaveOperationTimestamp;
+    private Long bulkSaveOperationTimestamp;
     private String bulkSaveOperationUuid;
 
-public IngestionRequestPayload(IngestionRequestDto ingestionRequestDto, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
+public IngestionRequestPayload(IngestionRequestDto ingestionRequestDto, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
         this.url = ingestionRequestDto.getUrl();
         this.depth = ingestionRequestDto.getDepth();
         this.fileTypes = ingestionRequestDto.getFileTypes();
@@ -41,11 +41,11 @@ public IngestionRequestPayload(IngestionRequestDto ingestionRequestDto, String b
         this.fileTypes = fileTypes;
     }
 
-    public String getBulkSaveOperationTimestamp() {
+    public Long getBulkSaveOperationTimestamp() {
         return bulkSaveOperationTimestamp;
     }
 
-    public void setBulkSaveOperationTimestamp(String bulkSaveOperationTimestamp) {
+    public void setBulkSaveOperationTimestamp(Long bulkSaveOperationTimestamp) {
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
     }
 

@@ -12,12 +12,14 @@ public class File implements Serializable {
     private long id;
     @Column(nullable = false)
     private boolean isIndexed;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String url;
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
     private String contentType;
     @Column(nullable = false)
-    private String bulkSaveOperationTimestamp;
+    private Long bulkSaveOperationTimestamp;
     @Column(nullable = false)
     private String bulkSaveOperationUuid;
     @Column(name = "created_at")
@@ -35,7 +37,8 @@ public class File implements Serializable {
         this.deleteFlag = false;
     }
 
-    public File(String name, String contentType, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
+    public File(String url, String name, String contentType, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
+        this.url = url;
         this.name = name;
         this.contentType = contentType;
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
@@ -66,6 +69,14 @@ public class File implements Serializable {
         isIndexed = indexed;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public String getName() {
         return name;
     }
@@ -90,11 +101,11 @@ public class File implements Serializable {
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
     }
 
-    public String getBulkSaveOperationTimestamp() {
+    public Long getBulkSaveOperationTimestamp() {
         return bulkSaveOperationTimestamp;
     }
 
-    public void setBulkSaveOperationTimestamp(String bulkSaveOperationTimestamp) {
+    public void setBulkSaveOperationTimestamp(Long bulkSaveOperationTimestamp) {
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
     }
 

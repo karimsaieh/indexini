@@ -23,7 +23,7 @@ public class FileIndexPayload {
     @JsonProperty("bisectingKmeansPrediction")
     private String bisectingKmeansPrediction;
     @JsonProperty("ldaTopics")
-    private float[] ldaTopics;
+    private Map<String, Float> ldaTopics;
     // json property annotation is in the getter
     private Map<String,Integer> mostCommonWords;
     @JsonProperty("summary")
@@ -94,11 +94,11 @@ public class FileIndexPayload {
         this.bisectingKmeansPrediction = bisectingKmeansPrediction;
     }
 
-    public float[] getLdaTopics() {
+    public Map<String, Float> getLdaTopics() {
         return ldaTopics;
     }
 
-    public void setLdaTopics(float[] ldaTopics) {
+    public void setLdaTopics(Map<String, Float> ldaTopics) {
         this.ldaTopics = ldaTopics;
     }
 
@@ -146,7 +146,7 @@ public class FileIndexPayload {
                 ", fileName='" + fileName + '\'' +
                 ", kmeansPrediction='" + kmeansPrediction + '\'' +
                 ", bisectingKmeansPrediction='" + bisectingKmeansPrediction + '\'' +
-                ", ldaTopics=" + Arrays.toString(ldaTopics) +
+                ", ldaTopics=" + ldaTopics +
                 ", mostCommonWords=" + this.getMostCommonWords() +
                 ", summary='" + summary + '\'' +
                 ", text='" + text + '\'' +

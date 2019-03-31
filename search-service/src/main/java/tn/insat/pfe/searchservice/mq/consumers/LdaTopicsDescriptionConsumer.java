@@ -31,4 +31,9 @@ public class LdaTopicsDescriptionConsumer implements IRabbitConsumer {
         System.out.println(ldaTopicsDescriptionPayloadList);
         this.searchService.upsertLdaTopicsDescription(ldaTopicsDescriptionPayloadList);
     }
+
+    @Override
+    public void consume(String in) throws IOException {
+        System.out.println("I'im in LdaTopicsDescriptionConsumer (String in ) \n" + in);
+    }
 }

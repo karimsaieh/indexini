@@ -8,14 +8,14 @@ public class FileFoundPayload {
     @JsonProperty("url")
     private String url;
     @JsonProperty("bulkSaveOperationTimestamp")
-    private String bulkSaveOperationTimestamp;
+    private Long bulkSaveOperationTimestamp;
     @JsonProperty("bulkSaveOperationUuid")
     private String bulkSaveOperationUuid;
 
     public FileFoundPayload() {
     }
 
-    public FileFoundPayload(String name, String url, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
+    public FileFoundPayload(String name, String url, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
         this.name = name;
         this.url = url;
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
@@ -38,11 +38,11 @@ public class FileFoundPayload {
         this.url = url;
     }
 
-    public String getBulkSaveOperationTimestamp() {
+    public Long getBulkSaveOperationTimestamp() {
         return bulkSaveOperationTimestamp;
     }
 
-    public void setBulkSaveOperationTimestamp(String bulkSaveOperationTimestamp) {
+    public void setBulkSaveOperationTimestamp(Long bulkSaveOperationTimestamp) {
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
     }
 

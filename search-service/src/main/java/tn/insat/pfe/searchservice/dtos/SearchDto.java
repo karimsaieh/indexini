@@ -8,13 +8,16 @@ public class SearchDto {
     private Page<FileGetDto> fileGetDtosPage;
     private List<String> suggestionsList;
     private float maxScore;
-    private List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtoList;
+    private List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList;
 
-    public SearchDto(Page<FileGetDto> fileGetDtosPage, List<String> suggestionsList, float maxScore, List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtoList) {
+    public SearchDto() {
+    }
+
+    public SearchDto(Page<FileGetDto> fileGetDtosPage, List<String> suggestionsList, float maxScore, List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList) {
         this.fileGetDtosPage = fileGetDtosPage;
         this.suggestionsList = suggestionsList;
         this.maxScore = maxScore;
-        this.ldaTopicsDescriptionGetDtoList = ldaTopicsDescriptionGetDtoList;
+        this.ldaTopicsDescriptionGetDtosList = ldaTopicsDescriptionGetDtosList;
     }
 
     public Page<FileGetDto> getFileGetDtosPage() {
@@ -41,11 +44,11 @@ public class SearchDto {
         this.maxScore = maxScore;
     }
 
-    public List<LdaTopicsDescriptionGetDto> getLdaTopicsDescriptionGetDtoList() {
-        return ldaTopicsDescriptionGetDtoList;
+    public List<LdaTopicsDescriptionGetDto> getLdaTopicsDescriptionGetDtosList() {
+        return ldaTopicsDescriptionGetDtosList;
     }
 
-    public void setLdaTopicsDescriptionGetDtoList(List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtoList) {
-        this.ldaTopicsDescriptionGetDtoList = ldaTopicsDescriptionGetDtoList;
+    public void setLdaTopicsDescriptionGetDtosList(List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList) {
+        this.ldaTopicsDescriptionGetDtosList = ldaTopicsDescriptionGetDtosList;
     }
 }

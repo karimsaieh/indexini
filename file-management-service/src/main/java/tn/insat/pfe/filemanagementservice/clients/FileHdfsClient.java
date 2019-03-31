@@ -31,14 +31,14 @@ public class FileHdfsClient implements IFileHdfsClient{
     }
 
     @Override
-    public void addFile(InputStream fileInputStream, String fileName, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) throws IOException {
+//    public void addFile(InputStream fileInputStream, String fileName, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) throws IOException {
+    public void addFile(String directoryUrl, String fileName,InputStream fileInputStream) throws IOException {
         //create save directory if it doesn't exist
-        String saveDirectoryPathString = String.format("%s/%s/%s/", this.hdfsProvider.getSaveDirectory(), bulkSaveOperationTimestamp, bulkSaveOperationUuid);
-        Path saveDirectoryPath = new Path(saveDirectoryPathString);
-        if (!this.fileSystem.exists(saveDirectoryPath)) {
+        Path directoryPath = new Path(directoryUrl);
+        if (!this.fileSystem.exists(directoryPath)) {
             this.mkdir(this.hdfsProvider.getSaveDirectory());
         }
-        FSDataOutputStream out = this.fileSystem.create(new Path(saveDirectoryPathString + fileName));
+        FSDataOutputStream out = this.fileSystem.create(new Path(directoryUrl + "/" +fileName));
         InputStream in = new BufferedInputStream(fileInputStream);
         byte[] b = new byte[1024];
         int numBytes = 0;
@@ -62,8 +62,13 @@ public class FileHdfsClient implements IFileHdfsClient{
     }
 
     @Override
-    public void deleteFile(String file) {
-        System.out.println("--------------- delete");
+    public void delete(String url) throws IOException {
+        Path path = new Path(url);
+        if (!fileSystem.exists(path)) {
+            System.out.println("File or Folder" + url + " does not exists");
+            return;
+        }
+        this.fileSystem.delete(new Path(url), true);
     }
 
     @Override

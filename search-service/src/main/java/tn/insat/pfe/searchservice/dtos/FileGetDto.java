@@ -12,7 +12,7 @@ public class FileGetDto {
     private String fileName;
     private String kmeansPrediction;
     private String bisectingKmeansPrediction;
-    private float[] ldaTopics;
+    private Map<String, Float> ldaTopics;
     private Map<String,Integer> mostCommonWords;
     private String summary;
     private String text;
@@ -78,11 +78,11 @@ public class FileGetDto {
         this.bisectingKmeansPrediction = bisectingKmeansPrediction;
     }
 
-    public float[] getLdaTopics() {
+    public Map<String, Float> getLdaTopics() {
         return ldaTopics;
     }
 
-    public void setLdaTopics(float[] ldaTopics) {
+    public void setLdaTopics(Map<String, Float> ldaTopics) {
         this.ldaTopics = ldaTopics;
     }
 

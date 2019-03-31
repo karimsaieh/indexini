@@ -24,8 +24,6 @@ spark_processor = SparkProcessor()
 file_index_repository = FileIndexRepository()
 lda_topics_description_repository = LdaTopicsDescriptionRepository()
 spark_utils = SparkUtils("local[2]", "indexing-script-app")
-# TO READ FROM HDFS: hdfs://localhost/pfe/data/save/1552298224747/d12bd6b1-1d67-46e9-9491-adb0e9dca818/*
-# else data/*/*
 
 files_rdd = spark_utils.read_files("hdfs://localhost/pfe/data/save/*/*/*")
 files_rdd = files_rdd.map(lambda file: file_processor.process(file)).cache()

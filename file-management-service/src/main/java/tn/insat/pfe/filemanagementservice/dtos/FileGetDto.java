@@ -1,31 +1,25 @@
 package tn.insat.pfe.filemanagementservice.dtos;
 
+import java.util.Date;
+
 public class FileGetDto {
 
-    private long id;
     private boolean isIndexed;
     private String name;
-    private String modifiedAt;
-    // ADD
-    // last modified
-    // created at
+    private Date createdAt;
+    private String url;
+    private String contentType;
+    private Long bulkSaveOperationTimestamp;
 
     public FileGetDto() {
     }
 
-    public FileGetDto(long id, boolean isIndexed,String name, String modifiedAt) {
-        this.id = id;
-        this.isIndexed = isIndexed;
+    public FileGetDto(String name, Date createdAt, String url, String contentType, Long bulkSaveOperationTimestamp) {
         this.name = name;
-        this.modifiedAt = modifiedAt;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+        this.createdAt = createdAt;
+        this.url = url;
+        this.contentType = contentType;
+        this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
     }
 
     public boolean isIndexed() {
@@ -44,11 +38,35 @@ public class FileGetDto {
         this.name = name;
     }
 
-    public String getModifiedAt() {
-        return modifiedAt;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setModifiedAt(String modifiedAt) {
-        this.modifiedAt = modifiedAt;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public Long getBulkSaveOperationTimestamp() {
+        return bulkSaveOperationTimestamp;
+    }
+
+    public void setBulkSaveOperationTimestamp(Long bulkSaveOperationTimestamp) {
+        this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
     }
 }

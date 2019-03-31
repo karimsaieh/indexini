@@ -5,23 +5,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class BulkSaveOperationDto {
 
     @JsonProperty("bulkSaveOperationTimestamp")
-    private String timestamp;
+    private Long timestamp;
     @JsonProperty("bulkSaveOperationUuid")
     private String uuid;
 
     public BulkSaveOperationDto() {
     }
 
-    public BulkSaveOperationDto(String timestamp, String uuid) {
+    public BulkSaveOperationDto(Long timestamp, String uuid) {
         this.timestamp = timestamp;
         this.uuid = uuid;
     }
 
-    public String getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 

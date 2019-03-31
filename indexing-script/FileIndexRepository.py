@@ -23,9 +23,14 @@ class FileIndexRepository:
                 "contentType": file_index["content_type"],
                 "kmeansPrediction": file_index["kmeans_prediction"],
                 "bisectingKmeansPrediction": file_index["bisecting_kmeans_prediction"],
-                "ldaTopics": file_index["lda_topics"].values.tolist(),
                 "thumbnail": file_index["thumbnail"],
             }
+
+            ldaTopics = {}
+            for index, topic_value in enumerate(file_index["lda_topics"].values.tolist()):
+                ldaTopics[index] = topic_value
+            payload["ldaTopics"] = ldaTopics
             file_index_producer.publish(json.dumps(payload))
+
         file_index_producer.close_connection()
 

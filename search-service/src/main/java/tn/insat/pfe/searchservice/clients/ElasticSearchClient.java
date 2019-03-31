@@ -1,10 +1,9 @@
 package tn.insat.pfe.searchservice.clients;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
@@ -12,29 +11,24 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.Fuzziness;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.SuggestionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import tn.insat.pfe.searchservice.config.IElasticSearchProvider;
-import tn.insat.pfe.searchservice.dtos.FileSaveDto;
-import tn.insat.pfe.searchservice.dtos.FileUpdateDto;
-import tn.insat.pfe.searchservice.mq.payloads.FileIndexPayload;
-import tn.insat.pfe.searchservice.mq.payloads.LdaTopicsDescriptionPayload;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 
@@ -52,10 +46,13 @@ public class ElasticSearchClient implements IElasticSearchClient {
     }
 
     @Override
-    public SearchResponse findAll(String index) {
+    public SearchResponse findAll(String index, String sortBy) {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.matchAllQuery()).from(0).size(10000);
+        if (sortBy !=null) {
+            searchSourceBuilder.sort(new FieldSortBuilder(sortBy).order(SortOrder.DESC));
+        }
         searchRequest.source(searchSourceBuilder);
         try {
             return this.restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
@@ -64,6 +61,7 @@ public class ElasticSearchClient implements IElasticSearchClient {
             throw new RuntimeException("ElasticSearchClient.findAll: Elastic search not working properly");
         }
     }
+
 
     @Override
     public SearchResponse search(String index, String field,  String query, Pageable pageable) {
@@ -89,6 +87,34 @@ public class ElasticSearchClient implements IElasticSearchClient {
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("ElasticSearchClient.search: Elastic search not working properly");
+        }
+    }
+
+    @Override
+    public SearchResponse findBy(String index, String by, String value, Pageable pageable) {
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        TermQueryBuilder termQueryBuilder = new TermQueryBuilder(by, value);
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+        searchSourceBuilder.query(termQueryBuilder).from(page * size).size(size);
+        searchRequest.source(searchSourceBuilder);
+        try {
+            return this.restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("ElasticSearchClient.findBy: Elastic search not working properly");
+        }
+    }
+
+    @Override
+    public GetResponse findById(String index, String type, String id) {
+        GetRequest getRequest = new GetRequest(index, type, id);
+        try {
+            return this.restHighLevelClient.get(getRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("ElasticSearchClient.findById: Elastic search not working properly");
         }
     }
 
@@ -165,6 +191,32 @@ public class ElasticSearchClient implements IElasticSearchClient {
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("ElasticSearchClient.deleteByIdRange: Elastic search not working properly");
+        }
+    }
+
+    @Override
+    public boolean deleteBy(String index, String deleteBy, String value) {
+        DeleteByQueryRequest request = new DeleteByQueryRequest(index);
+        request.setQuery(new TermQueryBuilder(deleteBy, value));
+        try {
+            BulkByScrollResponse bulkResponse =
+                    this.restHighLevelClient.deleteByQuery(request, RequestOptions.DEFAULT);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("ElasticSearchClient.delete: Elastic search not working properly");
+        }
+    }
+
+    @Override
+    public boolean deleteById(String index, String type, String value) {
+        DeleteRequest request = new DeleteRequest(index).type(type).id(value);
+        try {
+            DeleteResponse deleteResponse =  this.restHighLevelClient.delete(request, RequestOptions.DEFAULT);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("ElasticSearchClient.delete: Elastic search not working properly");
         }
     }
 
