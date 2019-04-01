@@ -1,25 +1,25 @@
 package tn.insat.pfe.filemanagementservice.dtos;
 
 import java.util.Date;
+import java.util.List;
 
 public class FileGetDto {
 
     private boolean isIndexed;
     private String name;
-    private Date createdAt;
-    private String url;
     private String contentType;
     private Long bulkSaveOperationTimestamp;
+    private List<String> metadata;
 
     public FileGetDto() {
     }
 
-    public FileGetDto(String name, Date createdAt, String url, String contentType, Long bulkSaveOperationTimestamp) {
+    public FileGetDto(boolean isIndexed, String name, String contentType, Long bulkSaveOperationTimestamp, List<String> metadata) {
+        this.isIndexed = isIndexed;
         this.name = name;
-        this.createdAt = createdAt;
-        this.url = url;
         this.contentType = contentType;
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
+        this.metadata = metadata;
     }
 
     public boolean isIndexed() {
@@ -38,22 +38,6 @@ public class FileGetDto {
         this.name = name;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public String getContentType() {
         return contentType;
     }
@@ -68,5 +52,13 @@ public class FileGetDto {
 
     public void setBulkSaveOperationTimestamp(Long bulkSaveOperationTimestamp) {
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
+    }
+
+    public List<String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<String> metadata) {
+        this.metadata = metadata;
     }
 }

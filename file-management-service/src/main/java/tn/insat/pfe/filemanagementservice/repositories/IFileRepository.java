@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface IFileRepository extends PagingAndSortingRepository<File, Long> {
 //    Optional<File> findByName(String name);
     //query dsl
-    Long removeByUrl(String url);
-    List<Long> removeByBulkSaveOperationTimestamp(String bulkSaveOperationTimestamp);
+    Long removeByLocation(String location);
+    List<Long> removeByBulkSaveOperationTimestamp(Long bulkSaveOperationTimestamp);
+    File findByLocation(String location);
 }

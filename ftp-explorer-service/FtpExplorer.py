@@ -7,13 +7,14 @@ from socket import timeout
 
 # TODO: SAME FILE NAME || keep directory as it is
 class FtpExplorer:
-    def __init__(self, publish_method, file_types, depth, url, bulk_save_operation_timestamp, bulk_save_operation_uuid):
+    def __init__(self, publish_method, msg):
         self.publish_method = publish_method
-        self.file_types = file_types
-        self.depth = depth
-        self.url = url
-        self.bulk_save_operation_timestamp = bulk_save_operation_timestamp
-        self.bulk_save_operation_uuid = bulk_save_operation_uuid
+        self.file_types = tuple(msg["fileTypes"])
+        self.depth = msg["depth"]
+        self.url = msg["url"]
+        self.bulk_save_operation_timestamp = msg["bulkSaveOperationTimestamp"]
+        self.bulk_save_operation_uuid = msg["bulkSaveOperationUuid"]
+        self.metadata = msg["metadata"]
         self.hostname = "{0.netloc}".format(urlsplit(self.url))
         self.ftp = None
 
@@ -68,7 +69,8 @@ class FtpExplorer:
                             "name": new_file_name,
                             "url": file_url,
                             "bulkSaveOperationTimestamp": self.bulk_save_operation_timestamp,
-                            "bulkSaveOperationUuid": self.bulk_save_operation_uuid
+                            "bulkSaveOperationUuid": self.bulk_save_operation_uuid,
+                            "metadata": self.metadata
                         }
                         notification_payload = {
                             "event": NotificationConstants.FILE_FOUND,

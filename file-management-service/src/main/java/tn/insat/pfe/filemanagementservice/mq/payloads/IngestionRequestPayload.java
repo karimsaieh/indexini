@@ -2,19 +2,23 @@ package tn.insat.pfe.filemanagementservice.mq.payloads;
 
 import tn.insat.pfe.filemanagementservice.dtos.IngestionRequestDto;
 
+import java.util.List;
+
 public class IngestionRequestPayload {
     private String url;
     private int depth;
     private String[] fileTypes;
     private Long bulkSaveOperationTimestamp;
     private String bulkSaveOperationUuid;
+    private List<String> metadata;
 
-public IngestionRequestPayload(IngestionRequestDto ingestionRequestDto, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
+public IngestionRequestPayload(IngestionRequestDto ingestionRequestDto, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid, List<String> metadata) {
         this.url = ingestionRequestDto.getUrl();
         this.depth = ingestionRequestDto.getDepth();
         this.fileTypes = ingestionRequestDto.getFileTypes();
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
+        this.metadata = metadata;
     }
 
     public String getUrl() {
@@ -55,5 +59,13 @@ public IngestionRequestPayload(IngestionRequestDto ingestionRequestDto, Long bul
 
     public void setBulkSaveOperationUuid(String bulkSaveOperationUuid) {
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
+    }
+
+    public List<String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<String> metadata) {
+        this.metadata = metadata;
     }
 }

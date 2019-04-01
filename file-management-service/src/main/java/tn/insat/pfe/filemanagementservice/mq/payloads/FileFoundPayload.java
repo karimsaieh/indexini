@@ -2,6 +2,8 @@ package tn.insat.pfe.filemanagementservice.mq.payloads;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class FileFoundPayload {
     @JsonProperty("name")
     private String name;
@@ -11,15 +13,18 @@ public class FileFoundPayload {
     private Long bulkSaveOperationTimestamp;
     @JsonProperty("bulkSaveOperationUuid")
     private String bulkSaveOperationUuid;
+    @JsonProperty("metadata")
+    private List<String> metadata;
 
     public FileFoundPayload() {
     }
 
-    public FileFoundPayload(String name, String url, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
+    public FileFoundPayload(String name, String url, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid, List<String> metadata) {
         this.name = name;
         this.url = url;
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
+        this.metadata = metadata;
     }
 
     public String getName() {
@@ -54,13 +59,22 @@ public class FileFoundPayload {
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
     }
 
+    public List<String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<String> metadata) {
+        this.metadata = metadata;
+    }
+
     @Override
     public String toString() {
-        return "FilePayload{" +
+        return "FileFoundPayload{" +
                 "name='" + name + '\'' +
                 ", url='" + url + '\'' +
-                ", bulkSaveOperationTimestamp='" + bulkSaveOperationTimestamp + '\'' +
+                ", bulkSaveOperationTimestamp=" + bulkSaveOperationTimestamp +
                 ", bulkSaveOperationUuid='" + bulkSaveOperationUuid + '\'' +
+                ", metadata=" + metadata +
                 '}';
     }
 }

@@ -19,7 +19,7 @@ class Main:
         self.files_found_producer = FilesFoundProducer()
         self.notification_producer = NotificationProducer()
         msg = json.loads(body.decode("utf-8"))
-        ftp_explorer = FtpExplorer(self.publish_method, tuple(msg["fileTypes"]), msg["depth"], msg["url"], msg["bulkSaveOperationTimestamp"], msg["bulkSaveOperationUuid"])
+        ftp_explorer = FtpExplorer(self.publish_method, msg)
         ftp_explorer.start()
         print("Done")
         self.files_found_producer.close_connection()

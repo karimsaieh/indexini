@@ -8,15 +8,16 @@ from constants import NotificationConstants
 
 
 class WebScraper:
-    def __init__(self, publish_method, file_types, depth, page_url, bulk_save_operation_timestamp, bulk_save_operation_uuid):
+    def __init__(self, publish_method, msg):
         self.publish_method = publish_method
-        self.file_types = file_types
-        self.depth = depth
-        self.page_url = page_url
-        self.bulk_save_operation_timestamp = bulk_save_operation_timestamp
-        self.bulk_save_operation_uuid = bulk_save_operation_uuid
+        self.file_types = tuple(msg["fileTypes"])
+        self.depth = msg["depth"]
+        self.page_url = msg["url"]
+        self.bulk_save_operation_timestamp = msg["bulkSaveOperationTimestamp"]
+        self.bulk_save_operation_uuid = msg["bulkSaveOperationUuid"]
+        self.metadata = msg["metadata"]
 
-    def find_files(self,root_page_url, page_url, depth, file_types, visited_pages_urls, files_found):
+    def find_files(self, root_page_url, page_url, depth, file_types, visited_pages_urls, files_found):
 
         if depth < 0:
                 return None
@@ -35,7 +36,8 @@ class WebScraper:
                             "name": new_file_name,
                             "url": current_link,
                             "bulkSaveOperationTimestamp": self.bulk_save_operation_timestamp,
-                            "bulkSaveOperationUuid": self.bulk_save_operation_uuid
+                            "bulkSaveOperationUuid": self.bulk_save_operation_uuid,
+                            "metadata": self.metadata
                         }
                         notification_payload = {
                             "event": NotificationConstants.FILE_FOUND,

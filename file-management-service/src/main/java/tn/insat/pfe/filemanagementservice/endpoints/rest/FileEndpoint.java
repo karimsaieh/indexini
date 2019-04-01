@@ -64,7 +64,7 @@ public class FileEndpoint {
 
     @DeleteMapping(params = "url")
     public boolean deleteFileByUrl(@RequestParam(name = "url", required = false) String url) throws IOException {
-        this.fileService.deleteByUrl(url);
+        this.fileService.deleteByLocation(url);
         return true; // "nothing is true everything is permitted", ezio auditore da firenze
     }
 

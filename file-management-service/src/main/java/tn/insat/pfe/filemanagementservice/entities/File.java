@@ -3,6 +3,7 @@ package tn.insat.pfe.filemanagementservice.entities;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "files")
@@ -13,7 +14,7 @@ public class File implements Serializable {
     @Column(nullable = false)
     private boolean isIndexed;
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String url;
+    private String location;
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
@@ -28,6 +29,9 @@ public class File implements Serializable {
     private Date modifiedAt;
     private boolean deleteFlag;
 
+    @ElementCollection
+    private List<String> metadata;
+
     @PrePersist
     protected void onCreate() {
         Date currentDate = new Date();
@@ -37,12 +41,13 @@ public class File implements Serializable {
         this.deleteFlag = false;
     }
 
-    public File(String url, String name, String contentType, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid) {
-        this.url = url;
+    public File(String location, String name, String contentType, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid, List<String> metadata) {
+        this.location = location;
         this.name = name;
         this.contentType = contentType;
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
+        this.metadata = metadata;
     }
 
     @PreUpdate
@@ -69,12 +74,12 @@ public class File implements Serializable {
         isIndexed = indexed;
     }
 
-    public String getUrl() {
-        return url;
+    public String getLocation() {
+        return location;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getName() {
@@ -131,5 +136,13 @@ public class File implements Serializable {
 
     public void setDeleteFlag(boolean deleteFlag) {
         this.deleteFlag = deleteFlag;
+    }
+
+    public List<String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<String> metadata) {
+        this.metadata = metadata;
     }
 }

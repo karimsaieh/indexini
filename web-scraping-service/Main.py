@@ -19,7 +19,7 @@ class Main:
         self.files_found_producer = FilesFoundProducer()
         self.notification_producer = NotificationProducer()
         msg = json.loads(body.decode("utf-8"))
-        web_scrapper = WebScraper(self.publish_method, tuple(msg["fileTypes"]), msg["depth"], msg["url"], msg["bulkSaveOperationTimestamp"], msg["bulkSaveOperationUuid"])
+        web_scrapper = WebScraper(self.publish_method, msg)
         web_scrapper.start()
         print("Done")
         self.files_found_producer.close_connection()

@@ -1,5 +1,6 @@
 package tn.insat.pfe.filemanagementservice.services;
 
+import org.apache.commons.io.FilenameUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +18,10 @@ import tn.insat.pfe.filemanagementservice.dtos.IngestionRequestDto;
 import tn.insat.pfe.filemanagementservice.dtos.mappers.FileMapper;
 import tn.insat.pfe.filemanagementservice.entities.File;
 import tn.insat.pfe.filemanagementservice.mq.Constants;
-import tn.insat.pfe.filemanagementservice.mq.payloads.FileDeletePayload;
-import tn.insat.pfe.filemanagementservice.mq.payloads.FileFoundPayload;
-import tn.insat.pfe.filemanagementservice.mq.payloads.IngestionRequestPayload;
-import tn.insat.pfe.filemanagementservice.mq.payloads.NotificationPayload;
+import tn.insat.pfe.filemanagementservice.mq.payloads.*;
 import tn.insat.pfe.filemanagementservice.mq.producers.IRabbitProducer;
 import tn.insat.pfe.filemanagementservice.repositories.IFileRepository;
+import tn.insat.pfe.filemanagementservice.services.Utils.FileServiceUtils;
 
 import javax.transaction.Transactional;
 import java.io.*;
@@ -30,9 +29,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +42,7 @@ public class FileService implements IFileService{
     private final IRabbitProducer ftpExplorerProducer;
     private final IRabbitProducer notificationProducer;
     private final IRabbitProducer fileDeleteProducer;
+
     @Value("${hdfs.save-directory}")
     private String saveDirectory;
 
@@ -81,23 +79,40 @@ public class FileService implements IFileService{
 
     @Override
     public BulkSaveOperationDto saveMultipartFiles(MultipartFile[] multipartFiles) throws IOException {
+        List<String> metadata=  new ArrayList<>(Arrays.asList("ui-upload"));
         Long bulkSaveOperationTimestamp = System.currentTimeMillis();
         String bulkSaveOperationUuid = UUID.randomUUID().toString();
-        for (MultipartFile multipartFile: multipartFiles) {
-            this.saveFile(multipartFile.getInputStream(), multipartFile.getOriginalFilename(),multipartFile.getContentType()
-                    ,bulkSaveOperationTimestamp, bulkSaveOperationUuid);
+        //
+        List<String> fileNames = new ArrayList<>();
+        for (MultipartFile multipartFile: multipartFiles ) {
+            fileNames.add(multipartFile.getOriginalFilename());
+        }
+        fileNames = FileServiceUtils.renameFiles(fileNames);
+        //
+        for (int i = 0; i < multipartFiles.length ; i++) {
+            this.saveFile(multipartFiles[i].getInputStream(), fileNames.get(i),multipartFiles[i].getContentType()
+                    ,bulkSaveOperationTimestamp, bulkSaveOperationUuid, metadata);
         }
         return new BulkSaveOperationDto(bulkSaveOperationTimestamp,bulkSaveOperationUuid);
     }
 
+    @Override
+    public void updateFile(FileDbUpdatePayload fileDbUpdatePayload) {
+        File file = this.fileRepository.findByLocation(fileDbUpdatePayload.getLocation());
+        file.setIndexed(fileDbUpdatePayload.isIndexed()); //always true btw
+//        this.fileRepository.save(file);
+    }
 
-    public boolean saveFile(InputStream inputStream, String fileName,String contentType, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid) throws IOException {
+
+    public boolean saveFile(InputStream inputStream, String fileName,String contentType, Long bulkSaveOperationTimestamp,
+                            String bulkSaveOperationUuid, List<String> metadata) throws IOException {
         String directoryUrl = this.saveDirectory + "/" + bulkSaveOperationTimestamp + "/" + bulkSaveOperationUuid;
         // save to hdfs
         this.fileHdfsClient.addFile(directoryUrl, fileName, inputStream);
         //save to db
-        String fileUrl = directoryUrl + "/" + fileName;
-        this.fileRepository.save(new File(fileUrl, fileName, contentType,bulkSaveOperationTimestamp, bulkSaveOperationUuid));
+        String fileLocation = directoryUrl + "/" + fileName;
+        this.fileRepository.save(new File(fileLocation, fileName, contentType,bulkSaveOperationTimestamp,
+                bulkSaveOperationUuid, metadata));
         return true;
     }
 
@@ -106,14 +121,16 @@ public class FileService implements IFileService{
         System.out.println("Submitting web scraping request");
         Long bulkSaveOperationTimestamp = System.currentTimeMillis();
         String bulkSaveOperationUuid = UUID.randomUUID().toString();
-        IngestionRequestPayload webscrapingRequestPayload = new IngestionRequestPayload(
+        List<String> metadata = new ArrayList<>(Arrays.asList("from url", ingestionRequestDto.getUrl()));
+        IngestionRequestPayload ingestionRequestPayload = new IngestionRequestPayload(
                 ingestionRequestDto,
                 bulkSaveOperationTimestamp,
-                bulkSaveOperationUuid
+                bulkSaveOperationUuid,
+                metadata
         );
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String jsonPayload = ow.writeValueAsString(webscrapingRequestPayload);
-        if(webscrapingRequestPayload.getUrl().startsWith("ftp://")) {
+        String jsonPayload = ow.writeValueAsString(ingestionRequestPayload);
+        if(ingestionRequestPayload.getUrl().startsWith("ftp://")) {
             this.ftpExplorerProducer.produce(jsonPayload);
         } else {
             this.webScrapingProducer.produce(jsonPayload);
@@ -124,21 +141,36 @@ public class FileService implements IFileService{
     @Override
     public boolean downloadAndSaveFile(FileFoundPayload fileFoundPayload) throws IOException {
         // download
+        System.out.println("krr");
         URL url = new URL(fileFoundPayload.getUrl());
         String uuid = UUID.randomUUID().toString();
+        System.out.println("krrsdmlfk");
         java.io.File temporaryfile = java.io.File.createTempFile(String.format("indexini-pfe-java-app-%s",uuid), "");
+        System.out.println("krrcwxwxcwxsdmlfk");
         ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+        System.out.println("krrsdmxclfk");
         FileOutputStream fileOutputStream = new FileOutputStream(temporaryfile);
+        System.out.println("krrpoipp");
         fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
         // save to HDFS & DB
-        this.saveFile(new FileInputStream(temporaryfile), fileFoundPayload.getName(), Files.probeContentType(temporaryfile.toPath()),
-                fileFoundPayload.getBulkSaveOperationTimestamp(),fileFoundPayload.getBulkSaveOperationUuid());
+        System.out.println("ttk");
+        FileInputStream fileInputStream = new FileInputStream(temporaryfile);
+        this.saveFile(fileInputStream, fileFoundPayload.getName(), Files.probeContentType(temporaryfile.toPath()),
+                fileFoundPayload.getBulkSaveOperationTimestamp(),fileFoundPayload.getBulkSaveOperationUuid(),
+                fileFoundPayload.getMetadata());
         // delete downloaded file from fs
+        System.out.println("ssk");
+        fileInputStream.close();
+        fileOutputStream.close();
         temporaryfile.delete();
+        System.out.println("kff");
+
         NotificationPayload notificationPayload = new NotificationPayload(Constants.FILE_DOWNLOADED, fileFoundPayload.getUrl(),fileFoundPayload.getName());
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String jsonPayload = ow.writeValueAsString(notificationPayload);
         this.notificationProducer.produce(jsonPayload);
+        System.out.println("kdd");
+
         return true;
     }
 
@@ -151,7 +183,7 @@ public class FileService implements IFileService{
     public void deleteByBulkSaveOperationTimestamp(String timestamp) throws IOException {
         String url = this.saveDirectory + "/" + timestamp + "/";
         this.fileHdfsClient.delete(url);
-        this.fileRepository.removeByBulkSaveOperationTimestamp(timestamp);
+        this.fileRepository.removeByBulkSaveOperationTimestamp(Long.parseLong(timestamp));
         FileDeletePayload fileDeletePayload = new FileDeletePayload("bulkSaveOperationTimestamp",timestamp);
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String jsonPayload = ow.writeValueAsString(fileDeletePayload);
@@ -159,10 +191,10 @@ public class FileService implements IFileService{
     }
 
     @Override
-    public void deleteByUrl(String url) throws IOException {
-        this.fileHdfsClient.delete(url);
-        this.fileRepository.removeByUrl(url);
-        FileDeletePayload fileDeletePayload = new FileDeletePayload("id",url);
+    public void deleteByLocation(String location) throws IOException {
+        this.fileHdfsClient.delete(location);
+        this.fileRepository.removeByLocation(location);
+        FileDeletePayload fileDeletePayload = new FileDeletePayload("id",location);
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String jsonPayload = ow.writeValueAsString(fileDeletePayload);
         this.fileDeleteProducer.produce(jsonPayload);

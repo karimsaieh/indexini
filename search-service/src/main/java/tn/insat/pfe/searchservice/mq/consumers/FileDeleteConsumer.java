@@ -29,6 +29,7 @@ public class FileDeleteConsumer implements IRabbitConsumer {
     @Override
     @RabbitHandler
     public void consume(byte[] in) throws IOException {
+        System.out.println("I'im in FileDeleteConsumer consumer (byte[] in ) \n" + in);
     }
 
     @Override

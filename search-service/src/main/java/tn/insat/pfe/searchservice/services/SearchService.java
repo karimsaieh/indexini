@@ -22,10 +22,8 @@ import tn.insat.pfe.searchservice.clients.IElasticSearchClient;
 import tn.insat.pfe.searchservice.dtos.*;
 import tn.insat.pfe.searchservice.entities.redis.SearchDtoCache;
 import tn.insat.pfe.searchservice.mq.Constants;
-import tn.insat.pfe.searchservice.mq.payloads.FileDeletePayload;
-import tn.insat.pfe.searchservice.mq.payloads.FileIndexPayload;
-import tn.insat.pfe.searchservice.mq.payloads.LdaTopicsDescriptionPayload;
-import tn.insat.pfe.searchservice.mq.payloads.NotificationPayload;
+import tn.insat.pfe.searchservice.mq.payloads.*;
+import tn.insat.pfe.searchservice.mq.producers.FileDbUpdateProducer;
 import tn.insat.pfe.searchservice.mq.producers.IRabbitProducer;
 import tn.insat.pfe.searchservice.mq.producers.NotificationProducer;
 import tn.insat.pfe.searchservice.services.fallbacks.SearchServiceCacheFallback;
@@ -51,12 +49,16 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
     private String ldaTopicsIndexType;
     private final IElasticSearchClient elasticSearchClient;
     private final IRabbitProducer notificationProducer;
+    private final IRabbitProducer fileDbUpdateProducer;
 
     @Autowired
-    public SearchService(IElasticSearchClient elasticSearchClient, @Qualifier("NotificationProducer") NotificationProducer notificationProducer) {
+    public SearchService(IElasticSearchClient elasticSearchClient,
+                         @Qualifier("NotificationProducer") NotificationProducer notificationProducer,
+                         @Qualifier("FileDbUpdateProducer") FileDbUpdateProducer fileDbUpdateProducer) {
         super();
         this.elasticSearchClient = elasticSearchClient;
         this.notificationProducer = notificationProducer;
+        this.fileDbUpdateProducer = fileDbUpdateProducer;
     }
 
     @HystrixCommand(fallbackMethod = "cachedFind")
@@ -156,6 +158,9 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
         NotificationPayload notificationPayload = new NotificationPayload(Constants.FILE_INDEXED, fileIndexPayload.getId(), fileIndexPayload.getFileName());
         String jsonPayload = ow.writeValueAsString(notificationPayload);
         this.notificationProducer.produce(jsonPayload);
+        FileDbUpdatePayload fileDbUpdatePayload = new FileDbUpdatePayload(fileIndexPayload.getId(),true);
+        String payloadString = ow.writeValueAsString(fileDbUpdatePayload);
+        this.fileDbUpdateProducer.produce(payloadString);
         return result;
     }
 

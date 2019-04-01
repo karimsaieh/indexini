@@ -15,7 +15,7 @@ public class FtpExplorerQueue implements IRabbitQueue{
 
     @PostConstruct
     public void init() {
-        this.queue = new Queue(Constants.FTP_EXPLORER_QUEUE);
+        this.queue = new Queue(Constants.FTP_EXPLORER_QUEUE, false);
     }
 
     public Queue getQueue() {
