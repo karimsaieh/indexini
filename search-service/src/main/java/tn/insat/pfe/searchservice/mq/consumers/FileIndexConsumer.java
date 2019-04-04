@@ -9,6 +9,7 @@ import tn.insat.pfe.searchservice.clients.IRedisClient;
 import tn.insat.pfe.searchservice.mq.Constants;
 import tn.insat.pfe.searchservice.mq.payloads.FileIndexPayload;
 import tn.insat.pfe.searchservice.services.ISearchService;
+import tn.insat.pfe.searchservice.utils.JsonUtils;
 
 import java.io.IOException;
 
@@ -29,8 +30,7 @@ public class FileIndexConsumer implements IRabbitConsumer{
     @Override
     public void consume(byte[] in) throws IOException {
         System.out.println(new String(in));
-        ObjectMapper mapper = new ObjectMapper();
-        FileIndexPayload fileIndexPayload = mapper.readValue(new String(in), FileIndexPayload.class);
+        FileIndexPayload fileIndexPayload = (FileIndexPayload) JsonUtils.jsonStringToObject(new String(in), FileIndexPayload.class);
         System.out.println(fileIndexPayload.getId());
         this.searchService.upsertFileIndex(fileIndexPayload);
         this.redisClient.deleteAll();

@@ -1,0 +1,115 @@
+version: "3.7"
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  tika:
+    image: logicalspark/docker-tikaserver
+    ports:
+      - "9998:9998"
+
+  rabbitmq:
+    image: rabbitmq:3.7-management
+    ports:
+      - "15671:15671"
+      - "15672:15672"
+      - "25672:25672"
+      - "4369:4369"
+      - "4396:4396"
+      - "5671:5671"
+      - "5672:5672"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - "transport.host=localhost"
+
+  file-management-service:
+    build: file-management-service
+    ports:
+      - "3011:3011"
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 300 --
+    command: "java -jar /usr/app/file-management-service-0.0.1-SNAPSHOT.jar"
+    labels:
+      - "traefik.http.routers.files.rule=(Host(`pfe.localhost`) && PathPrefix(`/api/v1/files`))"
+
+  front-end:
+    build: front-end
+    ports:
+      - "80:3000"
+    # entrypoint: you wait here for gateway
+    labels:
+      - "traefik.http.routers.front.rule=(Host(`pfe.localhost`) && PathPrefix(`/`))"
+
+  ftp-explorer-service:
+    build: ftp-explorer-service
+    #depends_on:
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 300 --
+    command: "python ./Main.py"
+
+  hadoop-docker-node:
+    build: hadoop-docker-node
+    ports:
+      - "8020:8020"
+      - "50070:50070"
+      - "4040:4040"
+      - "8998:8998"
+      - "8088:8088"
+    tty: true
+
+  hystrix-dashboard:
+    build: hystrix-dashboard
+    ports:
+      - "3014:3014"
+
+  notification-service:
+    build: notification-service
+    ports:
+      - "3000:3000"
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 300 --
+    command: "npm start"
+    labels:
+      - "traefik.http.routers.notifs.rule=(Host(`pfe.localhost`) && PathPrefix(`/api/v1/notifs`))"
+
+  search-service:
+    build: search-service
+    ports:
+      - "3012:3012"
+    entrypoint: /wait-for-it.sh redis:6379 -t 300 -- /wait-for-it.sh elasticsearch:9200 -t 300 -- /wait-for-it.sh rabbitmq:5672 -t 300 --
+    command: "java -jar /usr/app/search-service-0.0.1-SNAPSHOT.jar"
+    labels:
+      - "traefik.http.routers.search.rule=(Host(`pfe.localhost`) && PathPrefix(`/api/v1/search`))"
+
+  spark-manager-service:
+    build: spark-manager-service
+    ports:
+      - "3013:3013"
+    # entrypoint: you could wait for livy to start
+    # command:
+    labels:
+      - "traefik.http.routers.spark-manager.rule=(Host(`pfe.localhost`) && PathPrefix(`/api/v1/spark-manager`))"
+
+  web-scraping-service:
+    build: web-scraping-service
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 300 --
+    command: "python ./Main.py"
+
+  reverse-proxy:
+    image: traefik:v2.0
+    command: --api --providers.docker
+    ports:
+      - "8080:80" # The HTTP port
+      - "8180:8080" # The Web UI
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

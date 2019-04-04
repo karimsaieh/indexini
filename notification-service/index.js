@@ -14,7 +14,7 @@ const cors = require('./cors');
 app.use(sse);
 app.use(cors);
 
-app.get('/stream', (req, res) => {
+app.get('/api/v1/notifs/stream', (req, res) => {
   res.sseSetup();
   amqp.connect(`amqp://${process.env.RABBITMQ_HOST}`, (_errCon, conn) => {
     conn.createChannel((_errCh, ch) => {

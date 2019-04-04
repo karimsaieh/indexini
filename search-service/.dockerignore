@@ -1,0 +1,6 @@
+Dockerfile 
+.idea
+.mvn
+target
+search-service.iml
+.git/

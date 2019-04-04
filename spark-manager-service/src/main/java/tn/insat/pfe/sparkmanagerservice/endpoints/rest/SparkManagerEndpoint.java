@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tn.insat.pfe.sparkmanagerservice.services.SparkManagerService;
 
 @RestController
-@RequestMapping("/v1/SparkManager")
+@RequestMapping("/v1/spark-manager")
 public class SparkManagerEndpoint {
 
     private final SparkManagerService sparkManagerService;

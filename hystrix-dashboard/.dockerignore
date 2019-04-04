@@ -1,0 +1,6 @@
+Dockerfile 
+.idea
+.mvn
+target
+hystrix-dashboard.iml
+.git/

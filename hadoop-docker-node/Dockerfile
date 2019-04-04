@@ -1,5 +1,5 @@
 # build: docker build . -t karimsaieh/hadoop-docker-node
-# run:  docker run --rm -p 8020:8020 -p 8042:8042 -p 4040:4040 -p 50070:50070 -p 8088:8088 -it karimsaieh/hadoop-docker-node
+# run:  docker run --rm -p 8020:8020 -p 8088:8088 -p 4040:4040 -p 50070:50070 -p 8998:8998 -it karimsaieh/hadoop-docker-node
 FROM ubuntu:latest
 
 RUN apt-get update
@@ -43,6 +43,7 @@ ENV YARN_HOME=$HADOOP_HOME
 ENV HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
 ENV HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib"
 ENV HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop
+ENV LIVY_CONF_DIR=/usr/local/livy/conf/
 
 
 RUN ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' && \
@@ -63,8 +64,6 @@ RUN hadoop namenode -format
 
 RUN chmod 600 ~/.ssh/config
 
-
-
 RUN apt-get install -y curl net-tools iputils-ping
 
 RUN apt-get install -y python3-pip
@@ -76,23 +75,23 @@ RUN python3 -m nltk.downloader stopwords
 
 RUN apt-get install -y poppler-utils
 
-#TODO: set TIKA_HOST, ENV, RABBITMQ_HOST
+ENV TIKA_HOST=tika
+ENV ENV=staging
+ENV RABBITMQ_HOST=rabbitmq
+# ENV ENV=staging
+# ENV RABBITMQ_HOST=172.17.0.2
+# ENV TIKA_HOST=172.17.0.3
 
-#TODO:copy indexing-script project into /, but from where ? github ?
-
-#TODO: delete requirments.txt & use the one that comes with the project
-
+COPY ./indexing-script /
 
 #livy
 
-ENV ENV=staging
-ENV RABBITMQ_HOST=172.17.0.2
-ENV TIKA_HOST=172.17.0.3
-
-ENV LIVY_CONF_DIR=/usr/local/livy/conf/
 
 RUN mv /tmp/startup.sh /startup.sh
 
-EXPOSE 8020 50070 4040 8998
+ADD ./wait-for-it.sh /wait-for-it.sh
+ENV HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native"
+
+EXPOSE 8020 50070 4040 8998 8088
 
 CMD [ "sh", "-c", "service ssh start; /startup.sh && bash"]

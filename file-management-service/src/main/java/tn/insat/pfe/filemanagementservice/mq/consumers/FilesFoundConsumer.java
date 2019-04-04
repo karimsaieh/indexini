@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import tn.insat.pfe.filemanagementservice.mq.Constants;
 import tn.insat.pfe.filemanagementservice.mq.payloads.FileFoundPayload;
 import tn.insat.pfe.filemanagementservice.services.IFileService;
+import tn.insat.pfe.filemanagementservice.utils.JsonUtils;
 
 import java.io.IOException;
 
@@ -24,8 +25,8 @@ public class FilesFoundConsumer implements IRabbitConsumer{
 
     @RabbitHandler
     public void consume(byte[] in) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        FileFoundPayload fileFoundPayload = mapper.readValue(new String(in), FileFoundPayload.class);
+
+        FileFoundPayload fileFoundPayload = (FileFoundPayload) JsonUtils.jsonStringToObject(new String(in), FileFoundPayload.class);
         System.out.println(fileFoundPayload);
         System.out.println("ho");
         this.fileService.downloadAndSaveFile(fileFoundPayload);

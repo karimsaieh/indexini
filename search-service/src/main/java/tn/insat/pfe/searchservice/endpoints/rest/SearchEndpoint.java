@@ -1,6 +1,7 @@
 package tn.insat.pfe.searchservice.endpoints.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.annotations.SwaggerDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +24,7 @@ public class SearchEndpoint {
     }
 
     //use case query
-    @GetMapping
+    @GetMapping(params = "query")
     public SearchDto find(@RequestParam String query, @RequestParam int page,  @RequestParam int size) throws JsonProcessingException {
         return this.searchService.find(query, PageRequest.of(page, size));
     }

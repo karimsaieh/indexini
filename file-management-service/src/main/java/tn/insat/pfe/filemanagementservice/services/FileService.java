@@ -22,8 +22,9 @@ import tn.insat.pfe.filemanagementservice.mq.payloads.*;
 import tn.insat.pfe.filemanagementservice.mq.producers.IRabbitProducer;
 import tn.insat.pfe.filemanagementservice.repositories.IFileRepository;
 import tn.insat.pfe.filemanagementservice.services.Utils.FileServiceUtils;
+import tn.insat.pfe.filemanagementservice.utils.JsonUtils;
 
-import javax.transaction.Transactional;
+//import javax.transaction.Transactional;
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -33,7 +34,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+//@Transactional
 public class FileService implements IFileService{
     private final IFileRepository fileRepository;
     private final FileMapper fileMapper;
@@ -100,6 +101,7 @@ public class FileService implements IFileService{
     public void updateFile(FileDbUpdatePayload fileDbUpdatePayload) {
         File file = this.fileRepository.findByLocation(fileDbUpdatePayload.getLocation());
         file.setIndexed(fileDbUpdatePayload.isIndexed()); //always true btw
+        this.fileRepository.save(file);
 //        this.fileRepository.save(file);
     }
 
@@ -128,8 +130,7 @@ public class FileService implements IFileService{
                 bulkSaveOperationUuid,
                 metadata
         );
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String jsonPayload = ow.writeValueAsString(ingestionRequestPayload);
+        String jsonPayload = JsonUtils.objectToJsonString(ingestionRequestPayload);
         if(ingestionRequestPayload.getUrl().startsWith("ftp://")) {
             this.ftpExplorerProducer.produce(jsonPayload);
         } else {
@@ -166,8 +167,7 @@ public class FileService implements IFileService{
         System.out.println("kff");
 
         NotificationPayload notificationPayload = new NotificationPayload(Constants.FILE_DOWNLOADED, fileFoundPayload.getUrl(),fileFoundPayload.getName());
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String jsonPayload = ow.writeValueAsString(notificationPayload);
+        String jsonPayload = JsonUtils.objectToJsonString(notificationPayload);
         this.notificationProducer.produce(jsonPayload);
         System.out.println("kdd");
 
@@ -185,8 +185,7 @@ public class FileService implements IFileService{
         this.fileHdfsClient.delete(url);
         this.fileRepository.removeByBulkSaveOperationTimestamp(Long.parseLong(timestamp));
         FileDeletePayload fileDeletePayload = new FileDeletePayload("bulkSaveOperationTimestamp",timestamp);
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String jsonPayload = ow.writeValueAsString(fileDeletePayload);
+        String jsonPayload = JsonUtils.objectToJsonString(fileDeletePayload);
         this.fileDeleteProducer.produce(jsonPayload);
     }
 
@@ -195,8 +194,7 @@ public class FileService implements IFileService{
         this.fileHdfsClient.delete(location);
         this.fileRepository.removeByLocation(location);
         FileDeletePayload fileDeletePayload = new FileDeletePayload("id",location);
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String jsonPayload = ow.writeValueAsString(fileDeletePayload);
+        String jsonPayload = JsonUtils.objectToJsonString(fileDeletePayload);
         this.fileDeleteProducer.produce(jsonPayload);
     }
 

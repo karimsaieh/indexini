@@ -11,6 +11,7 @@ import tn.insat.pfe.searchservice.clients.IRedisClient;
 import tn.insat.pfe.searchservice.mq.Constants;
 import tn.insat.pfe.searchservice.mq.payloads.FileDeletePayload;
 import tn.insat.pfe.searchservice.services.ISearchService;
+import tn.insat.pfe.searchservice.utils.JsonUtils;
 
 import java.io.IOException;
 
@@ -35,8 +36,7 @@ public class FileDeleteConsumer implements IRabbitConsumer {
     @Override
     @RabbitHandler
     public void consume(String in) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        FileDeletePayload fileDeletePayload= mapper.readValue(in, FileDeletePayload.class);
+        FileDeletePayload fileDeletePayload= (FileDeletePayload)JsonUtils.jsonStringToObject(in, FileDeletePayload.class);
         System.out.println(fileDeletePayload);
         this.searchService.delete(fileDeletePayload);
         this.redisClient.deleteAll();

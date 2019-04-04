@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import tn.insat.pfe.filemanagementservice.mq.Constants;
 import tn.insat.pfe.filemanagementservice.mq.payloads.FileDbUpdatePayload;
 import tn.insat.pfe.filemanagementservice.services.IFileService;
+import tn.insat.pfe.filemanagementservice.utils.JsonUtils;
 
 import java.io.IOException;
 
@@ -31,8 +32,7 @@ public class FileDbUpdateConsumer implements  IRabbitConsumer {
     @Override
     @RabbitHandler
     public void consume(String in) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        FileDbUpdatePayload fileDbUpdatePayload = mapper.readValue(in, FileDbUpdatePayload.class);
+        FileDbUpdatePayload fileDbUpdatePayload = (FileDbUpdatePayload) JsonUtils.jsonStringToObject(in, FileDbUpdatePayload.class);
         this.fileService.updateFile(fileDbUpdatePayload);
     }
 }

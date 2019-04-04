@@ -61,7 +61,7 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
         this.fileDbUpdateProducer = fileDbUpdateProducer;
     }
 
-    @HystrixCommand(fallbackMethod = "cachedFind")
+   @HystrixCommand(fallbackMethod = "cachedFind")
     @Override
     public SearchDto find(String query, Pageable pageable) throws JsonProcessingException {
 
@@ -154,13 +154,11 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
         Map fileIndexPayloadMap = fileIndexPayload.toMap();
         boolean result = this.elasticSearchClient.upsert(this.fileIndex, this.fileIndexType, fileIndexPayloadMap);
         //i know it's messy cause elastic may fail, but i got no time
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+
         NotificationPayload notificationPayload = new NotificationPayload(Constants.FILE_INDEXED, fileIndexPayload.getId(), fileIndexPayload.getFileName());
-        String jsonPayload = ow.writeValueAsString(notificationPayload);
-        this.notificationProducer.produce(jsonPayload);
+        this.notificationProducer.produce(JsonUtils.objectToJsonString(notificationPayload));
         FileDbUpdatePayload fileDbUpdatePayload = new FileDbUpdatePayload(fileIndexPayload.getId(),true);
-        String payloadString = ow.writeValueAsString(fileDbUpdatePayload);
-        this.fileDbUpdateProducer.produce(payloadString);
+        this.fileDbUpdateProducer.produce(JsonUtils.objectToJsonString(fileDbUpdatePayload));
         return result;
     }
 

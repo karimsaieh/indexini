@@ -1,0 +1,9 @@
+# [providers]
+#   # [providers.file]
+# 	# [http]
+# 	# 	[http.routers]
+# 	# 		[http.routers.pfe]
+# 	# 			rule = "Host(`pfe.localhost`)"
+# 	# 			service = "docker.http.services.search-service"
+# 	[providers.docker]
+# 	endpoint = "unix:///var/run/docker.sock"
