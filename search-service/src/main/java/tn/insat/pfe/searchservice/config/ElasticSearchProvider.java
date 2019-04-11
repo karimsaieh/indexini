@@ -11,9 +11,9 @@ import javax.annotation.PostConstruct;
 @Component
 public class ElasticSearchProvider implements IElasticSearchProvider {
 
-    @Value("${elasticsearch.hostname}")
+    @Value("${pfe_elasticsearch_hostname}")
     private String hostname;
-    @Value("${elasticsearch.port}")
+    @Value("${pfe_elasticsearch_port}")
     private int port;
 
     private RestHighLevelClient restHighLevelClient;

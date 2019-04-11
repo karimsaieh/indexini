@@ -50,7 +50,7 @@ try:
                  ["url", "file_name", "timestamp", "uuid", "pre_processed_text", "summary", "most_common", "thumbnail", "content_type", "kmeans_prediction", "bisecting_kmeans_prediction"],
                  ["lda_topics"])
 
-    if os.environ["ENV"] == "dev":
+    if os.environ["pfe_env"] == "dev":
         result_df.show(n=200)
     # print(topics_descriptions)
 
@@ -61,7 +61,7 @@ try:
 
     #stats rdd
     file_types_stats_df = files_df.groupBy("content_type").count()
-    if os.environ["ENV"] == "dev":
+    if os.environ["pfe_env"] == "dev":
         file_types_stats_df.show(n=220) # 2nd column is named "count"
     # TODO: save stats to elasticsearch
 

@@ -14,9 +14,12 @@ const cors = require('./cors');
 app.use(sse);
 app.use(cors);
 
-app.get('/api/v1/notifs/stream', (req, res) => {
+app.get('/notifs-ms/api/v1/notifs/stream', (req, res) => {
   res.sseSetup();
-  amqp.connect(`amqp://${process.env.RABBITMQ_HOST}`, (_errCon, conn) => {
+  setInterval(() => {
+    res.sseSend({ event: 'alive' }); // sino traefik will give 502 error
+  }, 60000);
+  amqp.connect(`amqp://${process.env.pfe_rabbitmq_host}`, (_errCon, conn) => {
     conn.createChannel((_errCh, ch) => {
       const ex = 'notifications_exchange';
       ch.assertExchange(ex, 'fanout', { durable: false });
@@ -45,4 +48,6 @@ app.get('/api/v1/notifs/stream', (req, res) => {
   });
 });
 
-app.listen(3000, () => {});
+app.listen(3010, () => {
+  console.log('workingfgfd ?');
+});

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: search-service-config
+  namespace: default
+data:
+  spring.rabbitmq.host: rabbitmq
+  pfe_redis_hostname: redis
+  pfe_elasticsearch_hostname: elasticsearch

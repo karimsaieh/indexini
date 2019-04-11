@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-scraping-service-config
+  namespace: default
+data:
+  pfe_rabbitmq_host: rabbitmq

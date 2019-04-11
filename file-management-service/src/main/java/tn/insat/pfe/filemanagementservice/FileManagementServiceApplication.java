@@ -1,9 +1,10 @@
 package tn.insat.pfe.filemanagementservice;
 
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 
+@EnableCircuitBreaker
 @SpringBootApplication
 public class FileManagementServiceApplication {
 

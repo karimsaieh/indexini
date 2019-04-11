@@ -6,7 +6,7 @@ import os
 
 class SparkUtils:
     def __init__(self, master, app_name):
-        if os.environ["ENV"] != "dev":
+        if os.environ["pfe_env"] != "dev":
             self.sc = SparkContext(appName=app_name)
             self.sc.addFile('/FileProcessor.py')
             self.sc.addFile('/FileIndexProducer.py')

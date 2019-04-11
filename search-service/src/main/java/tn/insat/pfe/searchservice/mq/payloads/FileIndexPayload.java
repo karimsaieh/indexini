@@ -2,9 +2,7 @@ package tn.insat.pfe.searchservice.mq.payloads;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import tn.insat.pfe.searchservice.utils.MapUtils;
 
-import java.util.Arrays;
 import java.util.Map;
 
 public class FileIndexPayload {
@@ -105,7 +103,6 @@ public class FileIndexPayload {
     @JsonProperty("mostCommonWords")
     public Map<String, Integer> getMostCommonWords() {
         return mostCommonWords;
-//        return MapUtils.sortByValue(this.mostCommonWords);
     }
 
     public void setMostCommonWords(Map<String, Integer> mostCommonWords) {

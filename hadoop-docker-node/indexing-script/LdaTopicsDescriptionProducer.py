@@ -5,7 +5,7 @@ import RabbitMqConstants
 
 class LdaTopicsDescriptionProducer:
     def __init__(self):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["RABBITMQ_HOST"]))
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["pfe_rabbitmq_host"]))
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=RabbitMqConstants.LDA_TOPICS_DESCRIPTION_QUEUE)
 

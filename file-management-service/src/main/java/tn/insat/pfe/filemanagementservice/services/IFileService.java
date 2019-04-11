@@ -19,16 +19,10 @@ public interface IFileService {
     Page<FileGetDto> findAll(Pageable pageable);
     BulkSaveOperationDto saveMultipartFiles(MultipartFile[] multipartFiles) throws IOException;
     void updateFile(FileDbUpdatePayload fileDbUpdatePayload);
-//    boolean saveFile(InputStream inputStream, String fileName, String contentType, String bulkSaveOperationTimestamp, String bulkSaveOperationUuid) throws IOException;
     BulkSaveOperationDto submitIngestionRequest(IngestionRequestDto ingestionRequestDto) throws IOException;
     boolean downloadAndSaveFile(FileFoundPayload fileFoundPayload) throws IOException;
     InputStream readFile(String url) throws IOException;
     void deleteByBulkSaveOperationTimestamp(String timestamp) throws IOException;
     void deleteByLocation(String location) throws IOException;
-
-    //    Page<FileGetDto> findAll(Predicate predicate, Pageable pageable);
-    //    FileGetDto update(Long fileId, fileSaveDto fileSaveDto);
-    //    void deleteById(Long id);
-    //    void deleteByIdIn(List<Long> filesIds);
 
 }

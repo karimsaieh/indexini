@@ -1,12 +1,12 @@
 package tn.insat.pfe.searchservice.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 import tn.insat.pfe.searchservice.clients.IElasticSearchClient;
 import tn.insat.pfe.searchservice.dtos.*;
 import tn.insat.pfe.searchservice.entities.redis.SearchDtoCache;
@@ -31,21 +29,22 @@ import tn.insat.pfe.searchservice.services.fallbacks.utils.RedisUtils;
 import tn.insat.pfe.searchservice.services.helpers.ElasticSearchDataExtractorHelper;
 import tn.insat.pfe.searchservice.utils.JsonUtils;
 
-import java.net.ConnectException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class SearchService  extends SearchServiceCacheFallback implements ISearchService {
-    @Value("${elasticsearch.index.file}")
+    private static final Logger logger = LoggerFactory.getLogger(SearchService.class);
+    @Value("${pfe_elasticsearch_index_file}")
     private String fileIndex;
-    @Value("${elasticsearch.index.file.type}")
+    @Value("${pfe_elasticsearch_index_file_type}")
     private String fileIndexType;
-    @Value("${elasticsearch.index.file.index-field}")
+    @Value("${pfe_elasticsearch_index_file_index-field}")
     private String fileIndexField;
-    @Value("${elasticsearch.index.lda-topics}")
+    @Value("${pfe_elasticsearch_index_lda-topics}")
     private String ldaTopicsIndex;
-    @Value("${elasticsearch.index.lda-topics.type}")
+    @Value("${pfe_elasticsearch_index_lda-topics_type}")
     private String ldaTopicsIndexType;
     private final IElasticSearchClient elasticSearchClient;
     private final IRabbitProducer notificationProducer;
@@ -63,7 +62,7 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
 
    @HystrixCommand(fallbackMethod = "cachedFind")
     @Override
-    public SearchDto find(String query, Pageable pageable) throws JsonProcessingException {
+    public SearchDto find(String query, Pageable pageable) throws IOException {
 
         List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList = this.getLdaTopics();
 
@@ -83,74 +82,44 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
 
 
         try {
-            Jedis jedis = new Jedis(this.redisHostname);
-            String key = RedisUtils.generateKey(new String[]{this.keyPrefix,"find",query}, pageable);
-            jedis.set(key, JsonUtils.objectToJsonString(searchDtoCache));
-            jedis.expire(key, 60*60*24);
-            jedis.close();
+            try (Jedis jedis = new Jedis(this.redisHostname)) {
+                String key = RedisUtils.generateKey(new String[]{this.keyPrefix,"find",query}, pageable);
+                jedis.set(key, JsonUtils.objectToJsonString(searchDtoCache));
+                jedis.expire(key, 60*60*24);
+            }
         }catch(Exception ex){
-//            ex.printStackTrace();
-            System.out.println("redis thrown an exception: SearchService.find");
+            logger.error("redis thrown an exception: SearchService.find ", ex);
         }
-
         return searchDto;
     }
 
-//    @HystrixCommand(fallbackMethod = "cachedFindBy")
     @Override
-    public Page<FileGetDto> findBy(String by, String value, Pageable pageable) throws JsonProcessingException {
+    public Page<FileGetDto> findBy(String by, String value, Pageable pageable) throws IOException {
         SearchResponse searchResponse = this.elasticSearchClient.findBy(this.fileIndex, by, value, pageable);
-        Page<FileGetDto> pageFileGetDto =  ElasticSearchDataExtractorHelper.searchResponseToFileGetDtoPage(searchResponse, pageable);
-//        this.jedis.set(RedisUtils.generateKey(new String[]{this.keyPrefix,"findBy",by,value}, pageable), JsonUtils.objectToJsonString(pageFileGetDto));
-        return pageFileGetDto;
+        return ElasticSearchDataExtractorHelper.searchResponseToFileGetDtoPage(searchResponse, pageable);
     }
 
-//    @HystrixCommand(fallbackMethod = "cachedFindById")
     @Override
-    public FileGetDto findById(String id) throws JsonProcessingException {
+    public FileGetDto findById(String id) throws IOException {
         GetResponse getResponse = this.elasticSearchClient.findById(this.fileIndex, this.fileIndexType, id);
-        FileGetDto fileGetDto = new ObjectMapper().convertValue(getResponse.getSourceAsMap(), FileGetDto.class);
-//        this.jedis.set(RedisUtils.generateKey(new String[]{this.keyPrefix,"findById",id}), JsonUtils.objectToJsonString(fileGetDto));
-        return fileGetDto;
+        return new ObjectMapper().convertValue(getResponse.getSourceAsMap(), FileGetDto.class);
     }
 
-//    @HystrixCommand(fallbackMethod = "cachedFindAllSortBy")
     @Override
-    public Page<FileGetDto> findAllSortBy(String sortBy, Pageable pageable) throws JsonProcessingException {
+    public Page<FileGetDto> findAllSortBy(String sortBy, Pageable pageable) throws IOException {
         //find all & sort by
-        SearchResponse searchResponse = this.elasticSearchClient.findAll(this.fileIndex,  sortBy);
-        Page<FileGetDto> pageFileGetDto =  ElasticSearchDataExtractorHelper.searchResponseToFileGetDtoPage(searchResponse, pageable);
-//        this.jedis.set(RedisUtils.generateKey(new String[]{this.keyPrefix,"findAllSortBy",sortBy}, pageable), JsonUtils.objectToJsonString(pageFileGetDto));
-        return pageFileGetDto;
+        SearchResponse searchResponse = this.elasticSearchClient.findAll(this.fileIndex,  sortBy, pageable);
+        return ElasticSearchDataExtractorHelper.searchResponseToFileGetDtoPage(searchResponse, pageable);
     }
 
-//    @HystrixCommand(fallbackMethod = "cachedGetLdaTopics")
     @Override
-    public List<LdaTopicsDescriptionGetDto> getLdaTopics() throws JsonProcessingException {
-        SearchResponse topicsSearchResponse = this.elasticSearchClient.findAll(this.ldaTopicsIndex, null);
-        List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList = ElasticSearchDataExtractorHelper
-                .searchResponseToLdaTopicsDescriptionGetDtosList(topicsSearchResponse);
-//        this.jedis.set(RedisUtils.generateKey(new String[]{this.keyPrefix,"getLdaTopics"}), JsonUtils.objectToJsonString(ldaTopicsDescriptionGetDtosList));
-        return ldaTopicsDescriptionGetDtosList;
+    public List<LdaTopicsDescriptionGetDto> getLdaTopics() throws IOException {
+        SearchResponse topicsSearchResponse = this.elasticSearchClient.findAll(this.ldaTopicsIndex, null, null);
+        return ElasticSearchDataExtractorHelper.searchResponseToLdaTopicsDescriptionGetDtosList(topicsSearchResponse);
     }
 
-//    @Override
-//    public boolean save(FileSaveDto fileSaveDTo) {
-//        return this.elasticSearchClient.save(fileSaveDTo);
-//    }
-//
-//    @Override
-//    public boolean deleteByBulkSaveOperationTimestamp(String bulkSaveOperationTimestamp) {
-//        return this.elasticSearchClient.deleteByBulkSaveOperationTimestamp(bulkSaveOperationTimestamp);
-//    }
-//
-//    @Override
-//    public boolean deleteByBulkSaveOperationUuid(String bulkSaveOperationUuid) {
-//        return this.elasticSearchClient.deleteByBulkSaveOperationUuid(bulkSaveOperationUuid);
-//    }
-
     @Override
-    public boolean upsertFileIndex(FileIndexPayload fileIndexPayload) throws JsonProcessingException {
+    public boolean upsertFileIndex(FileIndexPayload fileIndexPayload) throws IOException {
         Map fileIndexPayloadMap = fileIndexPayload.toMap();
         boolean result = this.elasticSearchClient.upsert(this.fileIndex, this.fileIndexType, fileIndexPayloadMap);
         //i know it's messy cause elastic may fail, but i got no time
@@ -163,7 +132,7 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
     }
 
     @Override
-    public boolean upsertLdaTopicsDescription(List<LdaTopicsDescriptionPayload> ldaTopicsDescriptionPayloadList) {
+    public boolean upsertLdaTopicsDescription(List<LdaTopicsDescriptionPayload> ldaTopicsDescriptionPayloadList) throws IOException {
         for (LdaTopicsDescriptionPayload topic: ldaTopicsDescriptionPayloadList) {
             Map topicMap = topic.toMap();
             this.elasticSearchClient.upsert(this.ldaTopicsIndex, this.ldaTopicsIndexType, topicMap);
@@ -173,15 +142,11 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
     }
 
     @Override
-    public boolean delete(FileDeletePayload fileDeletePayload) {
+    public boolean delete(FileDeletePayload fileDeletePayload) throws IOException {
         if(fileDeletePayload.getDeleteBy().equals("id"))
             return this.elasticSearchClient.deleteById(this.fileIndex, this.fileIndexType, fileDeletePayload.getValue());
         else
             return this.elasticSearchClient.deleteBy(this.fileIndex, fileDeletePayload.getDeleteBy(), fileDeletePayload.getValue());
     }
 
-//    @Override
-//    public boolean update(String id, FileUpdateDto fileUpdateDto) {
-//        return this.elasticSearchClient.update(id, fileUpdateDto);
-//    }
 }

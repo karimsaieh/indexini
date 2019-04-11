@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: notification-service
+  labels:
+    app: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: karimsaieh/pfe-notification-service
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3010
+          env:
+            - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
+              value: "will be changsed during build fghfgdoooodjiuerh"
+          envFrom:
+            - configMapRef:
+                name: notification-service-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+spec:
+  selector:
+    app: notification-service
+  type: NodePort
+  ports:
+    - port: 3010
+###

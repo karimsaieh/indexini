@@ -5,7 +5,7 @@ import RabbitMqConstants
 
 class FileIndexProducer:
     def __init__(self):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["RABBITMQ_HOST"]))
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["pfe_rabbitmq_host"]))
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=RabbitMqConstants.FILE_INDEX_QUEUE)
 

@@ -1,0 +1,73 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: front-end-route
+spec:
+  entrypoints:
+    - web
+  routes:
+    - match: Host(`kube.localhost`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: front-end
+          port: 3000
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: file-management-service-route
+spec:
+  entrypoints:
+    - web
+  routes:
+    - match: Host(`kube.localhost`) && PathPrefix(`/files-ms`)
+      kind: Rule
+      services:
+        - name: file-management-service
+          port: 3011
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: search-service-route
+spec:
+  entrypoints:
+    - web
+  routes:
+    - match: Host(`kube.localhost`) && PathPrefix(`/search-ms`)
+      kind: Rule
+      services:
+        - name: search-service
+          port: 3012
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: notification-service-route
+spec:
+  entrypoints:
+    - web
+  routes:
+    - match: Host(`kube.localhost`) && PathPrefix(`/notifs-ms`)
+      kind: Rule
+      services:
+        - name: notification-service
+          port: 3010
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: spark-manager-service-route
+spec:
+  entrypoints:
+    - web
+  routes:
+    - match: Host(`kube.localhost`) && PathPrefix(`/spark-mg-ms`)
+      kind: Rule
+      services:
+        - name: spark-manager-service
+          port: 3013

@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 @Component
 public class HdfsProvider implements  IHdfsProvider{
-    @Value("${hdfs.path}")
+    @Value("${pfe_hdfs_path}")
     private String hdfsPath;
-    @Value("${hdfs.save-directory}")
+    @Value("${pfe_hdfs_save-directory}")
     private String saveDirectory;
     private Configuration conf;
 
@@ -23,11 +23,6 @@ public class HdfsProvider implements  IHdfsProvider{
     public Configuration getConf() {
         return this.conf;
     }
-
-//    @Override
-//    public String getHdfsPath() {
-//        return this.hdfsPath;
-//    }
 
     @Override
     public String getSaveDirectory() {

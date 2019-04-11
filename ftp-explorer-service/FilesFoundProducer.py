@@ -5,7 +5,7 @@ from constants import RabbitMqConstants
 
 class FilesFoundProducer:
     def __init__(self):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["RABBITMQ_HOST"],
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["pfe_rabbitmq_host"],
                                                                             heartbeat_interval=0))
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=RabbitMqConstants.FILES_FOUND_QUEUE)

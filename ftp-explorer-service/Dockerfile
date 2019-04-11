@@ -7,8 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENV RABBITMQ_HOST=rabbitmq
-
 ADD ./wait-for-it.sh /wait-for-it.sh
 RUN apk add --no-cache bash
 

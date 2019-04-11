@@ -13,7 +13,6 @@ RUN apk del build-base
 
 COPY . .
 
-ENV RABBITMQ_HOST=rabbitmq
 ADD ./wait-for-it.sh /wait-for-it.sh
 RUN apk add --no-cache bash
 

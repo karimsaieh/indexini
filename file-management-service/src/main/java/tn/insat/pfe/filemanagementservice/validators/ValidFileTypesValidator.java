@@ -8,7 +8,7 @@ public class ValidFileTypesValidator implements ConstraintValidator<ValidFileTyp
 
     @Override
     public void initialize(ValidFileTypes constraintAnnotation) {
-
+        // sonar lint wants me to put a comment in here
     }
 
     @Override

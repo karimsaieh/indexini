@@ -8,6 +8,10 @@ import java.io.IOException;
 
 public class JsonUtils {
 
+    private JsonUtils() {
+
+    }
+
     public static String objectToJsonString(Object o) throws JsonProcessingException {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         return ow.writeValueAsString(o);

@@ -18,6 +18,11 @@ import java.util.List;
 import java.util.Map;
 
 public class ElasticSearchDataExtractorHelper {
+
+    private ElasticSearchDataExtractorHelper() {
+
+    }
+
     public static List<FileGetDto> searchHitsToGetFileDtoList( SearchHit[] searchHits) {
         List<FileGetDto> fileGetDtosList = new ArrayList<>();
         for (SearchHit hit : searchHits) {

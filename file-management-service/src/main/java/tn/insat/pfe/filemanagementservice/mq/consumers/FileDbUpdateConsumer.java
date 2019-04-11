@@ -1,6 +1,7 @@
 package tn.insat.pfe.filemanagementservice.mq.consumers;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import java.io.IOException;
 @Component
 @RabbitListener(queues = Constants.FILE_DB_UPDATE_QUEUE)
 public class FileDbUpdateConsumer implements  IRabbitConsumer {
-
+    private static final Logger logger = LoggerFactory.getLogger(FileDbUpdateConsumer.class);
     private final IFileService fileService;
 
     @Autowired
@@ -26,7 +27,8 @@ public class FileDbUpdateConsumer implements  IRabbitConsumer {
     @Override
     @RabbitHandler
     public void consume(byte[] in) throws IOException {
-        System.out.println("I'im in FileDbUpdateConsumer consumer (byte[] in ) \n" + in);
+        String msg = String.format("I'im in FileDbUpdateConsumer consumer (byte[] in ) %n  %s", new String(in));
+        logger.info(msg);
     }
 
     @Override

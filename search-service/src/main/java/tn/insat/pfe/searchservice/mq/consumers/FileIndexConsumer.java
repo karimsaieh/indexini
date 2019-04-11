@@ -1,6 +1,7 @@
 package tn.insat.pfe.searchservice.mq.consumers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,13 @@ import tn.insat.pfe.searchservice.services.ISearchService;
 import tn.insat.pfe.searchservice.utils.JsonUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Component
 @RabbitListener(queues = Constants.FILES_INDEX_QUEUE)
 public class FileIndexConsumer implements IRabbitConsumer{
-
+    private static final Logger logger = LoggerFactory.getLogger(FileIndexConsumer.class);
+    private String logMsg;
     private final ISearchService searchService;
     private final IRedisClient redisClient;
 
@@ -29,15 +32,18 @@ public class FileIndexConsumer implements IRabbitConsumer{
     @RabbitHandler
     @Override
     public void consume(byte[] in) throws IOException {
-        System.out.println(new String(in));
+        this.logMsg = new String(in, StandardCharsets.UTF_8);
+        logger.info(this.logMsg);
         FileIndexPayload fileIndexPayload = (FileIndexPayload) JsonUtils.jsonStringToObject(new String(in), FileIndexPayload.class);
-        System.out.println(fileIndexPayload.getId());
+        this.logMsg = fileIndexPayload.getId();
+        logger.info(this.logMsg);
         this.searchService.upsertFileIndex(fileIndexPayload);
         this.redisClient.deleteAll();
     }
 
     @Override
     public void consume(String in) throws IOException {
-        System.out.println("I'im in file index consumer (String in ) \n" + in);
+        this.logMsg = String.format("I'im in file index consumer (String in ) %n %s", in);
+        logger.info(this.logMsg);
     }
 }

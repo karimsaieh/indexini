@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ftp-explorer-service-config
+  namespace: default
+data:
+  pfe_rabbitmq_host: rabbitmq

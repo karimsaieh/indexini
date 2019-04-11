@@ -2,45 +2,24 @@ package tn.insat.pfe.filemanagementservice.entities;
 
 import org.springframework.data.annotation.Id;
 
-//import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-//@Table(name = "files")
 public class File implements Serializable {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
-//    @Column(nullable = false)
     private boolean isIndexed;
-//    @Column(nullable = false, columnDefinition = "TEXT")
     private String location;
-//    @Column(nullable = false)
     private String name;
-//    @Column(nullable = false)
     private String contentType;
-//    @Column(nullable = false)
     private Long bulkSaveOperationTimestamp;
-//    @Column(nullable = false)
     private String bulkSaveOperationUuid;
-//    @Column(name = "created_at")
     private Date createdAt;
-//    @Column(name = "modified_at")
     private Date modifiedAt;
     private boolean deleteFlag;
 
-//    @ElementCollection
     private List<String> metadata;
-
-//    @PrePersist
-//    protected void onCreate() {
-//        Date currentDate = new Date();
-//        this.createdAt = currentDate;
-//        this.modifiedAt = currentDate;
-//        this.isIndexed  = false;
-//        this.deleteFlag = false;
-//    }
 
     public File(String location, String name, String contentType, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid, List<String> metadata) {
         this.location = location;
@@ -50,11 +29,6 @@ public class File implements Serializable {
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
         this.metadata = metadata;
     }
-//
-//    @PreUpdate
-//    protected void onUpdate() {
-//        this.modifiedAt = new Date();
-//    }
 
     public File() {
     }

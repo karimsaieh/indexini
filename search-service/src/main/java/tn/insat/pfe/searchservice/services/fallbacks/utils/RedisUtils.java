@@ -4,6 +4,10 @@ import org.springframework.data.domain.Pageable;
 
 public class RedisUtils {
 
+    private RedisUtils() {
+
+    }
+
     public static String generateKey(String[] keyParts) {
         StringBuilder keySb = new StringBuilder();
         for (String part: keyParts) {

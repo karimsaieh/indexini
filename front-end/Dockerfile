@@ -1,6 +1,6 @@
 # docker build . -t karimsaieh/front-end
 # build stage docker run --rm -p 3111:80 karimsaieh/front-end
-FROM node:9.11.1-alpine as build-stage
+FROM node:11.13.0-alpine as build-stage
 RUN apk update && apk upgrade && \
   apk add --no-cache bash git openssh
 RUN apk add --update \

@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: file-management-service
+  labels:
+    app: file-management-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-management-service
+  template:
+    metadata:
+      labels:
+        app: file-management-service
+    spec:
+      containers:
+        - name: file-management-service
+          image: karimsaieh/pfe-file-management-service
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3011
+          env:
+            - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
+              value: "will be chgfhnged durgfhing build doooodjiuerh"
+          envFrom:
+            - configMapRef:
+                name: file-management-service-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-management-service
+spec:
+  selector:
+    app: file-management-service
+  type: NodePort
+  ports:
+    - port: 3011
+###

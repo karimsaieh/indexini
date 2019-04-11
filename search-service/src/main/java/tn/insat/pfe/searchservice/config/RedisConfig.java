@@ -8,7 +8,7 @@ import redis.clients.jedis.Jedis;
 @Configuration
 public class RedisConfig {
 
-    @Value("${redis.hostname}")
+    @Value("${pfe_redis_hostname}")
     private String hostname;
 
     @Bean

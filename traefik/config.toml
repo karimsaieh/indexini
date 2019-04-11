@@ -1,9 +1,13 @@
-# [providers]
-#   # [providers.file]
-# 	# [http]
-# 	# 	[http.routers]
-# 	# 		[http.routers.pfe]
-# 	# 			rule = "Host(`pfe.localhost`)"
-# 	# 			service = "docker.http.services.search-service"
-# 	[providers.docker]
-# 	endpoint = "unix:///var/run/docker.sock"
+
+
+[Global]
+   debug = true
+
+# Tracing definition
+[tracing]
+  backend = "jaeger"
+  serviceName = "reverse-proxy"
+
+  [tracing.jaeger]
+    samplingServerURL = "http://jaeger:5778/sampling"
+    localAgentHostPort = "jaeger:6831"

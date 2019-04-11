@@ -11,6 +11,7 @@ public class SearchServiceApplicationTests {
 
 	@Test
 	public void contextLoads() {
+
 	}
 
 }

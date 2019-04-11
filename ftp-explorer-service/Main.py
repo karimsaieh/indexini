@@ -26,6 +26,7 @@ class Main:
         self.notification_producer.close_connection()
 
     def main(self):
+        print("running ftp explorer ...")
         ftp_explorer_consumer = FtpExplorerConsumer(self.web_scraping_request_callback)
 
 

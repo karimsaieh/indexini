@@ -5,7 +5,7 @@ from constants import RabbitMqConstants
 
 class NotificationProducer:
     def __init__(self):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["RABBITMQ_HOST"]))
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ["pfe_rabbitmq_host"]))
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange=RabbitMqConstants.NOTIFICATIONS_EXCHANGE, exchange_type="fanout")
 

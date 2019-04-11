@@ -1,6 +1,5 @@
 package tn.insat.pfe.filemanagementservice.dtos;
 
-import java.util.Date;
 import java.util.List;
 
 public class FileGetDto {
@@ -8,18 +7,19 @@ public class FileGetDto {
     private boolean isIndexed;
     private String name;
     private String contentType;
+    private String location;
     private Long bulkSaveOperationTimestamp;
     private List<String> metadata;
 
     public FileGetDto() {
     }
 
-    public FileGetDto(boolean isIndexed, String name, String contentType, Long bulkSaveOperationTimestamp, List<String> metadata) {
-        this.isIndexed = isIndexed;
-        this.name = name;
-        this.contentType = contentType;
-        this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
-        this.metadata = metadata;
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public boolean isIndexed() {

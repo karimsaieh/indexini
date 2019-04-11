@@ -3,3 +3,5 @@ Dockerfile
 .idea
 __pycache__
 venv
+.scannerwork
+

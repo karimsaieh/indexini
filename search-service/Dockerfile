@@ -13,5 +13,4 @@ EXPOSE 3012
 RUN apk add --no-cache bash
 ADD ./wait-for-it.sh /wait-for-it.sh
 RUN apk add --no-cache bash
-ENV ENV=staging
 CMD ["java","-jar","/usr/app/search-service-0.0.1-SNAPSHOT.jar"]

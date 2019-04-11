@@ -41,15 +41,10 @@ public class FileEndpoint {
 
     //
     @GetMapping("/func/readFile")
-    public void readFile(@RequestParam(name = "url") String url, HttpServletResponse response) {
-        try {
-            InputStream is = this.fileService.readFile(url);
-            org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
-            response.flushBuffer();
-        } catch (IOException ex) {
-            throw new RuntimeException("FileEndpoint.donwloadFile IOError writing file to output stream");
-        }
-
+    public void readFile(@RequestParam(name = "url") String url, HttpServletResponse response) throws IOException {
+        InputStream is = this.fileService.readFile(url);
+        org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
+        response.flushBuffer();
     }
 
     @PostMapping

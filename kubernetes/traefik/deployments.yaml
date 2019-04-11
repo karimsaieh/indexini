@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: default
+  name: traefik-ingress-controller
+
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  namespace: default
+  name: traefik
+  labels:
+    app: traefik
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      containers:
+        - name: traefik
+          image: traefik:v2.0
+          args:
+            - --api
+            - --accesslog
+            - --entrypoints=Name:web Address::8000
+            - --providers.kubernetescrd
+            - --tracing.backend=jaeger
+            - --tracing.servicename=api-gateway
+            - --tracing.jaeger.samplingserverurl=http://jaeger-agent:5778/sampling
+            - --tracing.jaeger.localagenthostport=jaeger-agent:6831
+          ports:
+            - name: web
+              containerPort: 8000
+            - name: admin
+              containerPort: 8080

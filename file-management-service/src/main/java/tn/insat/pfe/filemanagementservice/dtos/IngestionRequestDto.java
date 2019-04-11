@@ -3,7 +3,6 @@ package tn.insat.pfe.filemanagementservice.dtos;
 import tn.insat.pfe.filemanagementservice.validators.ValidFileTypes;
 
 import javax.validation.constraints.Max;
-import javax.validation.constraints.Pattern;
 
 public class IngestionRequestDto {
     private String url;

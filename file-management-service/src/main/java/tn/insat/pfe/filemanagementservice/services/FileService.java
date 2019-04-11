@@ -1,8 +1,8 @@
 package tn.insat.pfe.filemanagementservice.services;
 
-import org.apache.commons.io.FilenameUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,10 +21,9 @@ import tn.insat.pfe.filemanagementservice.mq.Constants;
 import tn.insat.pfe.filemanagementservice.mq.payloads.*;
 import tn.insat.pfe.filemanagementservice.mq.producers.IRabbitProducer;
 import tn.insat.pfe.filemanagementservice.repositories.IFileRepository;
-import tn.insat.pfe.filemanagementservice.services.Utils.FileServiceUtils;
+import tn.insat.pfe.filemanagementservice.services.utils.FileServiceUtils;
 import tn.insat.pfe.filemanagementservice.utils.JsonUtils;
 
-//import javax.transaction.Transactional;
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -36,6 +35,7 @@ import java.util.stream.Collectors;
 @Service
 //@Transactional
 public class FileService implements IFileService{
+    private static final Logger logger = LoggerFactory.getLogger(FileService.class);
     private final IFileRepository fileRepository;
     private final FileMapper fileMapper;
     private final IFileHdfsClient fileHdfsClient;
@@ -44,7 +44,7 @@ public class FileService implements IFileService{
     private final IRabbitProducer notificationProducer;
     private final IRabbitProducer fileDeleteProducer;
 
-    @Value("${hdfs.save-directory}")
+    @Value("${pfe_hdfs_save-directory}")
     private String saveDirectory;
 
     @Autowired
@@ -68,6 +68,7 @@ public class FileService implements IFileService{
     }
 
     @Override
+    @HystrixCommand(fallbackMethod = "fallback")
     public Page<FileGetDto> findAll(Pageable pageable) {
         Page<File> page = this.fileRepository.findAll(pageable);
         List<FileGetDto> fileGetDtoList = page
@@ -76,6 +77,10 @@ public class FileService implements IFileService{
                 .map(this.fileMapper::fileToFileGetDto)
                 .collect(Collectors.toList());
         return new PageImpl<>(fileGetDtoList, pageable, page.getTotalElements());
+    }
+
+    public Page<FileGetDto> fallback(Pageable pageable) {
+        return new PageImpl<>(new ArrayList<FileGetDto>(), pageable, 0);
     }
 
     @Override
@@ -102,9 +107,7 @@ public class FileService implements IFileService{
         File file = this.fileRepository.findByLocation(fileDbUpdatePayload.getLocation());
         file.setIndexed(fileDbUpdatePayload.isIndexed()); //always true btw
         this.fileRepository.save(file);
-//        this.fileRepository.save(file);
     }
-
 
     public boolean saveFile(InputStream inputStream, String fileName,String contentType, Long bulkSaveOperationTimestamp,
                             String bulkSaveOperationUuid, List<String> metadata) throws IOException {
@@ -120,7 +123,7 @@ public class FileService implements IFileService{
 
     @Override
     public BulkSaveOperationDto submitIngestionRequest(IngestionRequestDto ingestionRequestDto) throws IOException {
-        System.out.println("Submitting web scraping request");
+        logger.error("Submitting ingestion request");
         Long bulkSaveOperationTimestamp = System.currentTimeMillis();
         String bulkSaveOperationUuid = UUID.randomUUID().toString();
         List<String> metadata = new ArrayList<>(Arrays.asList("from url", ingestionRequestDto.getUrl()));
@@ -142,34 +145,31 @@ public class FileService implements IFileService{
     @Override
     public boolean downloadAndSaveFile(FileFoundPayload fileFoundPayload) throws IOException {
         // download
-        System.out.println("krr");
         URL url = new URL(fileFoundPayload.getUrl());
         String uuid = UUID.randomUUID().toString();
-        System.out.println("krrsdmlfk");
-        java.io.File temporaryfile = java.io.File.createTempFile(String.format("indexini-pfe-java-app-%s",uuid), "");
-        System.out.println("krrcwxwxcwxsdmlfk");
-        ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
-        System.out.println("krrsdmxclfk");
-        FileOutputStream fileOutputStream = new FileOutputStream(temporaryfile);
-        System.out.println("krrpoipp");
-        fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
-        // save to HDFS & DB
-        System.out.println("ttk");
-        FileInputStream fileInputStream = new FileInputStream(temporaryfile);
-        this.saveFile(fileInputStream, fileFoundPayload.getName(), Files.probeContentType(temporaryfile.toPath()),
-                fileFoundPayload.getBulkSaveOperationTimestamp(),fileFoundPayload.getBulkSaveOperationUuid(),
-                fileFoundPayload.getMetadata());
-        // delete downloaded file from fs
-        System.out.println("ssk");
-        fileInputStream.close();
-        fileOutputStream.close();
-        temporaryfile.delete();
-        System.out.println("kff");
+        logger.info("opening channel");
+        java.io.File temporaryFile =null;
+        try(ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream())) {
+            logger.info("channel opened");
+             temporaryFile =  java.io.File.createTempFile(String.format("indexini-pfe-java-app-%s",uuid), "");
+            try(FileOutputStream fileOutputStream = new FileOutputStream(temporaryFile)) {
+                // downloading file
+                fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                // save to HDFS & DB
+                try(FileInputStream fileInputStream = new FileInputStream(temporaryFile)) {
+                    this.saveFile(fileInputStream, fileFoundPayload.getName(), Files.probeContentType(temporaryFile.toPath()),
+                            fileFoundPayload.getBulkSaveOperationTimestamp(),fileFoundPayload.getBulkSaveOperationUuid(),
+                            fileFoundPayload.getMetadata());
+                }
+            }
+        }
+        Files.delete(temporaryFile.toPath());
+        String logMsg = "temp file " + temporaryFile.getName() + "deleted";
+        logger.info(logMsg);
 
         NotificationPayload notificationPayload = new NotificationPayload(Constants.FILE_DOWNLOADED, fileFoundPayload.getUrl(),fileFoundPayload.getName());
         String jsonPayload = JsonUtils.objectToJsonString(notificationPayload);
         this.notificationProducer.produce(jsonPayload);
-        System.out.println("kdd");
 
         return true;
     }

@@ -75,17 +75,10 @@ RUN python3 -m nltk.downloader stopwords
 
 RUN apt-get install -y poppler-utils
 
-ENV TIKA_HOST=tika
-ENV ENV=staging
-ENV RABBITMQ_HOST=rabbitmq
-# ENV ENV=staging
-# ENV RABBITMQ_HOST=172.17.0.2
-# ENV TIKA_HOST=172.17.0.3
 
 COPY ./indexing-script /
 
 #livy
-
 
 RUN mv /tmp/startup.sh /startup.sh
 
@@ -94,4 +87,4 @@ ENV HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native"
 
 EXPOSE 8020 50070 4040 8998 8088
 
-CMD [ "sh", "-c", "service ssh start; /startup.sh && bash"]
+CMD [ "sh", "-c", "service ssh start; /startup.sh && tail -f /dev/null"]

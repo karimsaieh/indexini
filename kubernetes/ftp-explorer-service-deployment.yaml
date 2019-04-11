@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ftp-explorer-service
+  labels:
+    app: ftp-explorer-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ftp-explorer-service
+  template:
+    metadata:
+      labels:
+        app: ftp-explorer-service
+    spec:
+      containers:
+        - name: ftp-explorer-service
+          image: karimsaieh/pfe-ftp-explorer-service
+          imagePullPolicy: Always
+          env:
+            - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
+              value: "will be changffghged during build doooodjiuerh"
+          envFrom:
+            - configMapRef:
+                name: ftp-explorer-service-config
