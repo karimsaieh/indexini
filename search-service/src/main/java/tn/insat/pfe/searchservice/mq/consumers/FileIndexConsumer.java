@@ -32,8 +32,6 @@ public class FileIndexConsumer implements IRabbitConsumer{
     @RabbitHandler
     @Override
     public void consume(byte[] in) throws IOException {
-        this.logMsg = new String(in, StandardCharsets.UTF_8);
-        logger.info(this.logMsg);
         FileIndexPayload fileIndexPayload = (FileIndexPayload) JsonUtils.jsonStringToObject(new String(in), FileIndexPayload.class);
         this.logMsg = fileIndexPayload.getId();
         logger.info(this.logMsg);

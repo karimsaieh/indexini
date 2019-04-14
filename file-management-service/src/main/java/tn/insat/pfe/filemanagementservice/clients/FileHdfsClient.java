@@ -58,10 +58,8 @@ public class FileHdfsClient implements IFileHdfsClient{
             logger.info(this.logMsg);
             return null;
         }
-
-        try(FSDataInputStream in = this.fileSystem.open(path)) {
-            return in.getWrappedStream();
-        }
+        FSDataInputStream in = this.fileSystem.open(path);
+        return in.getWrappedStream();
     }
 
     @Override
