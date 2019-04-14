@@ -1,1 +1,2 @@
 pika==0.13.0
+python-logstash==0.4.6

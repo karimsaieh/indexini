@@ -3,6 +3,7 @@ from urllib.parse import urlsplit
 from utils import change_file_name
 from constants import NotificationConstants
 from socket import timeout
+import LogstashLogger
 
 
 # TODO: SAME FILE NAME || keep directory as it is
@@ -19,18 +20,18 @@ class FtpExplorer:
         self.ftp = None
 
     def traverse(self, depth, path, files_found):
-        print("IN: " + path + " . " + str(depth))
+        LogstashLogger.info("IN: " + path + " . " + str(depth))
         if depth == 0:
             return None
-        # print('y')
+        # LogstashLogger.info('y')
         # self.ftp.connect()
-        # print('y')
+        # LogstashLogger.info('y')
         # self.ftp.login()
-        # print('y')
+        # LogstashLogger.info('y')
         # self.ftp.set_pasv(True)
-        # print('y')
+        # LogstashLogger.info('y')
         # self.browse_to_ftp_dir_and_get_path(path)
-        print('y')
+        LogstashLogger.info('y')
         # nlst hangs often :/, solution => right below
         success = False
         while not success:
@@ -38,33 +39,33 @@ class FtpExplorer:
                 path_generator = self.ftp.nlst()
                 success = True
             except timeout as e:
-                print(e, "----" ,type(e))
+                LogstashLogger.info(str(e) + "----" + str(type(e)))
                 self.ftp = ftplib.FTP(self.hostname, timeout=10)
                 self.ftp.connect(timeout=10)
                 self.ftp.login()
                 self.ftp.set_pasv(True)
                 self.browse_to_ftp_dir_and_get_path(path)
 
-        print('y')
+        LogstashLogger.info('y')
         paths = (path for path in path_generator if path not in ('.', '..'))
-        print(paths)
+        LogstashLogger.info(paths)
         for entry in paths:
-            print(entry)
+            LogstashLogger.info(entry)
             try:
-                # print(path, entry, depth)
+                # LogstashLogger.info(path, entry, depth)
                 self.ftp.cwd(entry)
-                # print("DIRECTORY <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " + "ftp://" + self.hostname + path+"/" + entry)
+                # LogstashLogger.info("DIRECTORY <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " + "ftp://" + self.hostname + path+"/" + entry)
                 self.traverse(depth - 1, path + "/" + entry, files_found)
                 self.ftp.cwd("..")
             except ftplib.error_perm:
-                # print(" ------- ")
-                # print("FILE ---------6> " + "ftp://" + self.hostname + path+"/" + entry)
+                # LogstashLogger.info(" ------- ")
+                # LogstashLogger.info("FILE ---------6> " + "ftp://" + self.hostname + path+"/" + entry)
                 if entry.endswith(self.file_types):
                     file_url = "ftp://" + self.hostname + path+"/" + entry
                     if file_url not in files_found.values():
                         new_file_name = change_file_name(entry, files_found)
                         files_found[new_file_name] = file_url
-                        print("file found", file_url)
+                        LogstashLogger.info("file found "+ file_url)
                         payload = {
                             "name": new_file_name,
                             "url": file_url,
@@ -88,9 +89,9 @@ class FtpExplorer:
             current_path = self.browse_to_ftp_dir_and_get_path(self.url)
             # self.depth = 300000000
             self.traverse(self.depth, current_path, {})
-            print("done")
+            LogstashLogger.info("done")
         except Exception as e:
-            print("karim: failed to connect to ftp server , ftpexplorer.start", type(e), e)
+            LogstashLogger.info("karim: failed to connect to ftp server , ftpexplorer.start " + str(type(e)) + str(e))
 
     def browse_to_ftp_dir_and_get_path(self, url):
         directory = "{0.path}".format(urlsplit(url)).split("/")
@@ -101,5 +102,5 @@ class FtpExplorer:
                     self.ftp.cwd(sub_dir)
                     current_path = current_path + "/" + sub_dir
                 except ftplib.error_perm:
-                    print("errooor in ftp explorer . start in ftp.cwd")
+                    LogstashLogger.info("errooor in ftp explorer . start in ftp.cwd")
         return current_path

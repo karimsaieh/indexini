@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
+    "start-prod": "node index.js | pino-socket -s ./pino-settings.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "genlint": "eslint -f json -o report.json .",
     "lint": "eslint  ."
@@ -23,6 +24,9 @@
   "dependencies": {
     "amqplib": "^0.5.3",
     "dotenv": "^7.0.0",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "pino": "^5.12.2",
+    "pino-socket": "^2.0.0",
+    "winston": "^2.4.4"
   }
 }

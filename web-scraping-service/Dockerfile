@@ -11,10 +11,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 RUN apk del build-base
 
+RUN apk add --no-cache bash
+
 COPY . .
 
 ADD ./wait-for-it.sh /wait-for-it.sh
-RUN apk add --no-cache bash
-
 
 CMD [ "python", "./Main.py" ]

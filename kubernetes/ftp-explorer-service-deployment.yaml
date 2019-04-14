@@ -20,7 +20,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
-              value: "will be changffghged during build doooodjiuerh"
+              value: "will be changsdfqsqdfoodjiuerh"
           envFrom:
             - configMapRef:
                 name: ftp-explorer-service-config

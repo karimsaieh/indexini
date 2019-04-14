@@ -1,5 +1,4 @@
 // in production , env variables should be set directly in host => best practice
-
 if (process.env.ENV !== 'staging') {
   require('dotenv').config(); // eslint-disable-line global-require
 }
@@ -8,8 +7,10 @@ const express = require('express');
 
 const app = express();
 const amqp = require('amqplib/callback_api');
+const logger = require('./logger.js');
 const sse = require('./sse');
 const cors = require('./cors');
+require('./logger');
 
 app.use(sse);
 app.use(cors);
@@ -49,5 +50,5 @@ app.get('/notifs-ms/api/v1/notifs/stream', (req, res) => {
 });
 
 app.listen(3010, () => {
-  console.log('workingfgfd ?');
+  logger.info('node js notification working');
 });

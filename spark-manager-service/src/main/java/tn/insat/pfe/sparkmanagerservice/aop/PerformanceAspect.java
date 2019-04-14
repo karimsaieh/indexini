@@ -1,5 +1,6 @@
 package tn.insat.pfe.sparkmanagerservice.aop;
 
+import net.logstash.logback.argument.StructuredArguments;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,8 +19,10 @@ public class PerformanceAspect {
         long start = System.nanoTime();
         Object proceed = joinPoint.proceed();
         long executionTime = System.nanoTime() - start;
-        String logMsg =  joinPoint.getSignature() + " executed in " + executionTime + " ns";
-        logger.info(logMsg);
+        String logMsg =  "{} executed in  {}  ns";
+        logger.info(logMsg ,
+                StructuredArguments.value("method_signature",joinPoint.getSignature().toString()),
+                StructuredArguments.value("execution_time", executionTime));
         return proceed;
     }
 

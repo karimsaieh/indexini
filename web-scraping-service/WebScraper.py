@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 import os
 from utils import change_file_name
 from constants import NotificationConstants
-
+import LogstashLogger
 
 class WebScraper:
     def __init__(self, publish_method, msg):
@@ -31,7 +31,7 @@ class WebScraper:
                     if current_link not in files_found.values():
                         new_file_name = change_file_name(file_name, files_found)
                         files_found[new_file_name] = current_link
-                        print("found file: " + new_file_name + " --> " + current_link)
+                        LogstashLogger.info("found file: " + new_file_name + " --> " + current_link)
                         payload = {
                             "name": new_file_name,
                             "url": current_link,
@@ -54,7 +54,7 @@ class WebScraper:
                             self.find_files(root_page_url, link_string, depth-1, file_types, visited_pages_urls, files_found)
 
         except Exception as x:
-            print(x)
+            LogstashLogger.info(x)
 
     def start(self):
         visited_pages_urls = []

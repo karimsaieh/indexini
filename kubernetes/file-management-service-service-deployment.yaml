@@ -22,7 +22,7 @@ spec:
             - containerPort: 3011
           env:
             - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
-              value: "will be chgfhnged durgfhing build doooodjiuerh"
+              value: "widsfllsqdfsdfuzerezrezrild dyyyoooodjiuerh"
           envFrom:
             - configMapRef:
                 name: file-management-service-config

@@ -1,7 +1,5 @@
-package tn.insat.pfe.searchservice.aop;
+package tn.insat.pfe.hystrixdashboard.aop;
 
-
-import net.logstash.logback.argument.StructuredArguments;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,15 +13,13 @@ public class PerformanceAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(PerformanceAspect.class);
 
-    @Around("execution(* tn.insat.pfe.searchservice..*.*(..))")
+    @Around("execution(* tn.insat.pfe.hystrixdashboard..*.*(..))")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.nanoTime();
         Object proceed = joinPoint.proceed();
         long executionTime = System.nanoTime() - start;
-        String logMsg =  "{} executed in  {}  ns";
-        logger.info(logMsg ,
-                StructuredArguments.value("method_signature",joinPoint.getSignature().toString()),
-                StructuredArguments.value("execution_time", executionTime));
+        String logMsg =  joinPoint.getSignature() + " executed in " + executionTime + " ns";
+        logger.info(logMsg);
         return proceed;
     }
 

@@ -11,4 +11,4 @@ ADD ./wait-for-it.sh /wait-for-it.sh
 RUN apk add --no-cache bash
 
 EXPOSE 3010
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "start-prod" ]

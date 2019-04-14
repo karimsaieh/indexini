@@ -3,6 +3,7 @@ from FtpExplorerConsumer import FtpExplorerConsumer
 from FilesFoundProducer import FilesFoundProducer
 from NotificationProducer import NotificationProducer
 from FtpExplorer import FtpExplorer
+import LogstashLogger
 
 
 class Main:
@@ -15,18 +16,18 @@ class Main:
         self.notification_producer.publish(json.dumps(notification_payload))
 
     def web_scraping_request_callback(self, ch, method, properties, body):
-        print(" [x] Received %r" % body)
+        LogstashLogger.info(" [x] Received %r" % body)
         self.files_found_producer = FilesFoundProducer()
         self.notification_producer = NotificationProducer()
         msg = json.loads(body.decode("utf-8"))
         ftp_explorer = FtpExplorer(self.publish_method, msg)
         ftp_explorer.start()
-        print("Done")
+        LogstashLogger.info("Done")
         self.files_found_producer.close_connection()
         self.notification_producer.close_connection()
 
     def main(self):
-        print("running ftp explorer ...")
+        LogstashLogger.warning("running ftp explorer ...")
         ftp_explorer_consumer = FtpExplorerConsumer(self.web_scraping_request_callback)
 
 

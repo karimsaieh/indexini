@@ -7,3 +7,5 @@ data:
   spring.rabbitmq.host: rabbitmq
   pfe_redis_hostname: redis
   pfe_elasticsearch_hostname: elasticsearch
+  pfe_logstash_host: logstash
+  spring_profiles_active: prod

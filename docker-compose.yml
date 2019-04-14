@@ -67,6 +67,7 @@ services:
     command: "python ./Main.py"
     environment:
       - pfe_rabbitmq_host=rabbitmq
+      - pfe_logstash_host=logstash
 
   hadoop-docker-node:
     build: hadoop-docker-node
@@ -99,11 +100,12 @@ services:
     ports:
       - "3010:3010"
     entrypoint: /wait-for-it.sh rabbitmq:5672 -t 300 --
-    command: "npm start"
+    command: "npm run start-prod"
     labels:
       - "traefik.http.routers.notifs.rule=(Host(`pfe.localhost`) && PathPrefix(`/notifs-ms`))"
     environment:
       - pfe_rabbitmq_host=rabbitmq
+      - pfe_logstash_host=logstash
 
   search-service:
     build: search-service
@@ -136,6 +138,7 @@ services:
     command: "python ./Main.py"
     environment:
       - pfe_rabbitmq_host=rabbitmq
+      - pfe_logstash_host=logstash
 
   reverse-proxy:
     image: traefik:v2.0
@@ -192,6 +195,7 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
   scope: # open browser on 4040
     image: weaveworks/scope:1.10.2
     network_mode: "host"
@@ -229,6 +233,19 @@ services:
   #     - /dev/disk/:/dev/disk:ro
   #   depends_on:
   #     - redis
+
+  logstash:
+    build: logstash
+    image: karimsaieh/pfe-logstash
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+      - "5000:5000"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.6.0
+    ports:
+      - "5601:5601"
 
 volumes:
   hadoop-volume:

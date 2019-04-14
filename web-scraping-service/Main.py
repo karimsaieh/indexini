@@ -3,6 +3,7 @@ from WebScrapingConsumer import WebScrapingConsumer
 from FilesFoundProducer import FilesFoundProducer
 from NotificationProducer import NotificationProducer
 from WebScraper import WebScraper
+import LogstashLogger
 
 
 class Main:
@@ -15,17 +16,18 @@ class Main:
         self.notification_producer.publish(json.dumps(notification_payload))
 
     def web_scraping_request_callback(self, ch, method, properties, body):
-        print(" [x] Received %r" % body)
+        LogstashLogger.info(" [x] Received %r" % body)
         self.files_found_producer = FilesFoundProducer()
         self.notification_producer = NotificationProducer()
         msg = json.loads(body.decode("utf-8"))
         web_scrapper = WebScraper(self.publish_method, msg)
         web_scrapper.start()
-        print("Done")
+        LogstashLogger.info("Done")
         self.files_found_producer.close_connection()
         self.notification_producer.close_connection()
 
     def main(self):
+        LogstashLogger.info("runnning ...")
         web_scraping_consumer = WebScrapingConsumer(self.web_scraping_request_callback)
 
 
