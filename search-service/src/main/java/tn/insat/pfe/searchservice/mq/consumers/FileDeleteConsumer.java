@@ -6,7 +6,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import tn.insat.pfe.searchservice.clients.IRedisClient;
 import tn.insat.pfe.searchservice.mq.Constants;
 import tn.insat.pfe.searchservice.mq.payloads.FileDeletePayload;
 import tn.insat.pfe.searchservice.services.ISearchService;
@@ -21,11 +20,9 @@ public class FileDeleteConsumer implements IRabbitConsumer {
     private static final Logger logger = LoggerFactory.getLogger(FileDeleteConsumer.class);
     private String logMsg;
     private final ISearchService searchService;
-    private final IRedisClient redisClient;
     @Autowired
-    public FileDeleteConsumer(ISearchService searchService, IRedisClient redisClient) {
+    public FileDeleteConsumer(ISearchService searchService) {
         this.searchService = searchService;
-        this.redisClient = redisClient;
     }
 
     @Override
@@ -42,6 +39,5 @@ public class FileDeleteConsumer implements IRabbitConsumer {
         this.logMsg = fileDeletePayload.toString();
         logger.info(this.logMsg);
         this.searchService.delete(fileDeletePayload);
-        this.redisClient.deleteAll();
     }
 }

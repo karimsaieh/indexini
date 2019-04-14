@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisHash;
 import tn.insat.pfe.searchservice.dtos.FileGetDto;
 import tn.insat.pfe.searchservice.dtos.LdaTopicsDescriptionGetDto;
 import tn.insat.pfe.searchservice.dtos.SearchDto;
@@ -11,7 +12,9 @@ import tn.insat.pfe.searchservice.dtos.SearchDto;
 import java.util.List;
 
 //got to do this cause i can't deerialize a "Page"
+@RedisHash(value = "SearchDtoCache", timeToLive = 60*60*24)
 public class SearchDtoCache {
+    private String id;
     private List<FileGetDto> fileGetDtosList;
     private int page;
     private int size;
@@ -23,7 +26,8 @@ public class SearchDtoCache {
     public SearchDtoCache() {
     }
 
-    public SearchDtoCache(List<FileGetDto> fileGetDtosList, int page, int size, long totalHits, List<String> suggestionsList, float maxScore, List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList) {
+    public SearchDtoCache(String id, List<FileGetDto> fileGetDtosList, int page, int size, long totalHits, List<String> suggestionsList, float maxScore, List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList) {
+        this.id = id;
         this.fileGetDtosList = fileGetDtosList;
         this.page = page;
         this.size = size;

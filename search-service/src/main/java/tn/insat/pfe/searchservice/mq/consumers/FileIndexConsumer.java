@@ -6,14 +6,12 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import tn.insat.pfe.searchservice.clients.IRedisClient;
 import tn.insat.pfe.searchservice.mq.Constants;
 import tn.insat.pfe.searchservice.mq.payloads.FileIndexPayload;
 import tn.insat.pfe.searchservice.services.ISearchService;
 import tn.insat.pfe.searchservice.utils.JsonUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 @Component
 @RabbitListener(queues = Constants.FILES_INDEX_QUEUE)
@@ -21,12 +19,10 @@ public class FileIndexConsumer implements IRabbitConsumer{
     private static final Logger logger = LoggerFactory.getLogger(FileIndexConsumer.class);
     private String logMsg;
     private final ISearchService searchService;
-    private final IRedisClient redisClient;
 
     @Autowired
-    public FileIndexConsumer(ISearchService searchService, IRedisClient redisClient) {
+    public FileIndexConsumer(ISearchService searchService) {
         this.searchService = searchService;
-        this.redisClient = redisClient;
     }
 
     @RabbitHandler
@@ -36,7 +32,6 @@ public class FileIndexConsumer implements IRabbitConsumer{
         this.logMsg = fileIndexPayload.getId();
         logger.info(this.logMsg);
         this.searchService.upsertFileIndex(fileIndexPayload);
-        this.redisClient.deleteAll();
     }
 
     @Override

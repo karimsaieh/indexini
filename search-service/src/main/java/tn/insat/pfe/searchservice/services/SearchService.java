@@ -15,7 +15,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.Jedis;
 import tn.insat.pfe.searchservice.clients.IElasticSearchClient;
 import tn.insat.pfe.searchservice.dtos.*;
 import tn.insat.pfe.searchservice.entities.redis.SearchDtoCache;
@@ -24,6 +23,7 @@ import tn.insat.pfe.searchservice.mq.payloads.*;
 import tn.insat.pfe.searchservice.mq.producers.FileDbUpdateProducer;
 import tn.insat.pfe.searchservice.mq.producers.IRabbitProducer;
 import tn.insat.pfe.searchservice.mq.producers.NotificationProducer;
+import tn.insat.pfe.searchservice.repositories.redis.ISearchDtoCacheRepository;
 import tn.insat.pfe.searchservice.services.fallbacks.SearchServiceCacheFallback;
 import tn.insat.pfe.searchservice.services.fallbacks.utils.RedisUtils;
 import tn.insat.pfe.searchservice.services.helpers.ElasticSearchDataExtractorHelper;
@@ -49,15 +49,17 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
     private final IElasticSearchClient elasticSearchClient;
     private final IRabbitProducer notificationProducer;
     private final IRabbitProducer fileDbUpdateProducer;
+    private final ISearchDtoCacheRepository searchDtoCacheRepository;
 
     @Autowired
     public SearchService(IElasticSearchClient elasticSearchClient,
                          @Qualifier("NotificationProducer") NotificationProducer notificationProducer,
-                         @Qualifier("FileDbUpdateProducer") FileDbUpdateProducer fileDbUpdateProducer) {
-        super();
+                         @Qualifier("FileDbUpdateProducer") FileDbUpdateProducer fileDbUpdateProducer,
+                         ISearchDtoCacheRepository searchDtoCacheRepository) {
         this.elasticSearchClient = elasticSearchClient;
         this.notificationProducer = notificationProducer;
         this.fileDbUpdateProducer = fileDbUpdateProducer;
+        this.searchDtoCacheRepository = searchDtoCacheRepository;
     }
 
    @HystrixCommand(fallbackMethod = "cachedFind")
@@ -78,17 +80,14 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
         Page<FileGetDto> fileGetDtosPage = new PageImpl<>(fileGetDtosList, PageRequest.of(page,size),totalHits);
         SearchDto searchDto =  new SearchDto(fileGetDtosPage, suggestionsList, maxScore, ldaTopicsDescriptionGetDtosList);
         // got to use another entity cause i can't deserialize abstract type page
-        SearchDtoCache searchDtoCache = new SearchDtoCache(fileGetDtosList, page, size, totalHits, suggestionsList, maxScore, ldaTopicsDescriptionGetDtosList);
-
-
+        SearchDtoCache searchDtoCache = new SearchDtoCache(
+                RedisUtils.generateKey(new String[]{this.keyPrefix,"find",query}, pageable),
+                fileGetDtosList, page, size, totalHits, suggestionsList, maxScore, ldaTopicsDescriptionGetDtosList);
         try {
-            try (Jedis jedis = new Jedis(this.redisHostname)) {
-                String key = RedisUtils.generateKey(new String[]{this.keyPrefix,"find",query}, pageable);
-                jedis.set(key, JsonUtils.objectToJsonString(searchDtoCache));
-                jedis.expire(key, 60*60*24);
-            }
+            this.searchDtoCacheRepository.save(searchDtoCache);
         }catch(Exception ex){
-            logger.error("redis thrown an exception: SearchService.find ", ex);
+            //  need to contain redis error,  so we can stay here and not go to the fallback
+            logger.error("redis thrown an exception: SearchService.find,", ex);
         }
         return searchDto;
     }
@@ -133,6 +132,7 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
 
     @Override
     public boolean upsertLdaTopicsDescription(List<LdaTopicsDescriptionPayload> ldaTopicsDescriptionPayloadList) throws IOException {
+        this.searchDtoCacheRepository.deleteAll();//files got reindexed ? => delete all cache
         for (LdaTopicsDescriptionPayload topic: ldaTopicsDescriptionPayloadList) {
             Map topicMap = topic.toMap();
             this.elasticSearchClient.upsert(this.ldaTopicsIndex, this.ldaTopicsIndexType, topicMap);
@@ -143,6 +143,7 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
 
     @Override
     public boolean delete(FileDeletePayload fileDeletePayload) throws IOException {
+        this.searchDtoCacheRepository.deleteAll();
         if(fileDeletePayload.getDeleteBy().equals("id"))
             return this.elasticSearchClient.deleteById(this.fileIndex, this.fileIndexType, fileDeletePayload.getValue());
         else
