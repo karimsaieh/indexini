@@ -2,8 +2,12 @@ package tn.insat.pfe.searchservice.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.core.AcknowledgedResponse;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +66,7 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
         this.searchDtoCacheRepository = searchDtoCacheRepository;
     }
 
-   @HystrixCommand(fallbackMethod = "cachedFind")
+    @HystrixCommand(fallbackMethod = "cachedFind")
     @Override
     public SearchDto find(String query, Pageable pageable) throws IOException {
 
@@ -148,6 +152,15 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
             return this.elasticSearchClient.deleteById(this.fileIndex, this.fileIndexType, fileDeletePayload.getValue());
         else
             return this.elasticSearchClient.deleteBy(this.fileIndex, fileDeletePayload.getDeleteBy(), fileDeletePayload.getValue());
+    }
+
+    @Override
+    public boolean initEsMapping() throws IOException {
+        if (!this.elasticSearchClient.indexExists(this.fileIndex)) {
+            this.elasticSearchClient.createIndex(this.fileIndex);
+
+        }
+        return this.elasticSearchClient.putMapping(this.fileIndex, this.fileIndexType);
     }
 
 }

@@ -44,7 +44,7 @@ services:
     image: karimsaieh/pfe-file-management-service
     ports:
       - "3011:3011"
-    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 300 --
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
     command: "java -jar /usr/app/file-management-service-0.0.1-SNAPSHOT.jar"
     labels:
       - "traefik.http.routers.files.rule=(Host(`pfe.localhost`) && PathPrefix(`/files-ms`))"
@@ -63,7 +63,7 @@ services:
   ftp-explorer-service:
     build: ftp-explorer-service
     image: karimsaieh/pfe-ftp-explorer-service
-    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 300 --
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
     command: "python ./Main.py"
     environment:
       - pfe_rabbitmq_host=rabbitmq
@@ -99,7 +99,7 @@ services:
     image: karimsaieh/pfe-notification-service
     ports:
       - "3010:3010"
-    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 300 --
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
     command: "npm run start-prod"
     labels:
       - "traefik.http.routers.notifs.rule=(Host(`pfe.localhost`) && PathPrefix(`/notifs-ms`))"
@@ -112,7 +112,7 @@ services:
     image: karimsaieh/pfe-search-service
     ports:
       - "3012:3012"
-    entrypoint: /wait-for-it.sh redis:6379 -t 300 -- /wait-for-it.sh elasticsearch:9200 -t 300 -- /wait-for-it.sh rabbitmq:5672 -t 300 --
+    entrypoint: /wait-for-it.sh redis:6379 -t 1000 -- /wait-for-it.sh elasticsearch:9200 -t 1000 -- /wait-for-it.sh rabbitmq:5672 -t 1000 --
     command: "java -jar /usr/app/search-service-0.0.1-SNAPSHOT.jar"
     labels:
       - "traefik.http.routers.search.rule=(Host(`pfe.localhost`) && PathPrefix(`/search-ms`))"
@@ -134,7 +134,7 @@ services:
   web-scraping-service:
     build: web-scraping-service
     image: karimsaieh/pfe-web-scraping-service
-    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 300 --
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
     command: "python ./Main.py"
     environment:
       - pfe_rabbitmq_host=rabbitmq

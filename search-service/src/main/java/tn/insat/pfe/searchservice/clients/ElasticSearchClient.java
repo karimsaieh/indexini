@@ -1,14 +1,25 @@
 package tn.insat.pfe.searchservice.clients;
 
+import org.elasticsearch.ElasticsearchStatusException;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.Fuzziness;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
@@ -26,6 +37,7 @@ import tn.insat.pfe.searchservice.config.IElasticSearchProvider;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -126,5 +138,60 @@ public class ElasticSearchClient implements IElasticSearchClient {
         DeleteRequest request = new DeleteRequest(index).type(type).id(value);
         this.restHighLevelClient.delete(request, RequestOptions.DEFAULT);
         return true;
+    }
+
+
+    @Override
+    public boolean indexExists(String index) throws IOException {
+        GetIndexRequest request = new GetIndexRequest();
+        request.indices(index);
+        return this.restHighLevelClient.indices().exists(request, RequestOptions.DEFAULT);
+    }
+
+    @Override
+    public boolean createIndex(String index) throws IOException {
+        CreateIndexRequest request = new CreateIndexRequest(index);
+        request.settings(Settings.builder()
+                .put("index.number_of_shards", 1)
+                .put("index.number_of_replicas", 1)
+        );
+        CreateIndexResponse createIndexResponse = this.restHighLevelClient.indices().create(request, RequestOptions.DEFAULT);
+        return createIndexResponse.isAcknowledged();
+    }
+
+    @Override
+    public boolean putMapping(String index, String type) throws IOException {
+        // i know this is messed up
+        PutMappingRequest request = new PutMappingRequest(index).type(type);
+        XContentBuilder builder = XContentFactory.jsonBuilder();
+        builder.startObject();
+        {
+            builder.startObject("properties");
+            {
+                builder.startObject("summary");
+                {
+                    builder.field("type", "keyword");
+                    builder.field("index", "false");
+                }
+                builder.endObject();
+                builder.startObject("thumbnail");
+                {
+                    builder.field("type", "keyword");
+                    builder.field("index", "false");
+                }
+                builder.endObject();
+                builder.startObject("text");
+                {
+                    builder.field("type", "text");
+                    builder.field("analyzer", "french");
+                }
+                builder.endObject();
+            }
+            builder.endObject();
+        }
+        builder.endObject();
+        request.source(builder);
+        AcknowledgedResponse putMappingResponse = this.restHighLevelClient.indices().putMapping(request, RequestOptions.DEFAULT);
+        return  putMappingResponse.isAcknowledged();
     }
 }

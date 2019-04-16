@@ -7,7 +7,7 @@ import re
 
 class TextPreProcessor:
     def __init__(self):
-        # NOT IN THE EXECUTOR
+        # NOT IN THE EXECUTOR //so remove it ?
         self.english_stopwords = stopwords.words('english')
 
     def tokenize(self, content):

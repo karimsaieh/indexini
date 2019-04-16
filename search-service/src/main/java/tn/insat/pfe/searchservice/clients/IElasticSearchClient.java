@@ -16,4 +16,10 @@ public interface IElasticSearchClient {
     boolean deleteByRangeFrom(String index, String attribute, int from) throws IOException;
     boolean deleteBy(String index, String deleteBy, String value) throws IOException;
     boolean deleteById(String index,String type, String value) throws IOException;
+
+    boolean indexExists(String index) throws IOException;
+
+    boolean createIndex(String index) throws IOException;
+
+    boolean putMapping(String index, String type) throws IOException;
 }
