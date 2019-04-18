@@ -5,10 +5,12 @@ from TextSummarizer import TextSummarizer
 from TextMostCommonWordsExtractor import TextMostCommonWordsExtractor
 from FileUrlProcessor import FileUrlProcessor
 import nltk
+import spacy
 
 
 class FileProcessor:
     def __init__(self):
+        # kim: this code runs in the executor
         self.parser = Parser()
         self.text_pre_processor = TextPreProcessor()
         self.thumbnail_generator = ThumbnailGenerator()
@@ -20,6 +22,9 @@ class FileProcessor:
         # necessary dependencies for the executor
         nltk.download('punkt')
         nltk.download('wordnet')
+        # spacy loaded for each row which is heavy,
+        # use for each partition instead ?
+        nlp_spacy = spacy.load("fr")
 
         url = file[0]
         binary = file[1]
@@ -28,9 +33,9 @@ class FileProcessor:
 
         thumbnail = self.thumbnail_generator.get_thumbnail(binary, content_type)
 
-        summary = self.text_summarizer.get_summary(content)
+        words, preprocessed_text, content = self.text_pre_processor.preprocess_text(content, nlp_spacy)
 
-        words, preprocessed_text = self.text_pre_processor.preprocess_text(content)
+        summary = self.text_summarizer.get_summary(content,nlp_spacy)
 
         most_common = self.text_most_common_words_extractor.get_most_common_words(words)
 
@@ -38,5 +43,5 @@ class FileProcessor:
 
         url = self.file_url_processor.normalizeUrl(url)
 
-        return url, file_name, timestamp, uuid, words, preprocessed_text, summary, most_common, thumbnail, content_type
+        return url, file_name, timestamp, uuid, words, preprocessed_text, summary, most_common, thumbnail, content_type,content
 

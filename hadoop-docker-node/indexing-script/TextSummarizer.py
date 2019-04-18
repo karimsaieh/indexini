@@ -1,66 +1,68 @@
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
-from nltk.tokenize import word_tokenize, sent_tokenize
 import nltk
-import re
+from TextPreProcessor import TextPreProcessor
+
 
 class TextSummarizer:
 
-    def __init__(self):
-        self.english_stopwords = stopwords.words('english')
-
-    def create_frequency_table(self, text_string) -> dict:
-        #TODO: change language to french ?
-        stop_words = set(self.english_stopwords)
-        words = word_tokenize(text_string)
-        ps = PorterStemmer()
-        freq_table = dict()
-        for word in words:
-            # TODO: lemmatization & a french one
-            word = ps.stem(word)
-            if word not in stop_words:
-                if word in freq_table:
-                    freq_table[word] += 1
-                else:
-                    freq_table[word] = 1
-        return freq_table
-
-    def score_sentences(self, sentences, freq_table) -> dict:
-        sentence_value = dict()
-        for sentence in sentences:
-            word_count_in_sentence = (len(word_tokenize(sentence)))
-            for wordValue in freq_table:
-                if wordValue in sentence.lower():
-                    if sentence[:100] in sentence_value:
-                        sentence_value[sentence[:100]] += freq_table[wordValue]
-                    else:
-                        sentence_value[sentence[:100]] = freq_table[wordValue]
-            sentence_value[sentence[:100]] = sentence_value[sentence[:100]] // word_count_in_sentence
-        return sentence_value
-
-    def find_average_score(self, sentence_value) -> int:
-        sum_values = 0
-        for entry in sentence_value:
-            sum_values += sentence_value[entry]
-        average = int(sum_values / len(sentence_value))
-        return average
-
-    def generate_summary(self, sentences, sentence_value, threshold):
-        sentence_count = 0
-        summary = ''
-        for sentence in sentences:
-            if sentence[:100] in sentence_value and sentence_value[sentence[:100]] > threshold:
-                summary += " " + sentence
-                sentence_count += 1
-        summary = re.sub(r'\n\s*\n', '\n', summary)
-        return summary
-
-    def get_summary(self, content):
+    def get_summary(self, content, nlp_spacy):
         summary = ""
-        if content:
-            freq_table = self.create_frequency_table(content.lower())
-            sentences = sent_tokenize(content)
-            sentence_scores = self.score_sentences(sentences, freq_table)
-            threshold = self.find_average_score(sentence_scores)
-            summary = self.generate_summary(sentences, sentence_scores, 1.2 * threshold)
-        return summary
+        # preprocess
+        tpp = TextPreProcessor()
+        # Step 1 - split it
+        original_sentences = nltk.sent_tokenize(content)
+        pre_processed_sentences = []
+        for sentence in original_sentences:
+            sentence = tpp.to_lowercase(sentence)
+            sentence = tpp.lemmatize(sentence, nlp_spacy)
+            words = tpp.tokenize(sentence)
+            words = tpp.remove_punctuation(words)
+            words = tpp.remove_numbers(words)
+            words = tpp.remove_one_character_words(words)
+            words = tpp.remove_stopwords(words, nlp_spacy)
+            sentence = " ".join(words)
+            pre_processed_sentences.append(sentence)
+        pre_processed_content = " ".join(pre_processed_sentences)
+
+        word_frequencies = {}
+        for word in nltk.word_tokenize(pre_processed_content):
+                if word not in word_frequencies.keys():
+                    word_frequencies[word] = 1
+                else:
+                    word_frequencies[word] += 1
+        if word_frequencies:
+            maximum_frequncy = max(word_frequencies.values())
+            ##
+            for word in word_frequencies.keys():
+                word_frequencies[word] = (word_frequencies[word]/maximum_frequncy)
+            ##
+            sentence_scores = []
+            for index, sent in enumerate(pre_processed_sentences):
+                sent_score = {
+                    "index": index,
+                    "score": 0,
+                    "sentence": original_sentences[index]
+                }
+                for word in nltk.word_tokenize(sent):
+                    sent_score["score"] += word_frequencies[word]
+                sentence_scores.append(sent_score)
+
+            sentence_scores = sorted(sentence_scores, key=lambda x: x["score"], reverse=True)
+            sentence_scores = sentence_scores[:5]
+            sentence_scores = sorted(sentence_scores, key=lambda x: x["index"], reverse=False)
+
+            for sen in sentence_scores:
+                summary += "\n" + sen["sentence"]
+        return summary.strip()
+
+
+if __name__ == '__main__':
+    # let's begin
+    import spacy
+    nlp_spacy = spacy.load("fr")
+    file = open("data.txt", "rb").read()
+    from Parser import Parser
+    p = Parser()
+    content, ct = p.parse_file(file)
+    tm = TextSummarizer()
+    summary = tm.get_summary(content, nlp_spacy)
+    print("-->", summary)

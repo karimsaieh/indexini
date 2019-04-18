@@ -72,6 +72,7 @@ RUN pip3 install -r /tmp/requirements.txt
 # RUN python3 -m nltk.downloader punkt
 RUN python3 -m nltk.downloader stopwords
 # RUN python3 -m nltk.downloader wordnet
+RUN python3 -m spacy download fr
 
 RUN apt-get install -y poppler-utils
 

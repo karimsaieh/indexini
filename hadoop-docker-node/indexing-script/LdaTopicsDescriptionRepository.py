@@ -1,5 +1,6 @@
 from LdaTopicsDescriptionProducer import LdaTopicsDescriptionProducer
 import json
+import os
 
 
 class LdaTopicsDescriptionRepository:
@@ -8,7 +9,8 @@ class LdaTopicsDescriptionRepository:
         lda_topics_description_producer = LdaTopicsDescriptionProducer()
         payload = []
         for index, topic in enumerate(topics_descriptions):
-            print(index, topic)
+            if os.environ["pfe_env"] == "dev":
+                print(index, topic)
             topic_dic = {}
             topic_dic["id"] = index
             topic_dic["description"] = topics_descriptions[index]

@@ -1,36 +1,24 @@
 import nltk
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
 import unicodedata
 import re
-
+import spacy
+import string
 
 class TextPreProcessor:
-    def __init__(self):
-        # NOT IN THE EXECUTOR //so remove it ?
-        self.english_stopwords = stopwords.words('english')
 
     def tokenize(self, content):
-        return nltk.word_tokenize(content)
+        return nltk.word_tokenize(content, language="french")
 
-    def remove_non_ascii(self, words):
-        new_words = []
-        for word in words:
-            new_word = unicodedata.normalize('NFKD', word).encode('ascii', 'ignore').decode('utf-8', 'ignore')
-            new_words.append(new_word)
-        return new_words
+    def normalize_nfc_and_remove_non_utf8(self, content):
+        return unicodedata.normalize('NFC', content).encode('utf-8', 'ignore').decode('utf-8', 'ignore')
 
-    def to_lowercase(self, words):
-        new_words = []
-        for word in words:
-            new_word = word.lower()
-            new_words.append(new_word)
-        return new_words
+    def to_lowercase(self, content):
+        return content.lower()
 
     def remove_punctuation(self, words):
         new_words = []
         for word in words:
-            new_word = re.sub(r'[^\w\s]', '', word)
+            new_word = word.translate(str.maketrans('','',string.punctuation))
             if new_word != '':
                 new_words.append(new_word)
         return new_words
@@ -42,35 +30,46 @@ class TextPreProcessor:
                 new_words.append(word)
         return new_words
 
-    def remove_stopwords(self, words):
+    def remove_stopwords(self, words, nlp_spacy):
         new_words = []
         for word in words:
-            if word not in self.english_stopwords:
-                new_words.append(word)
+            if word not in spacy.lang.fr.stop_words.STOP_WORDS:
+                if word not in ["qu","al"]:
+                    new_words.append(word)
         return new_words
 
-    def lemmatize_verbs(self, words):
-        lemmatizer = WordNetLemmatizer()
-        lemmas = []
-        for word in words:
-            # TODO: lemmatizer could be enhanced by tagging words and choosing the right pos: verb, noun , adjective ..
-            lemma = lemmatizer.lemmatize(word, pos='v')
-            lemmas.append(lemma)
-        return lemmas
+    def lemmatize(self, content, nlp_spacy):
+        doc = nlp_spacy(content)
+        return " ".join([token.lemma_ for token in doc])
+
+    def remove_one_character_words(self, words):
+        return [word for word in words if len(word) > 1]
+
+    def remove_newlines_and_extrasapaces(self, content):
+        return re.sub("\\s+", " ", content).strip()
 
     # TODO: french language instead
-    def normalize(self, words):
-        words = self.remove_non_ascii(words)
-        words = self.to_lowercase(words)
+    def normalize(self, content, nlp_spacy):
+        # normalization is critical
+        content = self.normalize_nfc_and_remove_non_utf8(content)
+        content = self.remove_newlines_and_extrasapaces(content)
+        # content for indexing
+        text_content = content
+        # should be before lemmatizer otherwise he'l consider some words like keywords & won't lemm them
+        content = self.to_lowercase(content)
+        content = self.lemmatize(content, nlp_spacy)
+        words = self.tokenize(content)
         words = self.remove_punctuation(words)
         words = self.remove_numbers(words)
-        words = self.remove_stopwords(words)
-        words = self.lemmatize_verbs(words)
+        words = self.remove_one_character_words(words)
+        words = self.remove_stopwords(words, nlp_spacy)
+        # pre processed text for machine learning
         pre_processed_text = ' '.join(x for x in words)
-        return words, pre_processed_text
 
-    def preprocess_text(self, content):
-        words, pre_processed_text = self.normalize(self.tokenize(content))
-        return words, pre_processed_text
+        return words, pre_processed_text, text_content
+
+    def preprocess_text(self, content, nlp_spacy):
+        words, pre_processed_text, content = self.normalize(content, nlp_spacy)
+        return words, pre_processed_text, content
 
 

@@ -17,9 +17,15 @@ class FileIndexRepository:
                 "bulkSaveOperationTimestamp": file_index["timestamp"],
                 "bulkSaveOperationUuid": file_index["uuid"],
                 "fileName": file_index["file_name"],
-                "text": file_index["pre_processed_text"],
+                "text": file_index["content"],
                 "summary": file_index["summary"],
-                "mostCommonWords": file_index["most_common"],
+                # had to store string instead of json, cause i got weird bugs in ES
+                # it happens when the content of the same file changes
+                # old commonwords don't get deleted
+                # so i end up with 30+( common words instead of 30
+                # UPDATE: i used index, instead of upsert & it seems to resolve the issue
+                # but i'll keep sending string anyws
+                "mostCommonWords": json.dumps(file_index["most_common"]),
                 "contentType": file_index["content_type"],
                 "kmeansPrediction": file_index["kmeans_prediction"],
                 "bisectingKmeansPrediction": file_index["bisecting_kmeans_prediction"],

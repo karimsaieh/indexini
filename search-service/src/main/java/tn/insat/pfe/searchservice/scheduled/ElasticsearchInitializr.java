@@ -42,7 +42,7 @@ public class ElasticsearchInitializr {
             try{
                 initialised = this.searchService.initEsMapping();
             }catch (Exception ex){
-                logger.warn("it seems that ES isn't ready yet offline");
+                logger.warn("it seems that ES isn't ready yet offline", ex);
             }
             if(!initialised){
                 TimeUnit.SECONDS.sleep(1);

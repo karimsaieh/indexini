@@ -21,9 +21,9 @@ public class FileIndexPayload {
     @JsonProperty("bisectingKmeansPrediction")
     private String bisectingKmeansPrediction;
     @JsonProperty("ldaTopics")
-    private Map<String, Float> ldaTopics;
-    // json property annotation is in the getter
-    private Map<String,Integer> mostCommonWords;
+    private Map<String, Double> ldaTopics;
+    @JsonProperty("mostCommonWords")
+    private String mostCommonWords;
     @JsonProperty("summary")
     private String summary;
     @JsonProperty("text")
@@ -92,20 +92,19 @@ public class FileIndexPayload {
         this.bisectingKmeansPrediction = bisectingKmeansPrediction;
     }
 
-    public Map<String, Float> getLdaTopics() {
+    public Map<String, Double> getLdaTopics() {
         return ldaTopics;
     }
 
-    public void setLdaTopics(Map<String, Float> ldaTopics) {
+    public void setLdaTopics(Map<String, Double> ldaTopics) {
         this.ldaTopics = ldaTopics;
     }
 
-    @JsonProperty("mostCommonWords")
-    public Map<String, Integer> getMostCommonWords() {
+    public String getMostCommonWords() {
         return mostCommonWords;
     }
 
-    public void setMostCommonWords(Map<String, Integer> mostCommonWords) {
+    public void setMostCommonWords(String mostCommonWords) {
         this.mostCommonWords = mostCommonWords;
     }
 

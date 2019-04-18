@@ -1,6 +1,5 @@
 package tn.insat.pfe.searchservice.clients;
 
-import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
@@ -8,6 +7,7 @@ import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
@@ -19,12 +19,12 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.SuggestBuilder;
@@ -37,7 +37,6 @@ import tn.insat.pfe.searchservice.config.IElasticSearchProvider;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -77,15 +76,23 @@ public class ElasticSearchClient implements IElasticSearchClient {
                 .fuzziness(Fuzziness.AUTO)
                 .maxExpansions(100)
                 .fuzzyTranspositions(true);
+
         SuggestionBuilder termSuggestionBuilder =
                 SuggestBuilders.termSuggestion(field).text(query);
         SuggestBuilder suggestBuilder = new SuggestBuilder();
         suggestBuilder.addSuggestion("suggest_text", termSuggestionBuilder);
         searchSourceBuilder.suggest(suggestBuilder);
 
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        HighlightBuilder.Field highlightField =
+                new HighlightBuilder.Field(field);
+        highlightField.highlighterType("unified");
+        highlightBuilder.field(highlightField);
+
         int page = pageable.getPageNumber();
         int size = pageable.getPageSize();
         searchSourceBuilder.query(matchQueryBuilder).from(page * size).size(size);
+        searchSourceBuilder.highlighter(highlightBuilder);
         searchRequest.source(searchSourceBuilder);
         return this.restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
     }
@@ -110,10 +117,9 @@ public class ElasticSearchClient implements IElasticSearchClient {
 
     @Override
     public boolean upsert(String index, String type, Map map) throws IOException {
-        UpdateRequest request = new UpdateRequest(index, type, (String) map.get("id"))
-                .doc(map);
-        request.upsert(map);
-        this.restHighLevelClient.update(request, RequestOptions.DEFAULT);
+        IndexRequest request = new IndexRequest(index, type, (String) map.get("id"))
+                .source(map);
+        this.restHighLevelClient.index(request, RequestOptions.DEFAULT);
         return true; // nothing is true, everything is permitted
     }
 
