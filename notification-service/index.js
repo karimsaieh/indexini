@@ -18,8 +18,8 @@ app.use(cors);
 app.get('/notifs-ms/api/v1/notifs/stream', (req, res) => {
   res.sseSetup();
   setInterval(() => {
-    res.sseSend({ event: 'alive' }); // sino traefik will give 502 error
-  }, 60000);
+    res.sseSend({ event: 'alive' }); // sinon traefik will give 502 error
+  }, 6000);
   amqp.connect(`amqp://${process.env.pfe_rabbitmq_host}`, (_errCon, conn) => {
     conn.createChannel((_errCh, ch) => {
       const ex = 'notifications_exchange';

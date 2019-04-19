@@ -4,40 +4,42 @@ import store from './store'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 // import { getToken } from '@/utils/auth' // get token from cookie
+import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-// permission judge function
-// function hasPermission(roles, permissionRoles) {
-//   if (roles.includes('admin')) return true // admin permission passed directly
-//   if (!permissionRoles) return true
-//   return roles.some(role => permissionRoles.indexOf(role) >= 0)
-// }
-
 // const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
-router.beforeEach((to, from, next) => {
-  NProgress.start() // start progress bar
+router.beforeEach(async(to, from, next) => {
+  // start progress bar
+  NProgress.start()
 
-  if (store.getters.roles.length === 0) {
-    // 判断当前用户是否已拉取完user_info信息
-    store
-      .dispatch('GetUserInfo')
-      .then(res => {
-        // 拉取user_info
-        const roles = ['admin'] // note: roles must be a object array! such as: [{id: '1', name: 'editor'}, {id: '2', name: 'developer'}]
-        console.log(roles)
-        store.dispatch('GenerateRoutes', { roles }).then(accessRoutes => {
-          // 根据roles权限生成可访问的路由表
-          router.addRoutes(accessRoutes) // 动态添加可访问路由表
-          next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-        })
-      })
-  } else {
+  // set page title
+  document.title = getPageTitle(to.meta.title)
+
+  // determine whether the user has logged in
+  // const hasToken = getToken()
+
+  // determine whether the user has obtained his permission roles through getInfo
+  if (store.getters.roles && store.getters.roles.length > 0) {
     next()
+  } else {
+    // get user info
+  // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
+    const { roles } = await store.dispatch('user/getInfo')
+    // generate accessible routes map based on roles
+    const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+
+    // dynamically add accessible routes
+    router.addRoutes(accessRoutes)
+
+    // hack method to ensure that addRoutes is complete
+    // set the replace: true, so the navigation will not leave a history record
+    next({ ...to, replace: true })
   }
 })
 
 router.afterEach(() => {
-  NProgress.done() // finish progress bar
+  // finish progress bar
+  NProgress.done()
 })

@@ -5,20 +5,21 @@
 </template>
 
 <script>
-import axios from 'axios'
-
-// create an axios instance
+import { mapActions } from 'vuex'
 
 export default {
   name: 'App',
-  created() {
-    const service = axios.create({
-      baseURL: 'http://pfe.localhost:8080/api/v1', // api 的 base_url
-      timeout: 5000 // request timeout
-    })
-    service.get('/files').then(res => {
-      console.log(res)
-    })
+  created: function() {
+    const _this = this
+    const evtSource = new EventSource('http://localhost:3010/notifs-ms/api/v1/notifs/stream')
+    evtSource.onmessage = function(e) {
+      _this.updateCurrentNotification(JSON.parse(e.data))
+    }
+  },
+  methods: {
+    ...mapActions('notification', [
+      'updateCurrentNotification'
+    ])
   }
 }
 </script>

@@ -13,7 +13,7 @@ public class ValidFileTypesValidator implements ConstraintValidator<ValidFileTyp
 
     @Override
     public boolean isValid(String[] strings, ConstraintValidatorContext constraintValidatorContext) {
-        String[] values = {"pdf", "doc", "zip", "tar.gz", "rar", "docx", "txt", "rtf", "png", "jpg", "jpeg"};
+        String[] values = {"pdf", "doc", "zip", "tar.gz", "rar", "docx", "txt", "rtf", "png", "jpg", "jpeg", "odt", "ppt", "pptx"};
         for(String str: strings) {
             if (Arrays.stream(values).noneMatch(str::equals)) {
                 return false;

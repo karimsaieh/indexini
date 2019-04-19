@@ -4,6 +4,7 @@ from FilesFoundProducer import FilesFoundProducer
 from NotificationProducer import NotificationProducer
 from WebScraper import WebScraper
 import LogstashLogger
+from constants import  NotificationConstants
 
 
 class Main:
@@ -20,6 +21,13 @@ class Main:
         self.files_found_producer = FilesFoundProducer()
         self.notification_producer = NotificationProducer()
         msg = json.loads(body.decode("utf-8"))
+        self.notification_producer.publish(json.dumps(
+            {
+                "event": NotificationConstants.INGESTION_STARTED,
+                "bulkSaveOperationTimestamp": msg["bulkSaveOperationTimestamp"],
+                "bulkSaveOperationUuid": msg["bulkSaveOperationUuid"],
+                "ingestionUrl": msg["url"]
+            }))
         web_scrapper = WebScraper(self.publish_method, msg)
         web_scrapper.start()
         LogstashLogger.info("Done")

@@ -1,6 +1,11 @@
 <template>
   <div>
     <div class="page-container">
+      <router-link :to="{ name: 'Dashboard', query: { plan: 'private' }, params: { disableTransition: true } }">
+        Go to Foo
+      </router-link>
+      <br>
+      <router-link to="/?q=6">Go to Bar</router-link>
       dasgboard container
       <!-- <file-search-card /> -->
       <br>
@@ -51,7 +56,7 @@
 // import FileWordCloud from './Components/FileWordCloud'
 // import FileRadarChart from './Components/FileRadarChart'
 // import FileSimilarFiles from './Components/FileSimilarfiles'
-// import FileSearchCard from './Components/FileSearchCard';
+// import FileSearchCard from './Components/FileSearchCard'
 export default {
   name: 'Dashboard',
   components: {

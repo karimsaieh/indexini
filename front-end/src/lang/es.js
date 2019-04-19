@@ -1,7 +1,6 @@
 export default {
   route: {
     dashboard: 'Panel de control',
-    introduction: 'Introducción',
     documentation: 'Documentación',
     guide: 'Guía',
     permission: 'Permisos',
@@ -10,7 +9,6 @@ export default {
     directivePermission: 'Permisos de la directiva',
     icons: 'Iconos',
     components: 'Componentes',
-    componentIndex: 'Introducción',
     tinymce: 'Tinymce',
     markdown: 'Markdown',
     jsonEditor: 'Editor JSON',
@@ -43,8 +41,6 @@ export default {
     dragTable: 'Arrastrar tabla',
     inlineEditTable: 'Editor',
     complexTable: 'Complex Table',
-    treeTable: 'Tree Table',
-    customTreeTable: 'Custom TreeTable',
     tab: 'Pestaña',
     form: 'Formulario',
     createArticle: 'Crear artículo',
@@ -136,6 +132,9 @@ export default {
     cancel: 'Cancelar',
     confirm: 'Confirmar'
   },
+  example: {
+    warning: 'Creating and editing pages cannot be cached by keep-alive because keep-alive include does not currently support caching based on routes, so it is currently cached based on component name. If you want to achieve a similar caching effect, you can use a browser caching scheme such as localStorage. Or do not use keep-alive include to cache all pages directly. See details'
+  },
   errorLog: {
     tips: 'Please click the bug icon in the upper right corner',
     description: 'Now the management system are basically the form of the spa, it enhances the user experience, but it also increases the possibility of page problems, a small negligence may lead to the entire page deadlock. Fortunately Vue provides a way to catch handling exceptions, where you can handle errors or report exceptions.',
@@ -163,5 +162,12 @@ export default {
     close: 'Cerrar',
     closeOthers: 'Cerrar otros',
     closeAll: 'Cerrar todos'
+  },
+  settings: {
+    title: 'Page style setting',
+    theme: 'Theme Color',
+    tagsView: 'Open Tags-View',
+    fixedHeader: 'Fixed Header',
+    sidebarLogo: 'Sidebar Logo'
   }
 }

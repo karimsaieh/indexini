@@ -14,7 +14,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --loglevel verbose
 COPY . .
-RUN npm run build:prod
+RUN npm run build:stage
 
 # docker build . -t karimsaieh/notification-service
 FROM node:11.13.0-alpine as production-stage

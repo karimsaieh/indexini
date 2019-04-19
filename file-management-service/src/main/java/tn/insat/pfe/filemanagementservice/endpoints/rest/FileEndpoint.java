@@ -18,7 +18,7 @@ import java.io.InputStream;
 
 @RestController
 @RequestMapping("/v1/files")
-//@CrossOrigin
+@CrossOrigin(origins = "http://localhost:9527")
 public class FileEndpoint {
     private final IFileService fileService;
 
