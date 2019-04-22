@@ -15,7 +15,7 @@ class WebScraper:
         self.page_url = msg["url"]
         self.bulk_save_operation_timestamp = msg["bulkSaveOperationTimestamp"]
         self.bulk_save_operation_uuid = msg["bulkSaveOperationUuid"]
-        self.metadata = msg["metadata"]
+        self.source = msg["source"]
 
     def find_files(self, root_page_url, page_url, depth, file_types, visited_pages_urls, files_found):
 
@@ -37,7 +37,7 @@ class WebScraper:
                             "url": current_link,
                             "bulkSaveOperationTimestamp": self.bulk_save_operation_timestamp,
                             "bulkSaveOperationUuid": self.bulk_save_operation_uuid,
-                            "metadata": self.metadata
+                            "source": self.source
                         }
                         notification_payload = {
                             "event": NotificationConstants.FILE_FOUND,

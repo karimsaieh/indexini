@@ -91,7 +91,31 @@ export const constantRoutes = [
         path: '',
         component: () => import('@/views/upload/index'),
         name: 'Upload',
-        meta: { title: 'Upload', icon: 'icon', noCache: true }
+        meta: { title: 'Upload', icon: 'el-icon-upload', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/indexing',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/indexing/index'),
+        name: 'Indexing',
+        meta: { title: 'Indexation', icon: 'tree-table', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/files',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/files/index'),
+        name: 'Files',
+        meta: { title: 'Fichiers', icon: 'tree-table', noCache: true }
       }
     ]
   }

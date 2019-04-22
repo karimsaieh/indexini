@@ -1,8 +1,10 @@
 package tn.insat.pfe.filemanagementservice.endpoints.rest;
 
+import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,11 +12,13 @@ import tn.insat.pfe.filemanagementservice.dtos.BulkSaveOperationDto;
 import tn.insat.pfe.filemanagementservice.dtos.FileGetDto;
 import tn.insat.pfe.filemanagementservice.dtos.IngestionRequestDto;
 import tn.insat.pfe.filemanagementservice.endpoints.exceptions.ResourceNotFoundException;
+import tn.insat.pfe.filemanagementservice.entities.File;
 import tn.insat.pfe.filemanagementservice.services.IFileService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/files")
@@ -29,8 +33,8 @@ public class FileEndpoint {
 
     // size=X&page=Y&sort=bulkSaveOperationTimestamp,desc
     @GetMapping
-    public Page<FileGetDto> findAll(Pageable pageable) {
-        return this.fileService.findAll(pageable);
+    public Page<FileGetDto> findAll(@QuerydslPredicate(root = File.class) Predicate predicate, Pageable pageable) {
+        return this.fileService.findAll(predicate, pageable);
     }
 
     // get file from DB
@@ -63,10 +67,21 @@ public class FileEndpoint {
         return true; // "nothing is true everything is permitted", ezio auditore da firenze
     }
 
+    @DeleteMapping("/deletes")
+    public boolean deleteMultipleFilesByUrl(@RequestBody String[] urls) throws IOException {
+        this.fileService.deleteMultipleFilesByLocation(urls);
+        return true; // "nothing is true everything is permitted", ezio auditore da firenze
+    }
+
     @DeleteMapping(params = "bulkSaveOperationTimestamp")
     public boolean deleteFileBybulkSaveOperationTimestamp(
             @RequestParam(name = "bulkSaveOperationTimestamp", required = false) String bulkSaveOperationTimestamp) throws IOException {
         this.fileService.deleteByBulkSaveOperationTimestamp(bulkSaveOperationTimestamp);
         return true; // "nothing is true everything is permitted", ezio auditore da firenze
+    }
+
+    @GetMapping("/func/indexingStats")
+    public Map<String, Long> indexingStats() {
+        return this.fileService.indexingStats();
     }
 }

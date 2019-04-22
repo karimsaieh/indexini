@@ -1,6 +1,5 @@
 package tn.insat.pfe.filemanagementservice.dtos;
 
-import java.util.List;
 
 public class FileGetDto {
 
@@ -9,7 +8,7 @@ public class FileGetDto {
     private String contentType;
     private String location;
     private Long bulkSaveOperationTimestamp;
-    private List<String> metadata;
+    private String source;
 
     public FileGetDto() {
     }
@@ -54,11 +53,11 @@ public class FileGetDto {
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
     }
 
-    public List<String> getMetadata() {
-        return metadata;
+    public String getSource() {
+        return source;
     }
 
-    public void setMetadata(List<String> metadata) {
-        this.metadata = metadata;
+    public void setSource(String source) {
+        this.source = source;
     }
 }

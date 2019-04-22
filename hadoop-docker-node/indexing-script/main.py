@@ -9,6 +9,7 @@ import os
 import time
 import json
 
+
 notification_producer = NotificationProducer()
 notification_payload = {
     "event": NotificationConstants.PROCESSING_STARTED

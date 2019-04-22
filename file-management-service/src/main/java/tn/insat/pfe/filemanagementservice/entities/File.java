@@ -1,11 +1,14 @@
 package tn.insat.pfe.filemanagementservice.entities;
 
+import com.querydsl.core.annotations.QueryEntity;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
+@Document
+@QueryEntity
 public class File implements Serializable {
     @Id
     private String id;
@@ -18,16 +21,16 @@ public class File implements Serializable {
     private Date createdAt;
     private Date modifiedAt;
     private boolean deleteFlag;
+    private String source;
 
-    private List<String> metadata;
 
-    public File(String location, String name, String contentType, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid, List<String> metadata) {
+    public File(String location, String name, String contentType, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid, String source) {
         this.location = location;
         this.name = name;
         this.contentType = contentType;
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
-        this.metadata = metadata;
+        this.source = source;
     }
 
     public File() {
@@ -113,11 +116,11 @@ public class File implements Serializable {
         this.deleteFlag = deleteFlag;
     }
 
-    public List<String> getMetadata() {
-        return metadata;
+    public String getSource() {
+        return source;
     }
 
-    public void setMetadata(List<String> metadata) {
-        this.metadata = metadata;
+    public void setSource(String source) {
+        this.source = source;
     }
 }

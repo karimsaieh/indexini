@@ -55,7 +55,13 @@ export default {
   },
   data: function() {
     return {
-      words: [['gogo', 19], ['frr', 10], ['action', 100], ['horror', 3], ['racing', 7], ['adventure', 3]],
+      words: [['gogo', 19], ['frr', 10], ['action', 100], ['horror', 650], ['racing', 7], ['adventure', 3],
+
+        ['gogo', 19], ['frr', 10], ['action', 100], ['horror', 300], ['racing', 7], ['adventure', 3],
+        ['gogo', 19], ['frr', 10], ['action', 100], ['horror', 3], ['racing', 700], ['adventure', 3],
+        ['gogo', 19], ['frr', 10], ['action', 100], ['horror', 3], ['racing', 7], ['adventure', 200],
+        ['gogo', 19], ['frr', 10], ['action', 100], ['horror', 3], ['racing', 7], ['adventure', 3]
+      ],
       seriesData: [0.10, 0.505, 0.95, 0.5, 0.8],
       ldaTopicsDescription: [
         {

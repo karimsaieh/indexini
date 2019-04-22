@@ -1,6 +1,7 @@
 package tn.insat.pfe.filemanagementservice.services;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.querydsl.core.types.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +70,13 @@ public class FileService implements IFileService{
 
     @Override
     @HystrixCommand(fallbackMethod = "fallback")
-    public Page<FileGetDto> findAll(Pageable pageable) {
-        Page<File> page = this.fileRepository.findAll(pageable);
+    public Page<FileGetDto> findAll(Predicate predicate, Pageable pageable) {
+        Page<File> page = null;
+        if(predicate == null) {
+            page = this.fileRepository.findAll(pageable);
+        } else {
+            page = this.fileRepository.findAll(predicate, pageable);
+        }
         List<FileGetDto> fileGetDtoList = page
                 .getContent()
                 .stream()
@@ -79,13 +85,13 @@ public class FileService implements IFileService{
         return new PageImpl<>(fileGetDtoList, pageable, page.getTotalElements());
     }
 
-    public Page<FileGetDto> fallback(Pageable pageable) {
+    public Page<FileGetDto> fallback(Predicate predicate, Pageable pageable) {
         return new PageImpl<>(new ArrayList<FileGetDto>(), pageable, 0);
     }
 
     @Override
     public BulkSaveOperationDto saveMultipartFiles(MultipartFile[] multipartFiles) throws IOException {
-        List<String> metadata=  new ArrayList<>(Arrays.asList("ui-upload"));
+        String source = "ui-upload";
         Long bulkSaveOperationTimestamp = System.currentTimeMillis();
         String bulkSaveOperationUuid = UUID.randomUUID().toString();
         //
@@ -97,7 +103,7 @@ public class FileService implements IFileService{
         //
         for (int i = 0; i < multipartFiles.length ; i++) {
             this.saveFile(multipartFiles[i].getInputStream(), fileNames.get(i),multipartFiles[i].getContentType()
-                    ,bulkSaveOperationTimestamp, bulkSaveOperationUuid, metadata);
+                    ,bulkSaveOperationTimestamp, bulkSaveOperationUuid, source);
         }
         return new BulkSaveOperationDto(bulkSaveOperationTimestamp,bulkSaveOperationUuid);
     }
@@ -110,14 +116,14 @@ public class FileService implements IFileService{
     }
 
     public boolean saveFile(InputStream inputStream, String fileName,String contentType, Long bulkSaveOperationTimestamp,
-                            String bulkSaveOperationUuid, List<String> metadata) throws IOException {
+                            String bulkSaveOperationUuid, String source) throws IOException {
         String directoryUrl = this.saveDirectory + "/" + bulkSaveOperationTimestamp + "/" + bulkSaveOperationUuid;
         // save to hdfs
         this.fileHdfsClient.addFile(directoryUrl, fileName, inputStream);
         //save to db
         String fileLocation = directoryUrl + "/" + fileName;
         this.fileRepository.save(new File(fileLocation, fileName, contentType,bulkSaveOperationTimestamp,
-                bulkSaveOperationUuid, metadata));
+                bulkSaveOperationUuid, source));
         return true;
     }
 
@@ -126,12 +132,12 @@ public class FileService implements IFileService{
         logger.error("Submitting ingestion request");
         Long bulkSaveOperationTimestamp = System.currentTimeMillis();
         String bulkSaveOperationUuid = UUID.randomUUID().toString();
-        List<String> metadata = new ArrayList<>(Arrays.asList("from url", ingestionRequestDto.getUrl()));
+        String source = ingestionRequestDto.getUrl();
         IngestionRequestPayload ingestionRequestPayload = new IngestionRequestPayload(
                 ingestionRequestDto,
                 bulkSaveOperationTimestamp,
                 bulkSaveOperationUuid,
-                metadata
+                source
         );
         String jsonPayload = JsonUtils.objectToJsonString(ingestionRequestPayload);
         if(ingestionRequestPayload.getUrl().startsWith("ftp://")) {
@@ -159,7 +165,7 @@ public class FileService implements IFileService{
                 try(FileInputStream fileInputStream = new FileInputStream(temporaryFile)) {
                     this.saveFile(fileInputStream, fileFoundPayload.getName(), Files.probeContentType(temporaryFile.toPath()),
                             fileFoundPayload.getBulkSaveOperationTimestamp(),fileFoundPayload.getBulkSaveOperationUuid(),
-                            fileFoundPayload.getMetadata());
+                            fileFoundPayload.getSource());
                 }
             }
         }
@@ -198,5 +204,22 @@ public class FileService implements IFileService{
         this.fileDeleteProducer.produce(jsonPayload);
     }
 
+    @Override
+    public void deleteMultipleFilesByLocation(String[] locations) throws IOException {
+        // this will generate multiple ElasticSearch Request
+        // would rather leverage the Elasticsearch bulk api but i got no time
+        for(String location: locations) {
+            this.deleteByLocation(location);
+        }
+    }
+
+
+    @Override
+    public Map<String , Long> indexingStats(){
+        Map<String, Long> stats  = new HashMap<>();
+        stats.put("notIndexed", this.fileRepository.countByIsIndexed(false));
+        stats.put("files", this.fileRepository.count());
+        return stats;
+    }
 
 }

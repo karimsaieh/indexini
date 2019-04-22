@@ -15,7 +15,7 @@ class FtpExplorer:
         self.url = msg["url"]
         self.bulk_save_operation_timestamp = msg["bulkSaveOperationTimestamp"]
         self.bulk_save_operation_uuid = msg["bulkSaveOperationUuid"]
-        self.metadata = msg["metadata"]
+        self.source = msg["source"]
         self.hostname = "{0.netloc}".format(urlsplit(self.url))
         self.ftp = None
 
@@ -71,7 +71,7 @@ class FtpExplorer:
                             "url": file_url,
                             "bulkSaveOperationTimestamp": self.bulk_save_operation_timestamp,
                             "bulkSaveOperationUuid": self.bulk_save_operation_uuid,
-                            "metadata": self.metadata
+                            "source": self.source
                         }
                         notification_payload = {
                             "event": NotificationConstants.FILE_FOUND,

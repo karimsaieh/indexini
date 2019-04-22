@@ -8,13 +8,13 @@ public class IngestionRequestPayload  extends  IngestionRequestDto{
 
     private Long bulkSaveOperationTimestamp;
     private String bulkSaveOperationUuid;
-    private List<String> metadata;
+    private String source;
 
-    public IngestionRequestPayload(IngestionRequestDto ingestionRequestDto, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid, List<String> metadata) {
+    public IngestionRequestPayload(IngestionRequestDto ingestionRequestDto, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid, String source) {
         super(ingestionRequestDto.getUrl(),ingestionRequestDto.getDepth(),ingestionRequestDto.getFileTypes());
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
-        this.metadata = metadata;
+        this.source = source;
     }
 
     public Long getBulkSaveOperationTimestamp() {
@@ -33,11 +33,11 @@ public class IngestionRequestPayload  extends  IngestionRequestDto{
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
     }
 
-    public List<String> getMetadata() {
-        return metadata;
+    public String getSource() {
+        return source;
     }
 
-    public void setMetadata(List<String> metadata) {
-        this.metadata = metadata;
+    public void setSource(String source) {
+        this.source = source;
     }
 }

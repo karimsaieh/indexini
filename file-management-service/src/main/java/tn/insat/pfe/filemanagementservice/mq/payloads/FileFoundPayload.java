@@ -13,18 +13,18 @@ public class FileFoundPayload {
     private Long bulkSaveOperationTimestamp;
     @JsonProperty("bulkSaveOperationUuid")
     private String bulkSaveOperationUuid;
-    @JsonProperty("metadata")
-    private List<String> metadata;
+    @JsonProperty("source")
+    private String source;
 
     public FileFoundPayload() {
     }
 
-    public FileFoundPayload(String name, String url, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid, List<String> metadata) {
+    public FileFoundPayload(String name, String url, Long bulkSaveOperationTimestamp, String bulkSaveOperationUuid, String source) {
         this.name = name;
         this.url = url;
         this.bulkSaveOperationTimestamp = bulkSaveOperationTimestamp;
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
-        this.metadata = metadata;
+        this.source = source;
     }
 
     public String getName() {
@@ -59,12 +59,12 @@ public class FileFoundPayload {
         this.bulkSaveOperationUuid = bulkSaveOperationUuid;
     }
 
-    public List<String> getMetadata() {
-        return metadata;
+    public String getSource() {
+        return source;
     }
 
-    public void setMetadata(List<String> metadata) {
-        this.metadata = metadata;
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class FileFoundPayload {
                 ", url='" + url + '\'' +
                 ", bulkSaveOperationTimestamp=" + bulkSaveOperationTimestamp +
                 ", bulkSaveOperationUuid='" + bulkSaveOperationUuid + '\'' +
-                ", metadata=" + metadata +
+                ", source=" + source+
                 '}';
     }
 }

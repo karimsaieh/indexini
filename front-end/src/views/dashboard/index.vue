@@ -7,7 +7,7 @@
       <br>
       <router-link to="/?q=6">Go to Bar</router-link>
       dasgboard container
-      <!-- <file-search-card /> -->
+      <file-search-card />
       <br>
       <br>
       <br>
@@ -56,7 +56,7 @@
 // import FileWordCloud from './Components/FileWordCloud'
 // import FileRadarChart from './Components/FileRadarChart'
 // import FileSimilarFiles from './Components/FileSimilarfiles'
-// import FileSearchCard from './Components/FileSearchCard'
+import FileSearchCard from './Components/FileSearchCard'
 export default {
   name: 'Dashboard',
   components: {
@@ -65,7 +65,7 @@ export default {
     // FileSummary
     // FileWordCloud
     // FileRadarChart
-    // FileSearchCard
+    FileSearchCard
     // FileSimilarFiles
   },
   data: function() {
