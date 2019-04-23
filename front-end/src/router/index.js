@@ -115,7 +115,7 @@ export const constantRoutes = [
         path: '',
         component: () => import('@/views/files/index'),
         name: 'Files',
-        meta: { title: 'Fichiers', icon: 'tree-table', noCache: true }
+        meta: { title: 'Fichiers', icon: 'fas el-icon-fa-ambulance', noCache: true }
       }
     ]
   }

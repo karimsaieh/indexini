@@ -51,10 +51,19 @@ public class FileEndpoint {
         response.flushBuffer();
     }
 
-    @PostMapping
+    @PostMapping("/func/multipleUploads")
     public BulkSaveOperationDto saveMultipartFiles(@RequestParam(value = "multipartFiles") MultipartFile[] multipartFiles) throws IOException {
         return this.fileService.saveMultipartFiles(multipartFiles);
     }
+
+    @PostMapping
+    public boolean saveMultipartFile(@RequestParam(value = "multipartFile") MultipartFile multipartFile,
+                     String bulkSaveOperationUuid,
+                     Long bulkSaveOperationTimestamp) throws IOException {
+        this.fileService.saveMultipartFile(multipartFile, bulkSaveOperationUuid, bulkSaveOperationTimestamp);
+        return true;
+    }
+
 
     @PostMapping("/func/submitIngestionRequest")
     public BulkSaveOperationDto submitIngestionRequest(@RequestBody @Validated IngestionRequestDto ingestionRequestDto) throws IOException {

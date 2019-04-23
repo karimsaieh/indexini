@@ -19,6 +19,8 @@ export default {
     if (icon) {
       if (icon.startsWith('el')) {
         vnodes.push(<i class={icon}/>)
+      } else if (icon.startsWith('fab') || icon.startsWith('fas')) {
+        vnodes.push(<i class={icon}/>)
       } else {
         vnodes.push(<svg-icon icon-class={icon}/>)
       }

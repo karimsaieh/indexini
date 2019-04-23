@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -90,6 +91,13 @@ public class FileService implements IFileService{
     }
 
     @Override
+    public void saveMultipartFile(MultipartFile multipartFile, String bulkSaveOperationUuid, Long bulkSaveOperationTimestamp) throws IOException {
+        String source = "ui-upload";
+        this.saveFile(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), multipartFile.getContentType(),
+                bulkSaveOperationTimestamp, bulkSaveOperationUuid, source);
+    }
+
+    @Override
     public BulkSaveOperationDto saveMultipartFiles(MultipartFile[] multipartFiles) throws IOException {
         String source = "ui-upload";
         Long bulkSaveOperationTimestamp = System.currentTimeMillis();
@@ -110,9 +118,29 @@ public class FileService implements IFileService{
 
     @Override
     public void updateFile(FileDbUpdatePayload fileDbUpdatePayload) {
-        File file = this.fileRepository.findByLocation(fileDbUpdatePayload.getLocation());
-        file.setIndexed(fileDbUpdatePayload.isIndexed()); //always true btw
-        this.fileRepository.save(file);
+        File file = null;
+        try {
+             file = this.fileRepository.findByLocation(fileDbUpdatePayload.getLocation());
+        }catch(IncorrectResultSizeDataAccessException ex) {
+            // this only hapens if the user is clever enough to send 2 files with the same uuid & timestamp
+            List<File> files = this.fileRepository.findAllByLocation(fileDbUpdatePayload.getLocation());
+            for (File f: files) {
+                f.setIndexed(true);
+                this.fileRepository.save(f);
+            }
+        }
+        // because as things stands right now, the user could delete a file from hdfs
+        // & the database while there is an indexing process running
+        // this cloud be solved by checking the database before indexing files
+        if(file !=null) {
+            file.setIndexed(fileDbUpdatePayload.isIndexed()); //always true btw
+            this.fileRepository.save(file);
+        } else {
+            logger.error("it seems that the file no longer exists, => the use must have delete it while there is " +
+                    "an indexing process running, " +
+                    "TODO: check the database before indexing, to find out if the file still exists");
+        }
+
     }
 
     public boolean saveFile(InputStream inputStream, String fileName,String contentType, Long bulkSaveOperationTimestamp,

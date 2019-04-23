@@ -22,6 +22,8 @@ public interface IFileService {
 
     Page<FileGetDto> findAll(Predicate predicate, Pageable pageable);
 
+    void saveMultipartFile(MultipartFile multipartFile, String bulkSaveOperationUuid, Long bulkSaveOperationTimestamp) throws IOException;
+
     BulkSaveOperationDto saveMultipartFiles(MultipartFile[] multipartFiles) throws IOException;
     void updateFile(FileDbUpdatePayload fileDbUpdatePayload);
     BulkSaveOperationDto submitIngestionRequest(IngestionRequestDto ingestionRequestDto) throws IOException;

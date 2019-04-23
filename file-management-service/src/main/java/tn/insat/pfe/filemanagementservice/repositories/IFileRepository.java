@@ -27,4 +27,6 @@ public interface IFileRepository extends MongoRepository<File, Long>,    Queryds
 
     Long countByIsIndexed(boolean isIndexed);
 
+    List<File> findAllByLocation(String location);
+
 }

@@ -78,6 +78,7 @@
   "devDependencies": {
     "@babel/core": "7.0.0",
     "@babel/register": "7.0.0",
+    "@fortawesome/fontawesome-free": "^5.8.1",
     "@vue/cli-plugin-babel": "3.5.3",
     "@vue/cli-plugin-eslint": "3.5.1",
     "@vue/cli-plugin-unit-jest": "3.5.3",
