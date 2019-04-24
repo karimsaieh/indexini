@@ -1,80 +1,81 @@
 import NOTIF_CONSTANTS from '@/consts/notification.js'
 
 const state = {
-  currentNotification: {
-    event: '',
-    fileUrl: '',
-    fileName: '',
-    bulkSaveOperationTimestamp: '',
-    bulkSaveOperationUuid: '',
-    ingestionUrl: ''
-  }
+  // currentNotification: {
+  //   event: '',
+  //   fileUrl: '',
+  //   fileName: '',
+  //   bulkSaveOperationTimestamp: '',
+  //   bulkSaveOperationUuid: '',
+  //   ingestionUrl: ''
+  // },
+  notifications: []
 }
 
 const mutations = {
-  SET_CURRENT_NOTIFICATION: (state, notification) => {
-    state.currentNotification = Object.assign({}, state.currentNotification, notification)
+  PUSH_NOTIFICATION: (state, notification) => {
+    state.notifications.push(notification)
   },
-  // ADD_ONGOING_INGESTION: (state, bulkSaveOperationUuid) => {
-  //   state.onGoingIngestion.push(bulkSaveOperationUuid)
-  // },
-  // REMOVE_ONGOING_INGESTION: (state, bulkSaveOperationUuid) => {
-  //   state.onGoingIngestion = state.onGoingIngestion.filter(item => item !== bulkSaveOperationUuid)
-  // }
-  DELETE_CURRENT_NOTIFICATION: (state) => {
-    state.currentNotification = {}
+  SHIFT_NOTIFICATION: (state) => {
+    state.notifications.shift()
   }
 }
 
 const actions = {
-  updateCurrentNotification({ commit }, notification) {
-    // if (state.onGoingIngestion.indexOf(notification.bulkSaveOperationUuid) > -1) {
-    //   if (notification.event === INGESTION_ENDED) {
-    //     commit('REMOVE_ONGOING_INGESTION', notification.bulkSaveOperationUuid)
-    //   }
-    // } else {
-    //   if()
-    //   commit('ADD_ONGOING_INGESTION', notification.bulkSaveOperationUuid)
-    // }
-    // // if ([FILE_FOUND, FILE_DOWNLOADED, INGESTION_STARTED, INGESTION_ENDED].indexOf(notification.event) > -1){
-
-    // // }
+  pushNotification({ commit, state }, notification) {
+    const colors = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6', '#999966']
+    let color
     if (notification.event !== 'alive') {
-      commit('SET_CURRENT_NOTIFICATION', notification)
+      let msg = ''
+      switch (notification.event) {
+        case NOTIF_CONSTANTS.FILE_FOUND:
+          msg = `Fichier trouvé: ${notification.fileUrl}`
+          color = colors[0]
+          break
+        case NOTIF_CONSTANTS.FILE_DOWNLOADED:
+          msg = `Fichier téléchargé: ${notification.fileUrl}`
+          color = colors[1]
+          break
+        case NOTIF_CONSTANTS.PROCESSING_STARTED:
+          msg = 'Indexation a commencé.'
+          color = colors[2]
+          break
+        case NOTIF_CONSTANTS.PROCESSING_ENDED:
+          this._vm.$notify({
+            title: 'Info',
+            message: 'Processing ended'
+          })
+          msg = 'Indexation a terminé.'
+          color = colors[3]
+          break
+        case NOTIF_CONSTANTS.FILE_INDEXED:
+          msg = `Fichier indexé: ${notification.fileUrl}`
+          color = colors[4]
+          break
+        case NOTIF_CONSTANTS.INGESTION_STARTED:
+          msg = `Ingestion a commencé.`
+          color = colors[5]
+          break
+        case '':
+          msg = ''
+          break
+      }
+      msg = `[${new Date().toLocaleString()}] ${msg}`
+      notification = { msg, color }
+      commit('PUSH_NOTIFICATION', notification)
+      if (state.notifications.length === 25) {
+        commit('SHIFT_NOTIFICATION')
+      }
     }
-  },
-  deleteCurrentNotification({ commit }) {
-    commit('DELETE_CURRENT_NOTIFICATION')
   }
 }
 
 const getters = {
+  getNotifications: state => {
+    return state.notifications
+  },
   getCurrentNotification: state => {
-    let msg = ''
-    switch (state.currentNotification.event) {
-      case NOTIF_CONSTANTS.FILE_FOUND:
-        msg = `Fichier trouvé: ${state.currentNotification.fileUrl}`
-        break
-      case NOTIF_CONSTANTS.FILE_DOWNLOADED:
-        msg = `Fichier téléchargé: ${state.currentNotification.fileUrl}`
-        break
-      case NOTIF_CONSTANTS.PROCESSING_STARTED:
-        msg = 'Indexation a commencé.'
-        break
-      case NOTIF_CONSTANTS.PROCESSING_ENDED:
-        msg = 'Indexation a terminé.'
-        break
-      case NOTIF_CONSTANTS.FILE_INDEXED:
-        msg = `Fichier indexé: ${state.currentNotification.fileUrl}`
-        break
-      case NOTIF_CONSTANTS.INGESTION_STARTED:
-        msg = `Ingestion a commencé: Initialisé le ${state.currentNotification.bulkSaveOperationTimestamp}`
-        break
-      case '':
-        msg = ''
-        break
-    }
-    return msg
+    return state.notifications[state.notifications.length - 1]
   }
 }
 

@@ -118,6 +118,18 @@ export const constantRoutes = [
         meta: { title: 'Fichiers', icon: 'fas el-icon-fa-ambulance', noCache: true }
       }
     ]
+  },
+  {
+    path: '/logs',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/logs/index'),
+        name: 'Logs',
+        meta: { title: 'Logs', icon: 'fab el-icon-fa-atlas', noCache: true }
+      }
+    ]
   }
   // {
   //   path: '/documentation',

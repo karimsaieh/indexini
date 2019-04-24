@@ -1,25 +1,32 @@
 <template>
   <div class="notif">
-    <el-button size="mini" icon="el-icon-delete" @click="deleteCurrentNotification" />
-    {{ getCurrentNotification }}
+
+    <template v-if="show === true">
+      <el-button size="mini" icon="fas el-icon-fa-eye-slash" @click="show = !show" />
+      {{ getCurrentNotification.msg }}
+    </template>
+    <template v-else>
+      <el-button size="mini" icon="fas el-icon-fa-eye" @click="show = !show" />
+    </template>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'FooterNotificationBarMini',
+  data() {
+    return {
+      show: true
+    }
+  },
   computed: {
     ...mapGetters('notification', [
       'getCurrentNotification'
     ])
-  },
-  methods: {
-    ...mapActions('notification', [
-      'deleteCurrentNotification'
-    ])
   }
+
 }
 </script>
 
