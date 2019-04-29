@@ -1,7 +1,9 @@
 <template>
   <div :class="{'show':show}" class="header-search">
+    <!-- <div :class="{'show':show}" class="header-search"> -->
+
     <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
-    <el-select
+    <!-- <el-select
       ref="headerSearchSelect"
       v-model="search"
       :remote-method="querySearch"
@@ -13,7 +15,15 @@
       @change="change"
     >
       <el-option v-for="item in options" :key="item.path" :value="item" :label="item.title.join(' > ')" />
-    </el-select>
+    </el-select> -->
+
+    <el-input
+      v-model="search"
+      placeholder="Search"
+      class="header-search-select"
+      @keyup.enter.native="doSearch"
+    />
+
   </div>
 </template>
 
@@ -72,17 +82,22 @@ export default {
       }
     },
     close() {
-      this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.blur()
-      this.options = []
-      this.show = false
+      // this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.blur()
+      // this.options = []
+      // this.show = false
     },
     change(val) {
-      this.$router.push(val.path)
+      // this.$router.push(val.path)
+      // this.search = ''
+      // this.options = []
+      // this.$nextTick(() => {
+      //   this.show = false
+      // })
+    },
+    doSearch() {
+      this.show = false
+      this.$router.push({ name: 'Search', query: { query: this.search, size: 10, page: 1 }})
       this.search = ''
-      this.options = []
-      this.$nextTick(() => {
-        this.show = false
-      })
     },
     initFuse(list) {
       this.fuse = new Fuse(list, {

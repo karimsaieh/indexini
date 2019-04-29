@@ -1,7 +1,6 @@
 <template>
   <div>
-    <br>
-    <div style="max-width:1200px; margin:0 auto;">
+    <div>
 
       <el-card>
         <div class="logs-container">
@@ -34,7 +33,7 @@ export default {
 <style lang="scss" scoped>
 .logs-container {
     background-color: #1f1c1a;
-    height: 400px;
+    height: 500px;
     padding:10px;
     white-space: nowrap;
     overflow: hidden;
@@ -42,6 +41,7 @@ export default {
     color: #f8fff8;
     font-weight: 700;
     font-family: monospace;
+    overflow-y:auto;
 
 }
 </style>

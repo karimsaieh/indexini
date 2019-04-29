@@ -3,7 +3,9 @@
 
     <template v-if="show === true">
       <el-button size="mini" icon="fas el-icon-fa-eye-slash" @click="show = !show" />
-      {{ getCurrentNotification.msg }}
+      <template v-if="getCurrentNotification != undefined">
+        {{ getCurrentNotification.msg }}
+      </template>
     </template>
     <template v-else>
       <el-button size="mini" icon="fas el-icon-fa-eye" @click="show = !show" />

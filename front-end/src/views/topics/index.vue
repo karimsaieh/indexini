@@ -1,16 +1,18 @@
 <template>
   <div class="fixed-width-page-parent-container">
     <div class="fixed-width-page-container">
-      <file-table />
+
+      <topics-table />
+
     </div>
   </div>
 </template>
 
 <script>
-import FileTable from './components/FileTable.vue'
+import TopicsTable from './components/TopicsTable'
 export default {
   components: {
-    FileTable
+    TopicsTable
   }
 }
 </script>
@@ -18,3 +20,4 @@ export default {
 <style scoped>
 
 </style>
+

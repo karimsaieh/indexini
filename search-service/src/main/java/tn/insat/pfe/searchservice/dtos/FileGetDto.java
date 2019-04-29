@@ -1,12 +1,14 @@
 package tn.insat.pfe.searchservice.dtos;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import tn.insat.pfe.searchservice.utils.JsonUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FileGetDto {
 
     private String id;

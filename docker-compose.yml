@@ -246,6 +246,16 @@ services:
     image: docker.elastic.co/kibana/kibana:6.6.0
     ports:
       - "5601:5601"
+  
+  jenkins:
+    build: jenkins
+    image: karimsaieh/pfe-jenkins
+    ports:
+      - "8089:8080"
+      - "50000:50000"
+    volumes:
+      - "jenkins_home:/var/jenkins_home"
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
 volumes:
   hadoop-volume:
@@ -253,3 +263,4 @@ volumes:
   es-volume:
   postgres-volume:
   postgres-data-volume:
+  jenkins_home:

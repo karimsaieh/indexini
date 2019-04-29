@@ -23,6 +23,9 @@ export default {
       return this.$store.state.tagsView.cachedViews
     },
     key() {
+      if (this.$route.name === 'Search') {
+        return 'Search'
+      }
       return this.$route.fullPath
     },
     transitionName() {

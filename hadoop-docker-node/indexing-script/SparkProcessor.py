@@ -25,15 +25,15 @@ class SparkProcessor:
         return rescaled_data, vocab
 
     def do_bisecting_kmeans(self, k, rescaled_data):
-        bisecting_kmeans = BisectingKMeans().setK(k).setSeed(1).setFeaturesCol("features")
+        bisecting_kmeans = BisectingKMeans().setK(k).setSeed(1).setFeaturesCol("features").setMaxIter(100)
         bisecting_kmeans_model = bisecting_kmeans.fit(rescaled_data)
         transformed_df = bisecting_kmeans_model.transform(rescaled_data).select("url", "prediction")
         return transformed_df
 
     def do_kmeans(self, k, rescaled_data):
-        bisecting_kmeans = KMeans().setK(k).setSeed(1).setFeaturesCol("features")
-        bisecting_kmeans_model = bisecting_kmeans.fit(rescaled_data)
-        transformed_df = bisecting_kmeans_model.transform(rescaled_data).select("url", "prediction")
+        kmeans = KMeans().setK(k).setSeed(1).setFeaturesCol("features").setMaxIter(100)
+        kmeans_model = kmeans.fit(rescaled_data)
+        transformed_df = kmeans_model.transform(rescaled_data).select("url", "prediction")
         return transformed_df
 
     # def do_lda_with_hashingtf(self, rescaled_data):
@@ -44,7 +44,7 @@ class SparkProcessor:
     #     return transformed_df
 
     def do_lda_with_count_vectorizer(self, k, rescaled_data, vocab):
-        lda = LDA(k=k, seed=1, optimizer="em", featuresCol="features")
+        lda = LDA(k=k, seed=1, maxIter=100, optimizer="em", featuresCol="features", topicConcentration=8)
         lda_model = lda.fit(rescaled_data)
         transformed_df = lda_model.transform(rescaled_data).select("url", "topicDistribution")
         topics_description = lda_model.describeTopics().rdd\

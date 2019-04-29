@@ -2,6 +2,7 @@ package tn.insat.pfe.searchservice.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -46,6 +47,8 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
     private String fileIndexType;
     @Value("${pfe_elasticsearch_index_file_index-field}")
     private String fileIndexField;
+    @Value("${pfe_elasticsearch_index_file_index_suggestion-field}")
+    private String suggestionField;
     @Value("${pfe_elasticsearch_index_lda-topics}")
     private String ldaTopicsIndex;
     @Value("${pfe_elasticsearch_index_lda-topics_type}")
@@ -66,15 +69,15 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
         this.searchDtoCacheRepository = searchDtoCacheRepository;
     }
 
-//    @HystrixCommand(fallbackMethod = "cachedFind")
+    @HystrixCommand(fallbackMethod = "cachedFind")
     @Override
     public SearchDto find(String query, Pageable pageable) throws IOException {
 
         List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList = this.getLdaTopics();
 
-        SearchResponse searchResponse = this.elasticSearchClient.search(this.fileIndex, this.fileIndexField, query, pageable);
+        SearchResponse searchResponse = this.elasticSearchClient.search(this.fileIndex, this.fileIndexField, query, this.suggestionField , pageable);
         SearchHits hits = searchResponse.getHits();
-        List<String> suggestionsList = ElasticSearchDataExtractorHelper.searchResponseToSuggestionsList(searchResponse);
+        Map<String, String> suggestionMap = ElasticSearchDataExtractorHelper.searchResponseToSuggestionsList(searchResponse);
         List<FileGetDto> fileGetDtosList = ElasticSearchDataExtractorHelper.searchHitsToGetFileDtoList(hits.getHits(),this.fileIndexField);
         long totalHits = hits.getTotalHits();
         float maxScore = hits.getMaxScore();
@@ -82,11 +85,11 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
         int page = pageable.getPageNumber();
         int size = pageable.getPageSize();
         Page<FileGetDto> fileGetDtosPage = new PageImpl<>(fileGetDtosList, PageRequest.of(page,size),totalHits);
-        SearchDto searchDto =  new SearchDto(fileGetDtosPage, suggestionsList, maxScore, ldaTopicsDescriptionGetDtosList);
+        SearchDto searchDto =  new SearchDto(fileGetDtosPage, suggestionMap, maxScore, ldaTopicsDescriptionGetDtosList);
         // got to use another entity cause i can't deserialize abstract type page
         SearchDtoCache searchDtoCache = new SearchDtoCache(
                 RedisUtils.generateKey(new String[]{this.keyPrefix,"find",query}, pageable),
-                fileGetDtosList, page, size, totalHits, suggestionsList, maxScore, ldaTopicsDescriptionGetDtosList);
+                fileGetDtosList, page, size, totalHits, suggestionMap, maxScore, ldaTopicsDescriptionGetDtosList);
         try {
             this.searchDtoCacheRepository.save(searchDtoCache);
         }catch(Exception ex){
@@ -137,11 +140,16 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
     @Override
     public boolean upsertLdaTopicsDescription(List<LdaTopicsDescriptionPayload> ldaTopicsDescriptionPayloadList) throws IOException {
         this.searchDtoCacheRepository.deleteAll();//files got reindexed ? => delete all cache
+        try{
+            this.elasticSearchClient.deleteAll(this.ldaTopicsIndex, this.ldaTopicsIndexType);
+        } catch(ElasticsearchStatusException ex) {
+            logger.error(ex.toString());
+            logger.error("error in upserting topics: no such index");
+        }
         for (LdaTopicsDescriptionPayload topic: ldaTopicsDescriptionPayloadList) {
             Map topicMap = topic.toMap();
             this.elasticSearchClient.upsert(this.ldaTopicsIndex, this.ldaTopicsIndexType, topicMap);
         }
-        this.elasticSearchClient.deleteByRangeFrom(this.ldaTopicsIndex, "id", ldaTopicsDescriptionPayloadList.size());
         return true; // ?
     }
 
@@ -154,11 +162,11 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
             return this.elasticSearchClient.deleteBy(this.fileIndex, fileDeletePayload.getDeleteBy(), fileDeletePayload.getValue());
     }
 
+
     @Override
     public boolean initEsMapping() throws IOException {
         if (!this.elasticSearchClient.indexExists(this.fileIndex)) {
             this.elasticSearchClient.createIndex(this.fileIndex);
-
         }
         return this.elasticSearchClient.putMapping(this.fileIndex, this.fileIndexType);
     }

@@ -1,7 +1,8 @@
 <template>
-  <div>
+  <div class="fixed-width-page-parent-container">
 
-    <div class="page-container">
+    <div class="fixed-width-page-container">
+
       <indexing-stats
         :files="indexingStats.files"
         :not-indexed="indexingStats.notIndexed"

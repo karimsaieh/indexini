@@ -5,17 +5,18 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Map;
 
 public class SearchDto {
     private Page<FileGetDto> fileGetDtosPage;
-    private List<String> suggestionsList;
+    private Map<String, String> suggestionsList;
     private float maxScore;
     private List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList;
 
     public SearchDto() {
     }
 
-    public SearchDto(Page<FileGetDto> fileGetDtosPage, List<String> suggestionsList, float maxScore, List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList) {
+    public SearchDto(Page<FileGetDto> fileGetDtosPage, Map<String, String> suggestionsList, float maxScore, List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList) {
         this.fileGetDtosPage = fileGetDtosPage;
         this.suggestionsList = suggestionsList;
         this.maxScore = maxScore;
@@ -30,11 +31,11 @@ public class SearchDto {
         this.fileGetDtosPage = fileGetDtosPage;
     }
 
-    public List<String> getSuggestionsList() {
+    public Map<String, String> getSuggestionsList() {
         return suggestionsList;
     }
 
-    public void setSuggestionsList(List<String> suggestionsList) {
+    public void setSuggestionsList(Map<String, String> suggestionsList) {
         this.suggestionsList = suggestionsList;
     }
 

@@ -10,6 +10,7 @@ import tn.insat.pfe.searchservice.dtos.LdaTopicsDescriptionGetDto;
 import tn.insat.pfe.searchservice.dtos.SearchDto;
 
 import java.util.List;
+import java.util.Map;
 
 //got to do this cause i can't deerialize a "Page"
 @RedisHash(value = "SearchDtoCache", timeToLive = 60*60*24)
@@ -19,20 +20,20 @@ public class SearchDtoCache {
     private int page;
     private int size;
     private long totalHits;
-    private List<String> suggestionsList;
+    private Map<String, String> suggestionMap;
     private float maxScore;
     private List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList;
 
     public SearchDtoCache() {
     }
 
-    public SearchDtoCache(String id, List<FileGetDto> fileGetDtosList, int page, int size, long totalHits, List<String> suggestionsList, float maxScore, List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList) {
+    public SearchDtoCache(String id, List<FileGetDto> fileGetDtosList, int page, int size, long totalHits, Map<String, String> suggestionMap, float maxScore, List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList) {
         this.id = id;
         this.fileGetDtosList = fileGetDtosList;
         this.page = page;
         this.size = size;
         this.totalHits = totalHits;
-        this.suggestionsList = suggestionsList;
+        this.suggestionMap = suggestionMap;
         this.maxScore = maxScore;
         this.ldaTopicsDescriptionGetDtosList = ldaTopicsDescriptionGetDtosList;
     }
@@ -40,7 +41,7 @@ public class SearchDtoCache {
     @JsonIgnore
     public SearchDto getSearchDto() {
         Page<FileGetDto> fileGetDtosPage = new PageImpl<>(this.fileGetDtosList, PageRequest.of(this.page,this.size),totalHits);
-        return  new SearchDto(fileGetDtosPage, suggestionsList, maxScore, ldaTopicsDescriptionGetDtosList);
+        return  new SearchDto(fileGetDtosPage, suggestionMap, maxScore, ldaTopicsDescriptionGetDtosList);
     }
 
     public List<FileGetDto> getFileGetDtosList() {
@@ -75,12 +76,12 @@ public class SearchDtoCache {
         this.totalHits = totalHits;
     }
 
-    public List<String> getSuggestionsList() {
-        return suggestionsList;
+    public Map<String, String> getSuggestionMap() {
+        return suggestionMap;
     }
 
-    public void setSuggestionsList(List<String> suggestionsList) {
-        this.suggestionsList = suggestionsList;
+    public void setSuggestionMap(Map<String, String> suggestionMap) {
+        this.suggestionMap = suggestionMap;
     }
 
     public float getMaxScore() {

@@ -36,3 +36,16 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
   background-color: rgb(240, 242, 245); 
   position: relative;
 }
+
+.fixed-width-page-container {
+  max-width: 1200px;
+  margin:auto;
+}
+
+.fixed-width-page-parent-container {
+  background-color: #f9f9f9; 
+  padding-top: 30px;
+  padding-bottom:40px;
+  padding-right:10px;
+  padding-left:10px;
+}

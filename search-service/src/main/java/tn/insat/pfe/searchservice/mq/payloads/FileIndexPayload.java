@@ -28,6 +28,10 @@ public class FileIndexPayload {
     private String summary;
     @JsonProperty("text")
     private String text;
+    @JsonProperty("suggestionText")
+    private String suggestionText;
+    @JsonProperty("completionText")
+    private String completionText;
     @JsonProperty("thumbnail")
     private String thumbnail;
 
@@ -124,6 +128,22 @@ public class FileIndexPayload {
         this.text = text;
     }
 
+    public String getSuggestionText() {
+        return suggestionText;
+    }
+
+    public void setSuggestionText(String suggestionText) {
+        this.suggestionText = suggestionText;
+    }
+
+    public String getCompletionText() {
+        return completionText;
+    }
+
+    public void setCompletionText(String completionText) {
+        this.completionText = completionText;
+    }
+
     public String getThumbnail() {
         return thumbnail;
     }
@@ -146,6 +166,8 @@ public class FileIndexPayload {
                 ", mostCommonWords=" + this.getMostCommonWords() +
                 ", summary='" + summary + '\'' +
                 ", text='" + text + '\'' +
+                ", suggestionText='" + suggestionText + '\'' +
+                ", completionText='" + completionText + '\'' +
                 ", thumbnail='" + thumbnail + '\'' +
                 '}';
     }

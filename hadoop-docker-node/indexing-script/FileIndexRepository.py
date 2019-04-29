@@ -18,6 +18,7 @@ class FileIndexRepository:
                 "bulkSaveOperationUuid": file_index["uuid"],
                 "fileName": file_index["file_name"],
                 "text": file_index["content"],
+                "suggestionText": file_index["content"],
                 "summary": file_index["summary"],
                 # had to store string instead of json, cause i got weird bugs in ES
                 # it happens when the content of the same file changes

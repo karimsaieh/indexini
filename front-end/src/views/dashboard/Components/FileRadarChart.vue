@@ -38,6 +38,12 @@ export default {
             colors: undefined
           }
         },
+        markers: {
+          size: 10,
+          hover: {
+            size: 15
+          }
+        },
         tooltip: {
           x: {
             show: false

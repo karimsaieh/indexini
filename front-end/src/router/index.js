@@ -130,6 +130,43 @@ export const constantRoutes = [
         meta: { title: 'Logs', icon: 'fab el-icon-fa-atlas', noCache: true }
       }
     ]
+  },
+  {
+    path: '/topics',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/topics/index'),
+        name: 'Topics',
+        meta: { title: 'Topics', icon: 'fab el-icon-fa-bolt', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/sortedFilesByTopic',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/sortedFilesByTopic/index'),
+        name: 'SortedFilesByTopic',
+        meta: { title: 'Top Docs by Topic', icon: 'fab el-icon-fa-bolt', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/search',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/search/index'),
+        name: 'Search',
+        meta: { title: 'Search', icon: 'fab el-icon-fa-search', noCache: true }
+      }
+    ]
   }
   // {
   //   path: '/documentation',

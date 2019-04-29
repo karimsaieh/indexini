@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/search")
-//@CrossOrigin
+@CrossOrigin(origins = "http://localhost:9527")
 public class SearchEndpoint {
     private final ISearchService searchService;
     @Autowired

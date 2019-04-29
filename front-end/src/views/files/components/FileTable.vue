@@ -1,106 +1,107 @@
 <template>
   <div>
-    <el-input
-      v-model="predicate.name"
-      prefix-icon="el-icon-search"
-      placeholder="Fichier"
-      clearable
-      style="width:20%"
-      @clear="refreshData()"
-    />
-    {{ seachingMsg }}
-    <br>
-    <br>
-    <el-table
-      v-loading="loading"
-      :data="tableData"
-      highlight-current-row
-      border
-      @selection-change="handleSelectionChange"
-    >
-
-      <el-table-column
-        type="selection"
-        width="55"
+    <el-card>
+      <el-input
+        v-model="predicate.name"
+        prefix-icon="el-icon-search"
+        placeholder="Fichier"
+        clearable
+        style="width:20%"
+        @clear="refreshData()"
       />
-
-      <el-table-column
-        prop="bulkSaveOperationTimestamp"
-        label="Téleversement"
+      {{ seachingMsg }}
+      <br>
+      <br>
+      <el-table
+        v-loading="loading"
+        :data="tableData"
+        highlight-current-row
+        border
+        @selection-change="handleSelectionChange"
       >
-        <template slot-scope="{row}">
-          {{ row.bulkSaveOperationTimestamp | formatDate }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="name"
-        label="Name"
-      >
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleReadFile(row)">{{ row.name }}</span>
-        </template>
 
-      </el-table-column>
-      <el-table-column
-        prop="indexed"
-        label="indexed"
-      >
-        <template slot-scope="{row}">
-          <span v-if="row.indexed === true">
-            <el-tag type="success">indexé</el-tag>
-          </span>
-          <span v-else>
-            <el-tag type="danger">Non indexé</el-tag>
-          </span>
-        </template>
+        <el-table-column
+          type="selection"
+          width="55"
+        />
 
-      </el-table-column>
-      <el-table-column
-        prop="contentType"
-        label="contentType"
+        <el-table-column
+          prop="bulkSaveOperationTimestamp"
+          label="Téleversement"
+        >
+          <template slot-scope="{row}">
+            {{ row.bulkSaveOperationTimestamp | formatDate }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="Name"
+        >
+          <template slot-scope="{row}">
+            <span class="link-type" @click="handleReadFile(row)">{{ row.name }}</span>
+          </template>
+
+        </el-table-column>
+        <el-table-column
+          prop="indexed"
+          label="indexed"
+        >
+          <template slot-scope="{row}">
+            <span v-if="row.indexed === true">
+              <el-tag type="success">indexé</el-tag>
+            </span>
+            <span v-else>
+              <el-tag type="danger">Non indexé</el-tag>
+            </span>
+          </template>
+
+        </el-table-column>
+        <el-table-column
+          prop="contentType"
+          label="contentType"
+        />
+        <el-table-column
+          prop="source"
+          label="source"
+        >
+          <template slot-scope="{row}">
+            <template v-if="row.source.startsWith('http') || row.source.startsWith('ftp')">
+              <a class="link-type" :href="row.source" target="_blank"> {{ row.source }}</a>
+            </template>
+            <template v-else>
+              <el-tag type="primary">{{ row.source }}</el-tag>
+            </template>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          label="Operations"
+        >
+
+          <template slot-scope="{row}">
+            <el-button
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="handleDeleteSingleFile(row)"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+      <span v-if="selectedData.length != 0" class="link-type" @click="deleteMultiple">
+        Supprimer la selection
+      </span>
+      <el-pagination
+        background
+        :current-page.sync="query.page"
+        :page-sizes="pageSizes"
+        :page-size="query.size"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
       />
-      <el-table-column
-        prop="source"
-        label="source"
-      >
-        <template slot-scope="{row}">
-          <template v-if="row.source.startsWith('http') || row.source.startsWith('ftp')">
-            <a class="link-type" :href="row.source" target="_blank"> {{ row.source }}</a>
-          </template>
-          <template v-else>
-            <el-tag type="primary">{{ row.source }}</el-tag>
-          </template>
-        </template>
-      </el-table-column>
-
-      <el-table-column
-        label="Operations"
-      >
-
-        <template slot-scope="{row}">
-          <el-button
-            size="mini"
-            type="danger"
-            icon="el-icon-delete"
-            @click="handleDeleteSingleFile(row)"
-          />
-        </template>
-      </el-table-column>
-    </el-table>
-    <span v-if="selectedData.length != 0" class="link-type" @click="deleteMultiple">
-      Supprimer la selection
-    </span>
-    <el-pagination
-      background
-      :current-page.sync="query.page"
-      :page-sizes="pageSizes"
-      :page-size="query.size"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
-
+    </el-card>
   </div>
 </template>
 
@@ -175,6 +176,7 @@ export default {
       this.refreshData()
     },
     handleSizeChange(size) {
+      this.loading = true
       this.query.size = size
       this.refreshData()
     },

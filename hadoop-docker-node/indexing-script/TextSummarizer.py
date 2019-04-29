@@ -47,7 +47,7 @@ class TextSummarizer:
                 sentence_scores.append(sent_score)
 
             sentence_scores = sorted(sentence_scores, key=lambda x: x["score"], reverse=True)
-            sentence_scores = sentence_scores[:5]
+            sentence_scores = sentence_scores[:3]
             sentence_scores = sorted(sentence_scores, key=lambda x: x["index"], reverse=False)
 
             for sen in sentence_scores:

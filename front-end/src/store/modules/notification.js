@@ -63,7 +63,7 @@ const actions = {
       msg = `[${new Date().toLocaleString()}] ${msg}`
       notification = { msg, color }
       commit('PUSH_NOTIFICATION', notification)
-      if (state.notifications.length === 25) {
+      if (state.notifications.length === 300) {
         commit('SHIFT_NOTIFICATION')
       }
     }

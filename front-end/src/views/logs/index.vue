@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <div class="fixed-width-page-parent-container">
+    <div class="fixed-width-page-container">
 
-    <logs-card />
+      <logs-card />
 
+    </div>
   </div>
 </template>
 

@@ -75,7 +75,7 @@ export default {
     },
     handleChange(file, fileList) {
       console.log(fileList)
-      this.fileList = fileList.filter(item => item.raw.type === 'application/pdf')
+      this.fileList = fileList.filter(item => ['application/pdf', 'text/plain'].includes(item.raw.type))
       this.fileList = _.uniqBy(this.fileList, 'name')
       console.log(fileList)
     }

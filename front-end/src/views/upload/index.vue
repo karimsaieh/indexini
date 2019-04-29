@@ -1,9 +1,8 @@
 <template>
-  <div>
-    <div class="page-container">
+  <div class="fixed-width-page-parent-container">
+    <div class="fixed-width-page-container">
       <upload-manual-form />
       <upload-ingestion-by-url-form />
-
     </div>
   </div>
 </template>

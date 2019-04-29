@@ -19,10 +19,14 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.reindex.BulkByScrollResponse;
+import org.elasticsearch.index.reindex.DeleteByQueryAction;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
+import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
@@ -69,21 +73,21 @@ public class ElasticSearchClient implements IElasticSearchClient {
 
 
     @Override
-    public SearchResponse search(String index, String field,  String query, Pageable pageable) throws IOException {
+    public SearchResponse search(String index, String field,  String query, String suggestionField, Pageable pageable) throws IOException {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder(field, query)
-                .fuzziness(Fuzziness.AUTO)
-                .maxExpansions(100)
-                .fuzzyTranspositions(true);
+        MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder(field, query);
+//                .fuzziness(Fuzziness.AUTO)
+//                .maxExpansions(100)
+//                .fuzzyTranspositions(true);
 
-        SuggestionBuilder termSuggestionBuilder =
-                SuggestBuilders.termSuggestion(field).text(query);
+        SuggestionBuilder phraseSuggestionBuilder =
+                SuggestBuilders.phraseSuggestion(suggestionField).text(query).highlight("<b>","</b>");
         SuggestBuilder suggestBuilder = new SuggestBuilder();
-        suggestBuilder.addSuggestion("suggest_text", termSuggestionBuilder);
+        suggestBuilder.addSuggestion("suggested_text", phraseSuggestionBuilder);
         searchSourceBuilder.suggest(suggestBuilder);
 
-        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        HighlightBuilder highlightBuilder = new HighlightBuilder().preTags("<b>").postTags("</b>").fragmentSize(130);
         HighlightBuilder.Field highlightField =
                 new HighlightBuilder.Field(field);
         highlightField.highlighterType("unified");
@@ -146,6 +150,15 @@ public class ElasticSearchClient implements IElasticSearchClient {
         return true;
     }
 
+    @Override
+    public boolean deleteAll(String index, String type) throws IOException {
+        DeleteByQueryRequest request =
+                new DeleteByQueryRequest(index);
+        request.setQuery(new MatchAllQueryBuilder());
+        this.restHighLevelClient.deleteByQuery(request, RequestOptions.DEFAULT);
+        return true;
+    }
+
 
     @Override
     public boolean indexExists(String index) throws IOException {
@@ -160,6 +173,12 @@ public class ElasticSearchClient implements IElasticSearchClient {
         request.settings(Settings.builder()
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replicas", 1)
+                .put("index.analysis.analyzer.trigram.type", "custom")
+                .put("index.analysis.analyzer.trigram.tokenizer", "standard")
+                .put("index.analysis.analyzer.trigram.filter", "shingle")
+                .put("index.analysis.filter.shingle.type", "shingle")
+                .put("index.analysis.filter.shingle.min_shingle_size", 2)
+                .put("index.analysis.filter.shingle.max_shingle_size", 3)
         );
         CreateIndexResponse createIndexResponse = this.restHighLevelClient.indices().create(request, RequestOptions.DEFAULT);
         return createIndexResponse.isAcknowledged();
@@ -190,6 +209,17 @@ public class ElasticSearchClient implements IElasticSearchClient {
                 {
                     builder.field("type", "text");
                     builder.field("analyzer", "french");
+                    builder.startObject("fields");
+                    {
+                        builder.startObject("suggestion");
+                        {
+                            builder.field("type", "text");
+                            builder.field("analyzer", "trigram");
+                        }
+                        builder.endObject();
+                    }
+                    builder.endObject();
+
                 }
                 builder.endObject();
             }

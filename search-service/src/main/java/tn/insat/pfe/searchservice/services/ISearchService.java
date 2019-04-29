@@ -20,5 +20,6 @@ public interface ISearchService {
     boolean upsertLdaTopicsDescription(List<LdaTopicsDescriptionPayload> ldaTopicsDescriptionPayloadList) throws IOException;
     boolean delete(FileDeletePayload fileDeletePayload) throws IOException;
 
+
     boolean initEsMapping() throws IOException;
 }

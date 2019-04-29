@@ -8,6 +8,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.phrase.PhraseSuggestion;
 import org.elasticsearch.search.suggest.term.TermSuggestion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,6 +18,7 @@ import tn.insat.pfe.searchservice.dtos.FileGetDto;
 import tn.insat.pfe.searchservice.dtos.LdaTopicsDescriptionGetDto;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,16 +60,19 @@ public class ElasticSearchDataExtractorHelper {
         return fileGetDtosList;
     }
 
-    public static List<String> searchResponseToSuggestionsList(SearchResponse searchResponse) {
-        List<String> suggestionsList = new ArrayList<>();
+    public static Map<String, String> searchResponseToSuggestionsList(SearchResponse searchResponse) {
+        Map<String, String> suggestionsMap = new HashMap <>();
         Suggest suggest = searchResponse.getSuggest();
-        TermSuggestion termSuggestion = suggest.getSuggestion("suggest_text");
-        for (TermSuggestion.Entry entry : termSuggestion.getEntries()) {
-            for (TermSuggestion.Entry.Option option : entry) {
-                suggestionsList.add(option.getText().string());
+        PhraseSuggestion phraseSuggestion = suggest.getSuggestion("suggested_text");
+        for (PhraseSuggestion.Entry entry : phraseSuggestion.getEntries()) {
+            if(entry.getOptions().size()>0) {
+                suggestionsMap.put(entry.getOptions().get(0).getText().string(), entry.getOptions().get(0).getHighlighted().string());
             }
+//            for (PhraseSuggestion.Entry.Option option : entry) {
+//                suggestionsMap.put(option.getText().string(), option.getHighlighted().string());
+//            }
         }
-        return suggestionsList;
+        return suggestionsMap;
     }
 
     public static List<LdaTopicsDescriptionGetDto> searchResponseToLdaTopicsDescriptionGetDtosList(SearchResponse searchResponse) {

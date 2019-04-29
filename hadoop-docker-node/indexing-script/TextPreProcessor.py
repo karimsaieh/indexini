@@ -58,6 +58,7 @@ class TextPreProcessor:
         # should be before lemmatizer otherwise he'l consider some words like keywords & won't lemm them
         content = self.to_lowercase(content)
         content = self.lemmatize(content, nlp_spacy)
+        content = self.to_lowercase(content) # cause spacy may uppercase some words
         words = self.tokenize(content)
         words = self.remove_punctuation(words)
         words = self.remove_numbers(words)

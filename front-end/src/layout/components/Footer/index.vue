@@ -2,14 +2,14 @@
   <div class="wrapper">
     <div class="footer">
       <el-row :gutter="20">
-        <el-col :span="20">
+        <el-col :span="24">
           <component :is="toggled" />
         </el-col>
-        <el-col :span="4" align="start">
+        <!-- <el-col :span="4" align="start">
           <span class="toggle" @click="toggle()">
             {{ toggled }}
           </span>
-        </el-col>
+        </el-col> -->
       </el-row>
     </div>
   </div>

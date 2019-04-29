@@ -1,16 +1,17 @@
 <template>
   <div class="fixed-width-page-parent-container">
     <div class="fixed-width-page-container">
-      <file-table />
+      <sorted-files-by-topic-table />
     </div>
   </div>
 </template>
 
 <script>
-import FileTable from './components/FileTable.vue'
+import SortedFilesByTopicTable from './components/SortedFilesByTopicTable'
+
 export default {
   components: {
-    FileTable
+    SortedFilesByTopicTable
   }
 }
 </script>
