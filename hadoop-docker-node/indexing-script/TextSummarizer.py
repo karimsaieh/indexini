@@ -5,7 +5,7 @@ from TextPreProcessor import TextPreProcessor
 class TextSummarizer:
 
     def get_summary(self, content, nlp_spacy):
-        summary = ""
+        summary = []
         # preprocess
         tpp = TextPreProcessor()
         # Step 1 - split it
@@ -51,8 +51,8 @@ class TextSummarizer:
             sentence_scores = sorted(sentence_scores, key=lambda x: x["index"], reverse=False)
 
             for sen in sentence_scores:
-                summary += "\n" + sen["sentence"]
-        return summary.strip()
+                summary.append(sen["sentence"].strip())
+        return summary
 
 
 if __name__ == '__main__':

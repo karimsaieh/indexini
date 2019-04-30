@@ -1,162 +1,190 @@
 <template>
   <div>
-    <div class="page-container">
-      <router-link :to="{ name: 'Dashboard', query: { plan: 'private' }, params: { disableTransition: true } }">
-        Go to Foo
-      </router-link>
-      <br>
-      <router-link to="/?q=6">Go to Bar</router-link>
-      dasgboard container
-      <file-search-card />
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
+
+    <div class="fixed-width-page-parent-container">
+      <div class="fixed-width-page-container">
+
+        <el-row :gutter="40">
+          <el-col :span="6">
+            <el-card class="a-card">
+              <div class="card-icon">
+                <i class="fas el-icon-fa-file-invoice el-icon-fa-7x icon-file" class-name="card-panel-icon" />
+              </div>
+              <div class="card-description">
+                <div class="card-panel-text">Fichiers Indexés</div>
+                <div class="card-panel-num">
+                  <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" />
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+
+          <el-col :span="6">
+            <el-card class="a-card">
+              <div class="card-icon">
+                <i class="fas el-icon-fa-file-invoice el-icon-fa-7x icon-file" class-name="card-panel-icon" />
+              </div>
+              <div class="card-description">
+                <div class="card-panel-text">Fichiers Indexés</div>
+                <div class="card-panel-num">5648,584,8448 K</div>
+              </div>
+            </el-card>
+          </el-col>
+
+          <el-col :span="6">
+            <el-card class="a-card">
+              <div class="card-icon">
+                <i class="fas el-icon-fa-file-invoice el-icon-fa-7x icon-file" class-name="card-panel-icon" />
+              </div>
+              <div class="card-description">
+                <div class="card-panel-text">Fichiers Indexés</div>
+                <div class="card-panel-num">5648,48 K</div>
+              </div>
+            </el-card>
+          </el-col>
+
+          <el-col :span="6">
+            <el-card class="a-card">
+              <div class="card-icon">
+                <i class="fas el-icon-fa-file-invoice el-icon-fa-7x icon-file" class-name="card-panel-icon" />
+              </div>
+              <div class="card-description">
+                <div class="card-panel-text">Fichiers Indexés</div>
+                <div class="card-panel-num">5648,584,8448 K</div>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+        <br>
+        <el-row :gutter="40">
+          <el-col :span="6">
+            <el-card style="font-weight: bold">
+              <div style="text-align:center">
+                <div style="font-size: 2.8rem;">
+                  <i class="fas el-icon-fa-file-invoice el-icon-fa-7x icon-file" class-name="card-panel-icon" />
+                </div>
+                <div class="card-panel-text" style="margin-top: 10px">Fichiers Indexés</div>
+                <div class="card-panel-num">5648,584,8448 K</div>
+
+              </div>
+            </el-card>
+          </el-col>
+
+          <el-col :span="6">
+            <el-card style="font-weight: bold">
+              <div style="text-align:center">
+                <div style="    font-size: 2.8rem;">
+                  <i class="fas el-icon-fa-file-invoice el-icon-fa-7x icon-file" class-name="card-panel-icon" />
+                </div>
+                <div class="card-panel-text" style="margin-top: 10px">Fichiers Indexés</div>
+                <div class="card-panel-num">5648,584,8448 K</div>
+
+              </div>
+            </el-card>
+          </el-col>
+
+          <el-col :span="6">
+            <el-card style="font-weight: bold">
+              <div style="text-align:center">
+                <div style="    font-size: 2.8rem;">
+                  <i class="fas el-icon-fa-file-invoice el-icon-fa-7x icon-file" class-name="card-panel-icon" />
+                </div>
+                <div class="card-panel-text" style="margin-top: 10px">Fichiers Indexés</div>
+                <div class="card-panel-num">5648,584,8448 K</div>
+
+              </div>
+            </el-card>
+          </el-col>
+
+          <el-col :span="6">
+            <el-card style="font-weight: bold">
+              <div style="text-align:center">
+                <div style="    font-size: 2.8rem;">
+                  <i class="fas el-icon-fa-file-invoice el-icon-fa-7x icon-file" class-name="card-panel-icon" />
+                </div>
+                <div class="card-panel-text" style="margin-top: 10px">Fichiers Indexés</div>
+                <div class="card-panel-num">5648,584,8448 K</div>
+
+              </div>
+            </el-card>
+          </el-col>
+
+        </el-row>
+
+        <br>
+
+      </div>
     </div>
+
+    <router-link :to="{ name: 'Dashboard', query: { plan: 'private' }, params: { disableTransition: true } }">
+      Go to Foo
+    </router-link>
+    <br>
+    <router-link to="/?q=6">Go to Bar</router-link>
+    dasgboard container
+    <file-search-card />
+
   </div>
+
 </template>
 
 <script>
-// import FilePreview from './Components/FilePreview'
-// import FileThumbnail from './Components/FileThumbnail'
-// import FileSummary from './Components/FileSummary'
-// import FileWordCloud from './Components/FileWordCloud'
-// import FileRadarChart from './Components/FileRadarChart'
-// import FileSimilarFiles from './Components/FileSimilarfiles'
-import FileSearchCard from './Components/FileSearchCard'
+import CountTo from 'vue-count-to'
+import FileSearchCard from '@/components/File/FileSearchCard'
+// import { indexingStats } from '@/api/file'
+// import { sparkStats } from '@/api/spark-manager'
+
 export default {
   name: 'Dashboard',
   components: {
-    // FilePreview,
-    // FileThumbnail,
-    // FileSummary
-    // FileWordCloud
-    // FileRadarChart
-    FileSearchCard
-    // FileSimilarFiles
-  },
-  data: function() {
-    return {
-      words: [
-        ['romance', 19],
-        ['brother', 10],
-        ['football', 100],
-        ['horror', 3],
-        ['fantasy', 7],
-        ['adventure', 3]
-      ],
-      seriesData: [0.1, 0.505, 0.95, 0.5, 0.8],
-      ldaTopicsDescritpion: [
-        {
-          id: '0',
-          description: [
-            'de',
-            '0000est',
-            'des',
-            'donnees',
-            'apprentissage',
-            'le',
-            'l',
-            'et',
-            'ou',
-            'un'
-          ]
-        },
-        {
-          id: '4',
-          description: [
-            'de',
-            '0000est',
-            'des',
-            'donnees',
-            'apprentissage',
-            'le',
-            'l',
-            'et',
-            'ou',
-            'un'
-          ]
-        },
-        {
-          id: '3',
-          description: [
-            'de',
-            '0000est',
-            'des',
-            'donnees',
-            'apprentissage',
-            'le',
-            'l',
-            'et',
-            'ou',
-            'un'
-          ]
-        },
-        {
-          id: '1',
-          description: [
-            'de',
-            'e111st',
-            'des',
-            'donnees',
-            'apprentissage',
-            'le',
-            'l',
-            'et',
-            'ou',
-            'un'
-          ]
-        },
-        {
-          id: '2',
-          description: [
-            'de',
-            'es2222t',
-            'des',
-            'donnees',
-            'apprentissage',
-            'le',
-            'l',
-            'et',
-            'ou',
-            'un'
-          ]
-        }
-      ]
-    }
+    FileSearchCard,
+    CountTo
   }
+  // created() {
+  //   // indexingStats().then((result) => {
+  //   //   this.indexingStats = Object.assign({}, this.indexingStats, result.data)
+  //   // })
+  //   // sparkStats().then((result) => {
+  //   //   this.sparkstats = Object.assign({}, this.sparkstats, result.data)
+  //   //   this.sparkstats.lastJobDate = new Date(this.sparkstats.lastJobDate)
+  //   // })
+  // }
 }
+
 </script>
+
+<style lang="scss" scoped>
+.number {
+  color: #666;
+  font-weight: 900;
+  font-size: 30px
+}
+
+.a-card {
+  height: 100px;
+}
+  .icon-file {
+    color: rebeccapurple
+  }
+  .card-icon {
+    font-size: 2.8rem;
+    float: left;
+    margin: 5px 0px 10px 0px;
+  }
+  .card-description {
+    float: right;
+    font-weight: bold;
+
+  }
+      .card-panel-text {
+        line-height: 18px;
+        color: rgba(0, 0, 0, 0.45);
+        font-size: 16px;
+        margin-bottom: 12px;
+      }
+      .card-panel-num {
+        color: #666;
+        font-size: 20px;
+      }
+</style>
+

@@ -22,7 +22,12 @@ import * as filters from './filters' // global filters
 
 import VueApexCharts from 'vue-apexcharts'
 Vue.component('apexchart', VueApexCharts)
-
+import VueImg from 'v-img'
+const vueImgConfig = {
+  // Use `alt` attribute as gallery slide title
+  altAsTitle: true
+}
+Vue.use(VueImg, vueImgConfig)
 /**
  * If you don't want to use mock-server
  * you want to use mockjs for request interception

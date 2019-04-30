@@ -47,8 +47,8 @@ export default {
 
 <style scoped>
 .image{
-  border-radius: 10px;
-  border: 1px  solid;
+  border-radius: 3px;
+  border: 1px  solid #eee;
 }
 </style>
 

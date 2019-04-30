@@ -43,6 +43,7 @@ public class ElasticSearchDataExtractorHelper {
             FileGetDto fileGetDto = new ObjectMapper().convertValue(sourceAsMap, FileGetDto.class);
             fileGetDto.setText("text highlighting has not been requested");
             if(highlightField != null) {
+                List<String> highlightList = new ArrayList<>();
                 Map<String, HighlightField> highlightFields = hit.getHighlightFields();
                 HighlightField highlight = highlightFields.get(highlightField);
                 Text[] fragments = highlight.fragments();
@@ -52,8 +53,11 @@ public class ElasticSearchDataExtractorHelper {
                     if (i != fragments.length -1 ) {
                         highlightedTextBuilder.append("\n");
                     }
+                    highlightList.add(fragments[i].toString());
                 }
                 fileGetDto.setText(highlightedTextBuilder.toString());
+                fileGetDto.setText(null);
+                fileGetDto.setHighlightList(highlightList);
             }
             fileGetDtosList.add(fileGetDto);
         }
@@ -63,14 +67,16 @@ public class ElasticSearchDataExtractorHelper {
     public static Map<String, String> searchResponseToSuggestionsList(SearchResponse searchResponse) {
         Map<String, String> suggestionsMap = new HashMap <>();
         Suggest suggest = searchResponse.getSuggest();
-        PhraseSuggestion phraseSuggestion = suggest.getSuggestion("suggested_text");
-        for (PhraseSuggestion.Entry entry : phraseSuggestion.getEntries()) {
-            if(entry.getOptions().size()>0) {
-                suggestionsMap.put(entry.getOptions().get(0).getText().string(), entry.getOptions().get(0).getHighlighted().string());
-            }
+        if(suggest != null) {
+            PhraseSuggestion phraseSuggestion = suggest.getSuggestion("suggested_text");
+            for (PhraseSuggestion.Entry entry : phraseSuggestion.getEntries()) {
+                if(entry.getOptions().size()>0) {
+                    suggestionsMap.put(entry.getOptions().get(0).getText().string(), entry.getOptions().get(0).getHighlighted().string());
+                }
 //            for (PhraseSuggestion.Entry.Option option : entry) {
 //                suggestionsMap.put(option.getText().string(), option.getHighlighted().string());
 //            }
+            }
         }
         return suggestionsMap;
     }

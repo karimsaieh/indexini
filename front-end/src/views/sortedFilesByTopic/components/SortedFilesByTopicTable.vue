@@ -12,7 +12,7 @@
       <el-card style="margin:10px;">
         <el-row>
           <el-col :sm="22">
-            <span class="link-type" @click="goToFileCard(file.id)"> {{ file.fileName }} </span>
+            <span class="link-type" @click="goToFileDetail(file.id)"> {{ file.fileName }} </span>
           </el-col>
           <el-col :sm="2" :class="percentageClass(file.ldaTopics[id])">
             {{ file.ldaTopics[id] | formatPercentage }}
@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     searchByWord: function(word) {
-      alert('TODO: search by selected word: ' + word)
+      this.$router.push({ name: 'Search', query: { query: word, size: 10, page: 1 }})
     },
     handleCurrentChange(page) {
       this.loading = true
@@ -120,8 +120,8 @@ export default {
         return 'i10'
       }
     },
-    goToFileCard(id) {
-      alert(`go to file card ${id}`)
+    goToFileDetail(id) {
+      this.$router.push({ name: 'FileDetail', query: { id: encodeURI(id) }})
     }
   }
 }

@@ -28,10 +28,10 @@ class ThumbnailGenerator:
             elif content_type == "image/png":
                 # TODO: reduce image size png
                 base64_string = base64.b64encode(binary).decode()
-            base64_string = "dummy thumbnail, set in thumbnail generator in spark script"
+            # base64_string = "dummy thumbnail, set in thumbnail generator in spark script"
         except Exception as e:
             print("an exception in my thumbnail generator scrip", str(e))
-            base64_string = "got an error when generating thumbnail/ replace me"
+            base64_string = ""
         return base64_string
         # value = "<img src=data:image/png;base64," + base64.b64encode(im_bytes.getvalue()).decode() + "></img>"
         # with open("i.html", "w") as text_file:

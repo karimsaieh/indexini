@@ -25,7 +25,7 @@ public class FileIndexPayload {
     @JsonProperty("mostCommonWords")
     private String mostCommonWords;
     @JsonProperty("summary")
-    private String summary;
+    private String[] summary;
     @JsonProperty("text")
     private String text;
     @JsonProperty("suggestionText")
@@ -112,11 +112,11 @@ public class FileIndexPayload {
         this.mostCommonWords = mostCommonWords;
     }
 
-    public String getSummary() {
+    public String[] getSummary() {
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void setSummary(String[] summary) {
         this.summary = summary;
     }
 

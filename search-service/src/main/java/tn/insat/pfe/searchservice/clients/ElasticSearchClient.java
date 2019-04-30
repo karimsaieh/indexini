@@ -19,10 +19,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.index.query.MatchAllQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryAction;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
@@ -42,6 +39,8 @@ import tn.insat.pfe.searchservice.config.IElasticSearchProvider;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Map;
+
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 
 @Component
@@ -82,12 +81,12 @@ public class ElasticSearchClient implements IElasticSearchClient {
 //                .fuzzyTranspositions(true);
 
         SuggestionBuilder phraseSuggestionBuilder =
-                SuggestBuilders.phraseSuggestion(suggestionField).text(query).highlight("<b>","</b>");
+                SuggestBuilders.phraseSuggestion(suggestionField).text(query).highlight("<em>","</em>");
         SuggestBuilder suggestBuilder = new SuggestBuilder();
         suggestBuilder.addSuggestion("suggested_text", phraseSuggestionBuilder);
         searchSourceBuilder.suggest(suggestBuilder);
 
-        HighlightBuilder highlightBuilder = new HighlightBuilder().preTags("<b>").postTags("</b>").fragmentSize(130);
+        HighlightBuilder highlightBuilder = new HighlightBuilder().preTags("<em>").postTags("</em>").fragmentSize(130);
         HighlightBuilder.Field highlightField =
                 new HighlightBuilder.Field(field);
         highlightField.highlighterType("unified");
@@ -102,13 +101,17 @@ public class ElasticSearchClient implements IElasticSearchClient {
     }
 
     @Override
-    public SearchResponse findBy(String index, String by, String value, Pageable pageable) throws IOException {
+    public SearchResponse findByMustNot(String index, String by, String value, String must, String not, Pageable pageable) throws IOException {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         TermQueryBuilder termQueryBuilder = new TermQueryBuilder(by, value);
+        QueryBuilder qb = QueryBuilders
+                .boolQuery()
+                .must (termQuery(by, value))
+                .mustNot(termQuery(must, not));
         int page = pageable.getPageNumber();
         int size = pageable.getPageSize();
-        searchSourceBuilder.query(termQueryBuilder).from(page * size).size(size);
+        searchSourceBuilder.query(qb).from(page * size).size(size);
         searchRequest.source(searchSourceBuilder);
         return this.restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
     }
@@ -193,15 +196,15 @@ public class ElasticSearchClient implements IElasticSearchClient {
         {
             builder.startObject("properties");
             {
-                builder.startObject("summary");
+                builder.startObject("id");
                 {
                     builder.field("type", "keyword");
-                    builder.field("index", "false");
+                    builder.field("index", "true");
                 }
                 builder.endObject();
                 builder.startObject("thumbnail");
                 {
-                    builder.field("type", "keyword");
+                    builder.field("type", "text");
                     builder.field("index", "false");
                 }
                 builder.endObject();

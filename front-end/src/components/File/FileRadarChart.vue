@@ -1,6 +1,13 @@
 <template>
   <div id="chart">
-    <apexchart type="radar" :options="chartOptions" :series="series" />
+
+    <apexchart
+      type="radar"
+      height="280"
+
+      :options="chartOptions"
+      :series="series"
+    />
   </div>
 </template>
 
@@ -23,6 +30,7 @@ export default {
   },
   data: function() {
     return {
+      topic: '',
       series: [
         {
           name: 'Topics',
@@ -36,13 +44,29 @@ export default {
             fontSize: '14px',
             fontFamily: 'Helvetica, Arial, sans-serif',
             colors: undefined
+          },
+          plotOptions: {
+            radar: {
+              size: 140,
+              polygons: {
+                strokeColor: '#e9e9e9',
+                fill: {
+                  colors: ['#f8f8f8', '#fff']
+                }
+              }
+            }
           }
         },
         markers: {
-          size: 10,
+          size: 4,
           hover: {
-            size: 15
+            size: 7
           }
+        },
+        yaxis: {
+          show: false,
+          max: 100
+
         },
         tooltip: {
           x: {
@@ -55,9 +79,13 @@ export default {
               formatter: (seriesName, series) => {
                 // TODO : enhancement:  could use cache
                 const index = series.dataPointIndex
-                const topic = this.ldaTopicsDescription[index]
-                console.log(topic.description)
-                return topic.description.join(', ')
+                const topic = this.ldaTopicsDescription.find(x => +x.id === index)
+                // console.log(topic.description)
+                this.topic = topic.description.join(', ')
+                this.topic = series.series[0][series.dataPointIndex] + '% ' + this.topic
+                this.$emit('update:topic', this.topic)
+                console.log()
+                return ''
               }
             }
           }
@@ -80,5 +108,6 @@ export default {
 }
 </script>
 <style scoped>
+
 </style>
 

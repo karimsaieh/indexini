@@ -33,9 +33,23 @@
             </el-card>
           </template>
           <template v-else>
-            <div v-for="(file, index) in filesData" :key="`files-sr-${index}`">
-              {{ file.id }}
+
+            <div v-for="(file) in filesData" :key="`files-sr-${file.id}`">
+              <file-search-card
+                :id="file.id"
+                :words="file.mostCommonWords"
+                :lda-topics="file.ldaTopics"
+                :lda-topics-description="ldaTopicsDescription"
+                :summary="file.summary"
+                :name="file.fileName"
+                :highlight-list="file.highlightList"
+                :bulk-save-operation-timestamp="file.bulkSaveOperationTimestamp"
+                :content-type="file.contentType"
+                :thumbnail="file.thumbnail"
+                :bisecting-kmeans-prediction="+file.bisectingKmeansPrediction"
+              />
             </div>
+
             <el-pagination
               background
               :current-page.sync="query.page"
@@ -60,14 +74,17 @@
 import { find } from '@/api/search'
 import axios from 'axios'
 import BackToTop from '@/components/BackToTop'
+import FileSearchCard from '@/components/File/FileSearchCard'
 
 export default {
   components: {
-    BackToTop
+    BackToTop,
+    FileSearchCard
   },
   data() {
     return {
       filesData: [],
+      ldaTopicsDescription: [],
       suggestions: {},
       loading: false,
       cancelFind: null,
@@ -96,20 +113,26 @@ export default {
   },
 
   beforeRouteUpdate(to, from, next) {
-    if (this.loading === true) {
-      this.cancelFind('canceling current search on favor of a new one')
-    }
-    const CancelToken = axios.CancelToken
-    const source = CancelToken.source()
-    this.loading = true
-    this.cancelFind = source.cancel
-    this.query = Object.assign({}, to.query)
-    const query = Object.assign({}, this.query)
-    query.page -= 1
-    find(query, source.token).then((result) => {
-      this.setData(result)
+    if (to.query.query !== undefined &&
+    to.query.page !== undefined &&
+    to.query.size !== undefined) {
+      if (this.loading === true) {
+        this.cancelFind('canceling current search on favor of a new one')
+      }
+      const CancelToken = axios.CancelToken
+      const source = CancelToken.source()
+      this.loading = true
+      this.cancelFind = source.cancel
+      this.query = Object.assign({}, to.query)
+      const query = Object.assign({}, this.query)
+      query.page -= 1
+      find(query, source.token).then((result) => {
+        this.setData(result)
+        next()
+      })
+    } else {
       next()
-    })
+    }
   },
 
   methods: {
@@ -119,6 +142,7 @@ export default {
       this.query.size = result.data.fileGetDtosPage.pageable.pageSize
       this.query.page = result.data.fileGetDtosPage.pageable.pageNumber + 1
       this.suggestions = result.data.suggestionsList
+      this.ldaTopicsDescription = result.data.ldaTopicsDescriptionGetDtosList
       this.loading = false
     },
     doSearch() {

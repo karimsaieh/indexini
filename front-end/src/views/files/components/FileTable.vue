@@ -38,7 +38,7 @@
           label="Name"
         >
           <template slot-scope="{row}">
-            <span class="link-type" @click="handleReadFile(row)">{{ row.name }}</span>
+            <span class="link-type" @click="goToFileDetailORreadFile(row)">{{ row.name }}</span>
           </template>
 
         </el-table-column>
@@ -147,8 +147,12 @@ export default {
     handleSelectionChange(val) {
       this.selectedData = val
     },
-    handleReadFile(row) {
-      window.open(readFile(encodeURIComponent(row.location)))
+    goToFileDetailORreadFile(row) {
+      if (row.indexed === true) {
+        this.$router.push({ name: 'FileDetail', query: { id: encodeURI(row.location) }})
+      } else {
+        window.open(readFile(encodeURIComponent(row.location)))
+      }
     },
     handleDeleteSingleFile(row) {
       this.loading = true

@@ -1,7 +1,11 @@
 <template>
-  <div :style="image">
-    <img :src="imageSrc" style="visibility: hidden;width:100%">
+  <div
 
+    :style="image"
+    @click="handleClick()"
+  >
+
+    <img id="vvv-img" v-img :alt="alt" :src="imageSrc" style="visibility: hidden;width:100%">
   </div>
 
 </template>
@@ -21,6 +25,10 @@ export default {
       default: ''
     },
     iconSrc: {
+      type: String,
+      default: ''
+    },
+    alt: {
       type: String,
       default: ''
     }
@@ -47,6 +55,11 @@ export default {
         bottom: '1px',
         right: '1px'
       }
+    }
+  },
+  methods: {
+    handleClick() {
+      document.getElementById('vvv-img').click()
     }
   }
 }

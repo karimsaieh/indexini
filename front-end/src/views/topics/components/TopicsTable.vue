@@ -5,8 +5,19 @@
       v-loading="loading"
       :data="tableData"
     >
+
       <el-table-column
-        label="Topics"
+        label="Topic"
+        width="80"
+      >
+        <template slot-scope="{row}">
+          Topic {{ +row.id + 1 }}
+        </template>
+
+      </el-table-column>
+
+      <el-table-column
+        label="Description"
       >
         <template slot-scope="{row}">
           <span v-for="(word, index) in row.description" :key="index">
@@ -55,6 +66,7 @@ export default {
     getLdaTopics().then((result) => {
       // console.log(result.data)
       this.tableData = result.data
+      this.tableData = this.tableData.sort((x, y) => +x.id - +y.id)
       this.loading = false
     }).catch(err => {
       this.loading = false

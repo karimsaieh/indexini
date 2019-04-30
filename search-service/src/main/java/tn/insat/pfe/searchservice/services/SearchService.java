@@ -69,7 +69,7 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
         this.searchDtoCacheRepository = searchDtoCacheRepository;
     }
 
-    @HystrixCommand(fallbackMethod = "cachedFind")
+//    @HystrixCommand(fallbackMethod = "cachedFind")
     @Override
     public SearchDto find(String query, Pageable pageable) throws IOException {
 
@@ -100,8 +100,8 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
     }
 
     @Override
-    public Page<FileGetDto> findBy(String by, String value, Pageable pageable) throws IOException {
-        SearchResponse searchResponse = this.elasticSearchClient.findBy(this.fileIndex, by, value, pageable);
+    public Page<FileGetDto> findByMustNot(String by, String value, String must, String not, Pageable pageable) throws IOException {
+        SearchResponse searchResponse = this.elasticSearchClient.findByMustNot(this.fileIndex, by, value, must, not, pageable);
         return ElasticSearchDataExtractorHelper.searchResponseToFileGetDtoPage(searchResponse, pageable);
     }
 

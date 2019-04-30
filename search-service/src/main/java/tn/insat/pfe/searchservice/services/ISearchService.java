@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface ISearchService {
     SearchDto find(String query, Pageable pageable) throws IOException;
-    Page<FileGetDto> findBy(String by, String  value, Pageable pageable) throws IOException;
+    Page<FileGetDto> findByMustNot(String by, String  value, String must, String not, Pageable pageable) throws IOException;
     FileGetDto findById(String id) throws IOException;
     Page<FileGetDto> findAllSortBy(String sortBy, Pageable pageable) throws IOException;
     List<LdaTopicsDescriptionGetDto> getLdaTopics() throws IOException;

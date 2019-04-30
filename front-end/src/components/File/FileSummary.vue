@@ -1,6 +1,10 @@
 <template>
   <div class="summary">
-    text summary goes here{{ summary }}
+    <p v-for="(summ, index) in summary" :key="`summary-gg-${index}`">
+
+      {{ summ }}
+
+    </p>
   </div>
 </template>
 
@@ -9,8 +13,10 @@ export default {
   name: 'FileSummary',
   props: {
     summary: {
-      type: String,
-      default: ''
+      type: Array,
+      default: function() {
+        return []
+      }
     }
   }
 }
@@ -18,6 +24,5 @@ export default {
 
 <style scoped>
 .summary {
-  word-break: break-all;
 }
 </style>

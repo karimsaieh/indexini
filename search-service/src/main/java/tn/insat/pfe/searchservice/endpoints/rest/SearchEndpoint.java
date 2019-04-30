@@ -28,8 +28,11 @@ public class SearchEndpoint {
     }
     // use cases: find by prediction
     @GetMapping(params = "by")
-    public Page<FileGetDto> findBy(@RequestParam String by, @RequestParam String value, Pageable pageable) throws IOException {
-        return this.searchService.findBy(by, value, pageable);
+    public Page<FileGetDto> findBy(@RequestParam String by, @RequestParam String value,
+                                   @RequestParam String must,
+                                   @RequestParam String not,
+                                   Pageable pageable) throws IOException {
+        return this.searchService.findByMustNot(by, value,must, not, pageable);
     }
 
     //use case: get file info

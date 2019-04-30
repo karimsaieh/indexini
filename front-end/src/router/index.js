@@ -167,6 +167,19 @@ export const constantRoutes = [
         meta: { title: 'Search', icon: 'fab el-icon-fa-search', noCache: true }
       }
     ]
+  },
+  {
+    path: '/fileDetail',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/file-detail/index'),
+        name: 'FileDetail',
+        meta: { title: 'FileDetail', noCache: true }
+      }
+    ]
   }
   // {
   //   path: '/documentation',
