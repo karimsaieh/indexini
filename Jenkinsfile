@@ -17,7 +17,7 @@ pipeline {
         branch 'develop'
       }
       steps {
-        withDockerRegistry([ credentialsId: "docker-hub-cred", url: "" ]) {
+        withDockerRegistry([ credentialsId: "karimsaieh/docker-hub-cred", url: "" ]) {
           sh 'docker-compose push'	   
         }
       }
