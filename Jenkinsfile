@@ -13,10 +13,11 @@ pipeline {
       }
     }
     stage('Push Images') {
-        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-cred') {
-              sh 'docker-compose push'
-            } 
-        echo "Trying to Push Docker Build to DockerHub"
+       steps {
+        withDockerRegistry([ credentialsId: "docker-hub-cred", url: "" ]) {
+          sh 'docker-compose push'
+        }
+      }
     }
   }
 }
