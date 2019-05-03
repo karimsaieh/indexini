@@ -13,14 +13,10 @@ pipeline {
       }
     }
     stage('Push Images') {
-      when {
-        branch 'develop'
-      }
-      steps {
-        docker.withRegistry("", "karimsaieh/docker-hub-cred") {
-          sh 'docker-compose push'	   
-        }
-      }
+        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-cred') {
+              sh 'docker-compose push'
+            } 
+        echo "Trying to Push Docker Build to DockerHub"
     }
   }
 }
