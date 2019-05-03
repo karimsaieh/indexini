@@ -102,5 +102,5 @@ class FtpExplorer:
                     self.ftp.cwd(sub_dir)
                     current_path = current_path + "/" + sub_dir
                 except ftplib.error_perm:
-                    LogstashLogger.info("errooor in ftp explorer . start in ftp.cwd")
+                    LogstashLogger.info("errooor in ftp explorer. start in ftp.cwd")
         return current_path

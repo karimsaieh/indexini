@@ -1,0 +1,220 @@
+version: "3"
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - "mongo-volume:/data/db"
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  tika:
+    image: logicalspark/docker-tikaserver
+    ports:
+      - "9998:9998"
+
+  rabbitmq:
+    image: rabbitmq:3.7-management
+    ports:
+      - "15671:15671"
+      - "15672:15672"
+      - "25672:25672"
+      - "4369:4369"
+      - "4396:4396"
+      - "5671:5671"
+      - "5672:5672"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - "transport.host=localhost"
+    volumes:
+      - "es-volume:/usr/share/elasticsearch/data"
+
+  file-management-service:
+    image: karimsaieh/pfe-file-management-service
+    ports:
+      - "3011:3011"
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
+    command: "java -jar /usr/app/file-management-service-0.0.1-SNAPSHOT.jar"
+    labels:
+      - "traefik.http.routers.files.rule=(Host(`pfe.localhost`) && PathPrefix(`/files-ms`))"
+    environment:
+      - spring_profiles_active=staging
+
+  front-end:
+    image: karimsaieh/pfe-front-end
+    ports:
+      - "3000:3000"
+    # entrypoint: you wait here for gateway
+    labels:
+      - "traefik.http.routers.front.rule=(Host(`pfe.localhost`) && PathPrefix(`/`))"
+
+  ftp-explorer-service:
+    image: karimsaieh/pfe-ftp-explorer-service
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
+    command: "python ./Main.py"
+    environment:
+      - pfe_rabbitmq_host=rabbitmq
+      - pfe_logstash_host=logstash
+
+  hadoop-docker-node:
+    image: karimsaieh/pfe-hadoop-docker-node
+    ports:
+      - "8020:8020"
+      - "50070:50070"
+      - "4040:4040"
+      - "8998:8998"
+      - "8088:8088"
+    # tty: true
+    volumes:
+      - "hadoop-volume:/usr/local/hadoop_store/hdfs/"
+    environment:
+      - pfe_tika_host=tika
+      - pfe_env=staging
+      - pfe_rabbitmq_host=rabbitmq
+
+  hystrix-dashboard:
+    image: karimsaieh/pfe-hystrix-dashboard
+    ports:
+      - "3014:3014"
+    environment:
+      - spring_profiles_active=staging
+
+  notification-service:
+    image: karimsaieh/pfe-notification-service
+    ports:
+      - "3010:3010"
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
+    command: "npm run start-prod"
+    labels:
+      - "traefik.http.routers.notifs.rule=(Host(`pfe.localhost`) && PathPrefix(`/notifs-ms`))"
+    environment:
+      - pfe_rabbitmq_host=rabbitmq
+      - pfe_logstash_host=logstash
+
+  search-service:
+    image: karimsaieh/pfe-search-service
+    ports:
+      - "3012:3012"
+    entrypoint: /wait-for-it.sh redis:6379 -t 1000 -- /wait-for-it.sh elasticsearch:9200 -t 1000 -- /wait-for-it.sh rabbitmq:5672 -t 1000 --
+    command: "java -jar /usr/app/search-service-0.0.1-SNAPSHOT.jar"
+    labels:
+      - "traefik.http.routers.search.rule=(Host(`pfe.localhost`) && PathPrefix(`/search-ms`))"
+    environment:
+      - spring_profiles_active=staging
+
+  spark-manager-service:
+    image: karimsaieh/pfe-spark-manager-service
+    ports:
+      - "3013:3013"
+    # entrypoint: you could wait for livy to start
+    # command:
+    labels:
+      - "traefik.http.routers.spark-manager.rule=(Host(`pfe.localhost`) && PathPrefix(`/spark-mg-ms`))"
+    environment:
+      - spring_profiles_active=staging
+
+  web-scraping-service:
+    image: karimsaieh/pfe-web-scraping-service
+    entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
+    command: "python ./Main.py"
+    environment:
+      - pfe_rabbitmq_host=rabbitmq
+      - pfe_logstash_host=logstash
+
+  reverse-proxy:
+    image: traefik:v2.0
+    command: --api --providers.docker
+    ports:
+      - "8000:80" # The HTTP port
+      - "8080:8080" # The Web UI
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/config.toml:/etc/traefik/traefik.toml
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.7
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "9411:9411"
+    environment:
+      COLLECTOR_ZIPKIN_HTTP_PORT: 9411
+
+  sonarqube:
+    image: sonarqube
+    ports:
+      - "9000:9000"
+    depends_on:
+      - db
+    environment:
+      - sonar.jdbc.url=jdbc:postgresql://db:5432/sonar
+
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+    volumes:
+      - "postgres-volume:/var/lib/postgresql"
+      # This needs explicit mapping due to https://github.com/docker-library/postgres/blob/4e48e3228a30763913ece952c611e5e9b95c8759/Dockerfile.template#L52
+      - "postgres-data-volume:/var/lib/postgresql/data"
+
+  netdata:
+    image: netdata/netdata
+    hostname: example.com # set to fqdn of host
+    ports:
+      - 19999:19999
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  scope: # open browser on 4040
+    image: weaveworks/scope:1.10.2
+    network_mode: "host"
+    pid: "host"
+    privileged: true
+    labels:
+      - "works.weave.role=system"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+    command:
+      - "--probe.docker=true"
+
+  logstash:
+    image: karimsaieh/pfe-logstash
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+      - "5000:5000"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.6.0
+    ports:
+      - "5601:5601"
+
+volumes:
+  hadoop-volume:
+  mongo-volume:
+  es-volume:
+  postgres-volume:
+  postgres-data-volume:
+  jenkins_home:
