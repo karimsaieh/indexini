@@ -14,9 +14,9 @@ pipeline {
     }
     stage('Push Images') { docker-hub-cred
       steps {
-        withDockerRegistry([ credentialsId: "docker-hub-cred", url: "" ]) {
+      
           sh 'docker-compose push'
-        }
+     
       }
     }
   }
