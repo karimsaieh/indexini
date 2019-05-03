@@ -64,6 +64,8 @@ RUN hadoop namenode -format
 
 RUN chmod 600 ~/.ssh/config
 
+RUN apt-get update
+
 RUN apt-get install -y curl net-tools iputils-ping
 
 RUN apt-get install -y python3-pip
