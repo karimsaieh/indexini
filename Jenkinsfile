@@ -16,7 +16,7 @@ pipeline {
       steps {
       
       withDockerRegistry([ credentialsId: "docker-hub-cred", url: "" ]) {	
-           sh 'docker-compose push'	          sh 'docker-compose push'
+           sh 'docker-compose push'	   
         }
      
       }
