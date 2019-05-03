@@ -12,9 +12,11 @@ pipeline {
         echo 'pretend to be testing'
       }
     }
-    stage('Push Images') {
+    stage('Push Images') { docker-hub-cred
       steps {
-        sh 'docker login && docker-compose push'
+        withDockerRegistry([ credentialsId: "docker-hub-cred", url: "" ]) {
+          sh 'docker-compose push'
+        }
       }
     }
   }
