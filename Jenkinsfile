@@ -13,10 +13,10 @@ pipeline {
       }
     }
     stage('Push Images') {
-       steps {
+    
         docker.withRegistry([ credentialsId: "gcr:docker-hub-cred", url: "" ]) {
           sh 'docker-compose push'
-        }
+    
       }
     }
   }
