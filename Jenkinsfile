@@ -1,9 +1,10 @@
 pipeline {
-  agent none
+  agent any
   stages {
-    stage('hello from develop branch') {
+    stage('docker-compose build') {
       steps {
-        echo 'hello pps from dev branch'
+        echo 'I am using docker-compose to build images :D'
+        sh 'docker-compose build'
       }
     }
   }
