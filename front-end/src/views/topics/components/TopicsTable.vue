@@ -7,11 +7,11 @@
     >
 
       <el-table-column
-        label="Topic"
+        label="Thème"
         width="80"
       >
         <template slot-scope="{row}">
-          Topic {{ +row.id + 1 }}
+          Thème {{ +row.id + 1 }}
         </template>
 
       </el-table-column>
@@ -32,7 +32,7 @@
       </el-table-column>
 
       <el-table-column
-        label="top docs"
+        label="Meilleurs Docs"
         fixed="right"
         width="120"
       >

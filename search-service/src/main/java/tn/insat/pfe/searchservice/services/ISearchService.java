@@ -9,10 +9,23 @@ import tn.insat.pfe.searchservice.mq.payloads.LdaTopicsDescriptionPayload;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public interface ISearchService {
     SearchDto find(String query, Pageable pageable) throws IOException;
+
+    List<Map<String, String>> searchAsYouType(String query) throws IOException;
+
+
+    long countSearch() throws IOException;
+
+
     Page<FileGetDto> findByMustNot(String by, String  value, String must, String not, Pageable pageable) throws IOException;
+
+    List<Map<String, Object>> histogramByRange(String range) throws IOException;
+
+    Page<Map<String, String>> findAllRawHistory(Pageable pageable) throws IOException;
+
     FileGetDto findById(String id) throws IOException;
     Page<FileGetDto> findAllSortBy(String sortBy, Pageable pageable) throws IOException;
     List<LdaTopicsDescriptionGetDto> getLdaTopics() throws IOException;

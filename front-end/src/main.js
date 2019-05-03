@@ -19,6 +19,12 @@ import './permission' // permission control
 import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
+// my filters
+import * as myfilters from './filters/global'
+
+import ECharts from 'vue-echarts' // refers to components/ECharts.vue in webpack
+Vue.component('v-chart', ECharts)
+require('echarts/theme/macarons') // echarts theme
 
 import VueApexCharts from 'vue-apexcharts'
 Vue.component('apexchart', VueApexCharts)
@@ -45,6 +51,10 @@ Vue.use(Element, {
 // register global utility filters
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
+})
+// register my global filters
+Object.keys(myfilters).forEach(key => {
+  Vue.filter(key, myfilters[key])
 })
 
 Vue.config.productionTip = false

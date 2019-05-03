@@ -2,7 +2,7 @@
   <div class="fixed-width-page-parent-container">
 
     <div class="fixed-width-page-container">
-
+      <!--
       <indexing-stats
         :files="indexingStats.files"
         :not-indexed="indexingStats.notIndexed"
@@ -11,7 +11,7 @@
         :current-suggestion-precision="sparkstats.currentSuggestionPrecision"
         :current-topics-number="sparkstats.currentTopicsNumber"
       />
-      <br>
+      <br> -->
 
       <indexing-form
         :files="indexingStats.files"
@@ -26,14 +26,14 @@
 
 <script>
 import IndexingForm from './components/IndexingForm'
-import IndexingStats from './components/IndexingStats'
+// import IndexingStats from './components/IndexingStats'
 import { indexingStats } from '@/api/file'
 import { sparkStats } from '@/api/spark-manager'
 
 export default {
   components: {
-    IndexingForm,
-    IndexingStats
+    IndexingForm
+    // IndexingStats
   },
   data: function() {
     return {

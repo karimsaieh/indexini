@@ -1,32 +1,35 @@
 <template>
   <div>
-    <i class="fas el-icon-fa-camera" />
-    <el-upload
-      ref="upload"
-      v-loading="loading"
-      element-loading-background="rgba(0, 0, 0, 0.1)"
-      class="upload-demo"
-      action="http://localhost:3011/files-ms/api/v1/files"
-      :auto-upload="false"
-      name="multipartFile"
-      :on-success="handleSuccess"
-      :on-error="handleError"
-      :multiple="true"
-      :file-list="fileList"
-      :data="data"
-      :on-change="handleChange"
-    >
-      <el-button slot="trigger" size="small" type="primary">select fileS</el-button>
-      <el-button
-        :disabled="fileList.length == 0"
-        style="margin-left: 10px;"
-        size="small"
-        type="success"
-        @click="submitUpload"
-      >upload to server</el-button>
-      <div slot="tip" class="el-upload__tip">pdf for now</div>
-    </el-upload>
-
+    <el-card>
+      <div slot="header" class="clearfix">
+        <span>Téléversement manuel</span>
+      </div>
+      <el-upload
+        ref="upload"
+        v-loading="loading"
+        element-loading-background="rgba(0, 0, 0, 0.1)"
+        class="upload-demo"
+        action="http://localhost:3011/files-ms/api/v1/files"
+        :auto-upload="false"
+        name="multipartFile"
+        :on-success="handleSuccess"
+        :on-error="handleError"
+        :multiple="true"
+        :file-list="fileList"
+        :data="data"
+        :on-change="handleChange"
+      >
+        <el-button slot="trigger" size="small" type="primary">Sélectionner</el-button>
+        <el-button
+          :disabled="fileList.length == 0"
+          style="margin-left: 10px;"
+          size="small"
+          type="success"
+          @click="submitUpload"
+        >Téléverser</el-button>
+        <div slot="tip" class="el-upload__tip" />
+      </el-upload>
+    </el-card>
   </div>
 </template>
 

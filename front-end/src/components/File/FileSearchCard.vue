@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <el-card shadow="always" style="margin-top:30px;">
+    <el-card shadow="always">
       <div style="height:30px;">
         <div style="float: right; ">
           <el-tooltip class="item" effect="dark" content="Télécharger" placement="top">
@@ -16,7 +16,7 @@
         </div>
         <div>
           <div class="file-name link-type" @click="goToFileDetail(id)">{{ name }}</div>
-          <div class="tip"> {{ bulkSaveOperationTimestamp | formatDate }} </div>
+          <div class="tip"> {{ bulkSaveOperationTimestamp | formatDateFromTimestampMilli }} </div>
         </div>
 
       </div>
@@ -110,11 +110,6 @@ export default {
     FileRadarChart,
     FileSimilarFiles
   },
-  filters: {
-    formatDate: function(value) {
-      return new Date(parseInt(value)).toLocaleString()
-    }
-  },
   mixins: [FileIconMixin],
   props: {
     id: {
@@ -167,7 +162,7 @@ export default {
     },
     includesHighlight: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data: function() {
@@ -217,9 +212,9 @@ export default {
       window.open(readFile(encodeURIComponent(this.id)))
     },
     removeFile() {
-      this.$confirm('This will permanently delete the file. Continue?', 'Warning', {
+      this.$confirm('Cela supprimera définitivement le fichier. Continuer?', 'Annuler', {
         confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
+        cancelButtonText: 'Annuler',
         type: 'warning'
       }).then(() => {
         deleteFileByUrl(this.id).then((result) => {
@@ -228,7 +223,7 @@ export default {
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: 'Delete canceled'
+          message: 'Suppression Annulé'
         })
       })
     },
@@ -241,7 +236,6 @@ export default {
 
 <style lang="scss" scoped>
 
- scoped>
 .right {
     width: 280px;
     float: right;

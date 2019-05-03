@@ -1,5 +1,6 @@
 package tn.insat.pfe.searchservice.clients;
 
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
@@ -8,22 +9,23 @@ import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.*;
-import org.elasticsearch.index.reindex.BulkByScrollResponse;
-import org.elasticsearch.index.reindex.DeleteByQueryAction;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
-import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
+import org.elasticsearch.search.aggregations.bucket.range.DateRangeAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
@@ -31,6 +33,8 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.SuggestionBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -45,6 +49,8 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 @Component
 public class ElasticSearchClient implements IElasticSearchClient {
+    private static final Logger logger = LoggerFactory.getLogger(ElasticSearchClient.class);
+
     private RestHighLevelClient restHighLevelClient;
     private final IElasticSearchProvider elasticSearchProvider;
     @Autowired
@@ -54,6 +60,47 @@ public class ElasticSearchClient implements IElasticSearchClient {
     @PostConstruct
     public void init() {
         this.restHighLevelClient = this.elasticSearchProvider.getRestHighLevelClient();
+    }
+
+
+    @Override
+    public CountResponse count(String index) throws IOException {
+        CountRequest countRequest = new CountRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+        countRequest.source(searchSourceBuilder);
+        return this.restHighLevelClient.count(countRequest, RequestOptions.DEFAULT);
+    }
+
+    @Override
+    public SearchResponse histogramByRange(String index, String field, String from, String to, DateHistogramInterval dateHistogramInterval) throws IOException {
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        DateHistogramAggregationBuilder histogramAggregation = AggregationBuilders.dateHistogram("date_histogram")
+                .field(field).dateHistogramInterval(dateHistogramInterval);
+        DateRangeAggregationBuilder rangeAggregation = AggregationBuilders.dateRange("date_range")
+                .field(field).addRange(from, to).subAggregation(histogramAggregation);
+        searchSourceBuilder.aggregation(rangeAggregation);
+        searchSourceBuilder.fetchSource(false);
+        searchSourceBuilder.size(0);
+        searchRequest.source(searchSourceBuilder);
+        return this.restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    }
+
+    @Override
+    public SearchResponse findAnd(String index, String field, String query) throws IOException {
+        SearchRequest searchRequest = new SearchRequest(index);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder(field, query).operator(Operator.AND);
+        HighlightBuilder highlightBuilder = new HighlightBuilder().preTags("<em>").postTags("</em>").fragmentSize(1000);
+        HighlightBuilder.Field highlightField =
+                new HighlightBuilder.Field(field);
+        highlightField.highlighterType("unified");
+        highlightBuilder.field(highlightField);
+        searchSourceBuilder.query(matchQueryBuilder);
+        searchSourceBuilder.highlighter(highlightBuilder);
+        searchRequest.source(searchSourceBuilder);
+        return this.restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
     }
 
     @Override
@@ -104,7 +151,6 @@ public class ElasticSearchClient implements IElasticSearchClient {
     public SearchResponse findByMustNot(String index, String by, String value, String must, String not, Pageable pageable) throws IOException {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        TermQueryBuilder termQueryBuilder = new TermQueryBuilder(by, value);
         QueryBuilder qb = QueryBuilders
                 .boolQuery()
                 .must (termQuery(by, value))
@@ -122,11 +168,30 @@ public class ElasticSearchClient implements IElasticSearchClient {
         return this.restHighLevelClient.get(getRequest, RequestOptions.DEFAULT);
     }
 
-    @Override
+    @Override // actually this is index and not upsert
     public boolean upsert(String index, String type, Map map) throws IOException {
         IndexRequest request = new IndexRequest(index, type, (String) map.get("id"))
                 .source(map);
         this.restHighLevelClient.index(request, RequestOptions.DEFAULT);
+        return true; // nothing is true, everything is permitted
+    }
+
+    @Override // actually this is index and not upsert
+    public boolean upsertAsync(String index, String type, Map map) throws IOException {
+        IndexRequest request = new IndexRequest(index, type, (String) map.get("id"))
+                .source(map);
+        ActionListener listener = new ActionListener<IndexResponse>() {
+            @Override
+            public void onResponse(IndexResponse indexResponse) {
+                logger.info("index async done");
+            }
+            @Override
+            public void onFailure(Exception e) {
+                String msg = "error in index async ==> \n" + e.toString();
+                logger.error(msg);
+            }
+        };
+        this.restHighLevelClient.indexAsync(request, RequestOptions.DEFAULT, listener);
         return true; // nothing is true, everything is permitted
     }
 
@@ -171,64 +236,16 @@ public class ElasticSearchClient implements IElasticSearchClient {
     }
 
     @Override
-    public boolean createIndex(String index) throws IOException {
+    public boolean createIndex(String index, Settings.Builder settings) throws IOException {
         CreateIndexRequest request = new CreateIndexRequest(index);
-        request.settings(Settings.builder()
-                .put("index.number_of_shards", 1)
-                .put("index.number_of_replicas", 1)
-                .put("index.analysis.analyzer.trigram.type", "custom")
-                .put("index.analysis.analyzer.trigram.tokenizer", "standard")
-                .put("index.analysis.analyzer.trigram.filter", "shingle")
-                .put("index.analysis.filter.shingle.type", "shingle")
-                .put("index.analysis.filter.shingle.min_shingle_size", 2)
-                .put("index.analysis.filter.shingle.max_shingle_size", 3)
-        );
+        request.settings(settings);
         CreateIndexResponse createIndexResponse = this.restHighLevelClient.indices().create(request, RequestOptions.DEFAULT);
         return createIndexResponse.isAcknowledged();
     }
 
     @Override
-    public boolean putMapping(String index, String type) throws IOException {
-        // i know this is messed up
+    public boolean putMapping(String index, String type, XContentBuilder builder) throws IOException {
         PutMappingRequest request = new PutMappingRequest(index).type(type);
-        XContentBuilder builder = XContentFactory.jsonBuilder();
-        builder.startObject();
-        {
-            builder.startObject("properties");
-            {
-                builder.startObject("id");
-                {
-                    builder.field("type", "keyword");
-                    builder.field("index", "true");
-                }
-                builder.endObject();
-                builder.startObject("thumbnail");
-                {
-                    builder.field("type", "text");
-                    builder.field("index", "false");
-                }
-                builder.endObject();
-                builder.startObject("text");
-                {
-                    builder.field("type", "text");
-                    builder.field("analyzer", "french");
-                    builder.startObject("fields");
-                    {
-                        builder.startObject("suggestion");
-                        {
-                            builder.field("type", "text");
-                            builder.field("analyzer", "trigram");
-                        }
-                        builder.endObject();
-                    }
-                    builder.endObject();
-
-                }
-                builder.endObject();
-            }
-            builder.endObject();
-        }
-        builder.endObject();
         request.source(builder);
         AcknowledgedResponse putMappingResponse = this.restHighLevelClient.indices().putMapping(request, RequestOptions.DEFAULT);
         return  putMappingResponse.isAcknowledged();

@@ -90,7 +90,7 @@ public class FileEndpoint {
     }
 
     @GetMapping("/func/indexingStats")
-    public Map<String, Long> indexingStats() {
+    public Map<String, Object> indexingStats() {
         return this.fileService.indexingStats();
     }
 }

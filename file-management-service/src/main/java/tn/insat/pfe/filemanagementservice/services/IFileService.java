@@ -34,5 +34,5 @@ public interface IFileService {
 
     void deleteMultipleFilesByLocation(String[] locations) throws IOException;
 
-    Map<String , Long> indexingStats();
+    Map<String , Object> indexingStats();
 }

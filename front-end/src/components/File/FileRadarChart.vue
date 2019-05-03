@@ -82,9 +82,8 @@ export default {
                 const topic = this.ldaTopicsDescription.find(x => +x.id === index)
                 // console.log(topic.description)
                 this.topic = topic.description.join(', ')
-                this.topic = series.series[0][series.dataPointIndex] + '% ' + this.topic
+                this.topic = 'Thème ' + index + ': ' + series.series[0][series.dataPointIndex] + '% ' + this.topic
                 this.$emit('update:topic', this.topic)
-                console.log()
                 return ''
               }
             }
@@ -97,7 +96,7 @@ export default {
     generateLabels: function() {
       const labels = []
       for (let i = 0; i < this.seriesData.length; i++) {
-        labels.push('Topic ' + (i + 1))
+        labels.push('Thème ' + (i + 1))
       }
       return labels
     },

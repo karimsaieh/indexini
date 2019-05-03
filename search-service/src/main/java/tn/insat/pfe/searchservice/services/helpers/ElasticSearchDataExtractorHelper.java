@@ -6,10 +6,12 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
+import org.elasticsearch.search.aggregations.bucket.histogram.ParsedDateHistogram;
+import org.elasticsearch.search.aggregations.bucket.range.ParsedDateRange;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.phrase.PhraseSuggestion;
-import org.elasticsearch.search.suggest.term.TermSuggestion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -97,6 +99,49 @@ public class ElasticSearchDataExtractorHelper {
         int page = pageable.getPageNumber();
         int size = pageable.getPageSize();
         return new PageImpl<>(fileGetDtosList, PageRequest.of(page,size),totalHits);
+    }
+
+    public static List<Map<String, String>> searchResponseToSearchAsYouTypeListOfMap(SearchResponse searchResponse, String field) {
+        List<Map<String, String>> result = new ArrayList<>();
+
+        for (SearchHit hit: searchResponse.getHits().getHits()) {
+            Map<String, HighlightField> highlightFieldsMap =  hit.getHighlightFields();
+            Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+            Map<String, String> map = new HashMap<>();
+            map.put("highlight",highlightFieldsMap.get(field).fragments()[0].toString());
+            map.put("value", (String)sourceAsMap.get(field));
+            result.add(map);
+        }
+        return result;
+    }
+
+    public static List<Map<String, Object>> searchResponseTohHistogramByRange(SearchResponse searchResponse) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        ParsedDateRange parsedDateRange = searchResponse.getAggregations().get("date_range");
+        ParsedDateHistogram parsedDateHistogram = parsedDateRange.getBuckets().get(0).getAggregations().get("date_histogram");
+        for(Histogram.Bucket bucket: parsedDateHistogram.getBuckets()) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("x", bucket.getKeyAsString());
+            map.put("y", bucket.getDocCount());
+            result.add(map);
+        }
+        return result;
+    }
+
+    public static Page<Map<String, String>>  searchResponseToRawHistoryPageListOfMap(SearchResponse searchResponse, Pageable pageable) {
+        List<Map<String, String>> result = new ArrayList<>();
+
+        for (SearchHit hit: searchResponse.getHits().getHits()) {
+            Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+            Map<String, String> map = new HashMap<>();
+            map.put("history", (String)sourceAsMap.get("history"));
+            map.put("date", (String)sourceAsMap.get("date"));
+            result.add(map);
+        }
+        long totalHits = searchResponse.getHits().getTotalHits();
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+        return new PageImpl<>(result, PageRequest.of(page,size),totalHits);
     }
 
 }

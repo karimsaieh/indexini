@@ -15,6 +15,7 @@
           :content-type="file.contentType"
           :thumbnail="file.thumbnail"
           :bisecting-kmeans-prediction="+file.bisectingKmeansPrediction"
+          :includes-highlight="false"
         />
 
       </div>

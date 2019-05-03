@@ -14,13 +14,13 @@
         :lg="3"
         :xl="3"
       >
-        <div style="height:280px;">
+        <div style="height:280px;" @click="goToFileDetail(file.id)">
           <file-thumbnail
             :image-src="file.thumbnail"
             :icon-src="contentTypeIcon(file.contentType)"
           />
           <div>
-            <span class="link-type" style="word-break: break-all;" @click="goToFileDetail(file.id)">{{ file.fileName | wrapFileName }} </span>
+            <span class="link-type" style="word-break: break-all;">{{ file.fileName | wrapFileName }} </span>
           </div>
         </div>
       </el-col>

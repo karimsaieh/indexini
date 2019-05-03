@@ -2,11 +2,10 @@
   <div>
     <el-card shadow="always">
       <div slot="header" class="clearfix">
-        <span>Téléversement par Url</span>
-        <el-button style="float: right; padding: 3px 0" type="text">Operation button</el-button>
+        <span>Téléversement par URL</span>
       </div>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <el-form-item label="Url" prop="url">
+        <el-form-item label="URL" prop="url">
           <el-input v-model="form.url" />
         </el-form-item>
 

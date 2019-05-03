@@ -2,6 +2,7 @@
   <div class="fixed-width-page-parent-container">
     <div class="fixed-width-page-container">
       <upload-manual-form />
+      <br>
       <upload-ingestion-by-url-form />
     </div>
   </div>

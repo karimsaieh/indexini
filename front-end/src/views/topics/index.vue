@@ -1,9 +1,9 @@
 <template>
   <div class="fixed-width-page-parent-container">
     <div class="fixed-width-page-container">
-
-      <topics-table />
-
+      <el-card>
+        <topics-table />
+      </el-card>
     </div>
   </div>
 </template>

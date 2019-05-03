@@ -5,27 +5,38 @@
 
         <el-row :gutter="20">
           <el-col :sm="18">
-            <el-input
+            <el-autocomplete
+              ref="autocomplete"
               v-model="query.query"
+              style="width:100%"
+              :debounce="0"
+              :hide-loading="true"
+              :fetch-suggestions="searchAsYouType"
               clearable
+              :trigger-on-focus="false"
               @keyup.enter.native="doSearch()"
               @clear="doSearch()"
-            />
+              @select="doSearch()"
+            >
+              <template slot-scope="{ item }" class="search-as-you-type-suggestion">
+                <div class="search-as-you-type-suggestion" v-html="item.highlight" />
+              </template>
+            </el-autocomplete>
+
           </el-col>
           <el-col :sm="6">
-            <el-button type="primary" icon="el-icon-search" @click="doSearch()">Search</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="doSearch()">Rechercher</el-button>
           </el-col>
         </el-row>
 
         <div class="tip">
-          <template v-if="Object.keys(suggestions).length !== 0">
+          <template v-if="suggestions!=null && Object.keys(suggestions).length !== 0">
             Essayez avec:
-            <span v-for="(value, path, index) in suggestions" :key="`suggestions-${index}`" class="link-type">
+            <span v-for="(value, path, index) in suggestions" :key="`suggestions-${index}`" class="suggestion-highlight link-type">
               <span class="link-type" @click="searchUsingSuggestion(path)" v-html="value" />
             </span>
           </template>
         </div>
-
         <div v-loading="loading" style="margin-top:30px">
           <template v-if="filesData.length==0">
             <el-card>
@@ -34,7 +45,7 @@
           </template>
           <template v-else>
 
-            <div v-for="(file) in filesData" :key="`files-sr-${file.id}`">
+            <div v-for="(file) in filesData" :key="`files-sr-${file.id}`" style="margin-top:30px;margin-bottom:30px">
               <file-search-card
                 :id="file.id"
                 :words="file.mostCommonWords"
@@ -88,6 +99,7 @@ export default {
       suggestions: {},
       loading: false,
       cancelFind: null,
+      cancelSearchAsYouType: null,
       query: {
         query: '',
         size: 10,
@@ -148,6 +160,7 @@ export default {
     doSearch() {
       this.query.page = 1
       this.$router.replace({ query: this.query })
+      this.$refs.autocomplete.suggestions = []
     },
     searchUsingSuggestion(suggestion) {
       this.query.query = suggestion
@@ -161,15 +174,43 @@ export default {
       console.log('handle size change')
       this.query.size = size
       this.$router.replace({ query: this.query })
+    },
+    searchAsYouType(queryString, cb) {
+      if (this.cancelSearchAsYouType != null) {
+        this.cancelSearchAsYouType('canceling search as you type')
+      }
+      const CancelToken = axios.CancelToken
+      const source = CancelToken.source()
+      this.cancelSearchAsYouType = source.cancel
+
+      const query = { 'searchAsYouType': queryString }
+
+      find(query, source.token).then((result) => {
+        const suggestions = result.data
+        this.cancelSearchAsYouType = null
+        cb(suggestions)
+      })
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .tip{
   font-size: 12px;
   color: #606266;
   height:15px;
+}
+.search-as-you-type-suggestion{
+  /deep/ em {
+    font-weight: bold;
+    font-style: normal;
+  }
+}
+.suggestion-highlight {
+    /deep/ em {
+    font-weight: bold;
+    font-style: normal;
+  }
 }
 </style>

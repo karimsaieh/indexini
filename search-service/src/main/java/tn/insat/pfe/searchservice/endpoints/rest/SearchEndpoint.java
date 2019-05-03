@@ -4,12 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import tn.insat.pfe.searchservice.dtos.*;
 import tn.insat.pfe.searchservice.services.ISearchService;
-
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/search")
@@ -47,8 +48,30 @@ public class SearchEndpoint {
         return this.searchService.findAllSortBy(sortBy, pageable);
     }
 
+    //use case search as you type from history
+    @GetMapping(params = "searchAsYouType")
+    public List<Map<String, String>> searchAsYouType(String searchAsYouType) throws IOException {
+        return this.searchService.searchAsYouType(searchAsYouType);
+    }
+
     @GetMapping("/ldaTopics")
     public List<LdaTopicsDescriptionGetDto> getLdaTopics() throws IOException {
         return this.searchService.getLdaTopics();
     }
+
+    @GetMapping("/historyAgg")
+    public List<Map<String, Object>> histogramByRange(@RequestParam String range) throws IOException {
+        return this.searchService.histogramByRange(range);
+    }
+
+    @GetMapping("/countSearch")
+    public long countSearch() throws IOException {
+        return this.searchService.countSearch();
+    }
+
+    @GetMapping("/history")
+    public Page<Map<String, String>> findAllHistory(Pageable pageable) throws IOException {
+        return this.searchService.findAllRawHistory(pageable);
+    }
+
 }

@@ -20,7 +20,7 @@ export default {
       if (icon.startsWith('el')) {
         vnodes.push(<i class={icon}/>)
       } else if (icon.startsWith('fab') || icon.startsWith('fas')) {
-        vnodes.push(<i class={icon}/>)
+        vnodes.push(<i style='width:40px !important' class={icon}/>)
       } else {
         vnodes.push(<svg-icon icon-class={icon}/>)
       }

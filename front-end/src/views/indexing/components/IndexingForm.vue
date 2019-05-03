@@ -2,11 +2,11 @@
   <div>
     <el-card shadow="always">
       <div slot="header" class="clearfix">
-        <span>Indexer</span>
+        <span>Indexation</span>
       </div>
       <el-form ref="form" :model="form" label-width="120px">
         <el-form-item label-width="190px" label="Pertinence de suggestion" prop="suggestionPrecision">
-          <el-slider v-model="form.suggestionPrecision" :format-tooltip="suggestionExplanation" />
+          <el-slider v-model="form.suggestionPrecision" style="width:100%" :format-tooltip="suggestionExplanation" />
         </el-form-item>
 
         <el-form-item label-width="190px" label="Nombre de Topics" prop="topicsNumber">

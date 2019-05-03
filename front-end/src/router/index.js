@@ -79,7 +79,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'dashboard', icon: 'dashboard', noCache: true, affix: true }
+        meta: { title: 'dashboard', icon: 'fas el-icon-fa-tachometer-alt', noCache: true, affix: true }
       }
     ]
   },
@@ -91,7 +91,7 @@ export const constantRoutes = [
         path: '',
         component: () => import('@/views/upload/index'),
         name: 'Upload',
-        meta: { title: 'Upload', icon: 'el-icon-upload', noCache: true }
+        meta: { title: 'Téléversement', icon: 'fas el-icon-fa-upload', noCache: true }
       }
     ]
   },
@@ -103,7 +103,7 @@ export const constantRoutes = [
         path: '',
         component: () => import('@/views/indexing/index'),
         name: 'Indexing',
-        meta: { title: 'Indexation', icon: 'tree-table', noCache: true }
+        meta: { title: 'Indexation', icon: 'fas el-icon-fa-hammer', noCache: true }
       }
     ]
   },
@@ -115,7 +115,7 @@ export const constantRoutes = [
         path: '',
         component: () => import('@/views/files/index'),
         name: 'Files',
-        meta: { title: 'Fichiers', icon: 'fas el-icon-fa-ambulance', noCache: true }
+        meta: { title: 'Fichiers', icon: 'fas el-icon-fa-table', noCache: true }
       }
     ]
   },
@@ -127,7 +127,7 @@ export const constantRoutes = [
         path: '',
         component: () => import('@/views/logs/index'),
         name: 'Logs',
-        meta: { title: 'Logs', icon: 'fab el-icon-fa-atlas', noCache: true }
+        meta: { title: 'Notifications', icon: 'fab el-icon-fa-bell', noCache: true }
       }
     ]
   },
@@ -139,7 +139,7 @@ export const constantRoutes = [
         path: '',
         component: () => import('@/views/topics/index'),
         name: 'Topics',
-        meta: { title: 'Topics', icon: 'fab el-icon-fa-bolt', noCache: true }
+        meta: { title: 'Thèmes', icon: 'fab el-icon-fa-list-ol', noCache: true }
       }
     ]
   },
@@ -152,7 +152,7 @@ export const constantRoutes = [
         path: '',
         component: () => import('@/views/sortedFilesByTopic/index'),
         name: 'SortedFilesByTopic',
-        meta: { title: 'Top Docs by Topic', icon: 'fab el-icon-fa-bolt', noCache: true }
+        meta: { title: 'Meilleurs Docs par thème', icon: 'fas el-icon-fa-history', noCache: true }
       }
     ]
   },
@@ -164,7 +164,7 @@ export const constantRoutes = [
         path: '',
         component: () => import('@/views/search/index'),
         name: 'Search',
-        meta: { title: 'Search', icon: 'fab el-icon-fa-search', noCache: true }
+        meta: { title: 'Recherche', icon: 'fab el-icon-fa-search', noCache: true }
       }
     ]
   },
@@ -177,7 +177,19 @@ export const constantRoutes = [
         path: '',
         component: () => import('@/views/file-detail/index'),
         name: 'FileDetail',
-        meta: { title: 'FileDetail', noCache: true }
+        meta: { title: 'Détails du fichier', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/history',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/history/index'),
+        name: 'History',
+        meta: { title: 'Historique', icon: 'fas el-icon-fa-history', noCache: true }
       }
     ]
   }

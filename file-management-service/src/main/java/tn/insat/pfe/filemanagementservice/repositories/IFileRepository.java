@@ -1,8 +1,5 @@
 package tn.insat.pfe.filemanagementservice.repositories;
 
-import com.querydsl.core.types.Predicate;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
@@ -11,6 +8,7 @@ import tn.insat.pfe.filemanagementservice.entities.File;
 import tn.insat.pfe.filemanagementservice.entities.QFile;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface IFileRepository extends MongoRepository<File, Long>,    QuerydslPredicateExecutor<File>
@@ -28,5 +26,7 @@ public interface IFileRepository extends MongoRepository<File, Long>,    Queryds
     Long countByIsIndexed(boolean isIndexed);
 
     List<File> findAllByLocation(String location);
+
+
 
 }

@@ -1,7 +1,6 @@
 <template>
   <div>
     <div>
-
       <el-card>
         <div class="logs-container">
           <div v-for="(notif, index) in getNotifications" :key="index" :style="{color: notif.color}">

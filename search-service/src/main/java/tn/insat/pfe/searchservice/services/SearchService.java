@@ -1,15 +1,14 @@
 package tn.insat.pfe.searchservice.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.core.AcknowledgedResponse;
-import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +34,8 @@ import tn.insat.pfe.searchservice.services.helpers.ElasticSearchDataExtractorHel
 import tn.insat.pfe.searchservice.utils.JsonUtils;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +54,16 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
     private String ldaTopicsIndex;
     @Value("${pfe_elasticsearch_index_lda-topics_type}")
     private String ldaTopicsIndexType;
+    @Value("${pfe_elasticsearch_index_history}")
+    private String historyIndex;
+    @Value("${pfe_elasticsearch_index_history_type}")
+    private String historyIndextype;
+    @Value("${pfe_elasticsearch_index_history-field}")
+    private String historyIndexField;
+    @Value("${pfe_elasticsearch_index_raw_history}")
+    private String rawHistoryIndex;
+    @Value("${pfe_elasticsearch_index_raw_history_type}")
+    private String rawHistoryIndextype;
     private final IElasticSearchClient elasticSearchClient;
     private final IRabbitProducer notificationProducer;
     private final IRabbitProducer fileDbUpdateProducer;
@@ -69,9 +80,14 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
         this.searchDtoCacheRepository = searchDtoCacheRepository;
     }
 
-//    @HystrixCommand(fallbackMethod = "cachedFind")
+
+
+    @HystrixCommand(fallbackMethod = "cachedFind")
     @Override
     public SearchDto find(String query, Pageable pageable) throws IOException {
+
+        this.saveHistory(query);
+        this.saveRawHistory(query);
 
         List<LdaTopicsDescriptionGetDto> ldaTopicsDescriptionGetDtosList = this.getLdaTopics();
 
@@ -100,9 +116,78 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
     }
 
     @Override
+    public List<Map<String, String>> searchAsYouType(String query) throws IOException {
+        SearchResponse searchResponse = this.elasticSearchClient.findAnd(this.historyIndex,this.historyIndexField, query);
+        return ElasticSearchDataExtractorHelper.searchResponseToSearchAsYouTypeListOfMap(searchResponse, this.historyIndexField);
+    }
+
+    private void saveHistory(String query) throws IOException {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", query);
+        map.put(this.historyIndexField, query);
+        map.put("date", new Date()); // not needed anymore ?
+        this.elasticSearchClient.upsertAsync(this.historyIndex, this.historyIndextype, map);
+    }
+
+    private void saveRawHistory(String query) throws  IOException {
+        Map<String, Object> map = new HashMap<>();
+        map.put(this.historyIndexField, query);
+        map.put("date", new Date());
+        this.elasticSearchClient.upsertAsync(this.rawHistoryIndex, this.rawHistoryIndextype, map);
+    }
+
+    @Override
+    public long countSearch() throws IOException {
+        return this.elasticSearchClient.count(this.rawHistoryIndex).getCount();
+    }
+
+
+    @Override
     public Page<FileGetDto> findByMustNot(String by, String value, String must, String not, Pageable pageable) throws IOException {
         SearchResponse searchResponse = this.elasticSearchClient.findByMustNot(this.fileIndex, by, value, must, not, pageable);
         return ElasticSearchDataExtractorHelper.searchResponseToFileGetDtoPage(searchResponse, pageable);
+    }
+
+
+    @Override
+    public List<Map<String, Object>> histogramByRange(String range) throws IOException {
+        DateHistogramInterval dateHistogramInterval;
+        String from;
+        String to ="now";
+        switch (range) {
+            case "lastHour":
+                dateHistogramInterval = DateHistogramInterval.MINUTE;
+                from = "now-60m/m";
+                break;
+            case "lastDay":
+                dateHistogramInterval = DateHistogramInterval.HOUR;
+                from = "now-"+(60*24)+"m/m";
+                break;
+            case "lastWeek":
+                dateHistogramInterval = DateHistogramInterval.DAY;
+                from = "now-"+(60*24*7)+"m/m";
+                break;
+            case "lastMonth":
+                dateHistogramInterval = DateHistogramInterval.DAY;
+                from = "now-"+(60*24*7*31)+"m/m";
+                break;
+            case "lastYear":
+                dateHistogramInterval = DateHistogramInterval.MONTH;
+                from = "now-"+(60*24*7*30*12)+"m/m";
+                break;
+            default:
+                dateHistogramInterval = DateHistogramInterval.MINUTE;
+                from = "now-60m/m";
+        }
+        SearchResponse searchResponse = this.elasticSearchClient
+                .histogramByRange(this.rawHistoryIndex, "date", from, to, dateHistogramInterval);
+        return ElasticSearchDataExtractorHelper.searchResponseTohHistogramByRange(searchResponse);
+    }
+
+    @Override
+    public Page<Map<String, String>> findAllRawHistory(Pageable pageable) throws IOException {
+        SearchResponse searchResponse = this.elasticSearchClient.findAll(this.rawHistoryIndex, "date", pageable);
+        return ElasticSearchDataExtractorHelper.searchResponseToRawHistoryPageListOfMap(searchResponse, pageable);
     }
 
     @Override
@@ -165,10 +250,95 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
 
     @Override
     public boolean initEsMapping() throws IOException {
-        if (!this.elasticSearchClient.indexExists(this.fileIndex)) {
-            this.elasticSearchClient.createIndex(this.fileIndex);
+        Settings.Builder fileIndexSettings =  Settings.builder()
+                .put("index.number_of_shards", 1)
+                .put("index.number_of_replicas", 1)
+                .put("index.analysis.analyzer.trigram.type", "custom")
+                .put("index.analysis.analyzer.trigram.tokenizer", "standard")
+                .put("index.analysis.analyzer.trigram.filter", "shingle")
+                .put("index.analysis.filter.shingle.type", "shingle")
+                .put("index.analysis.filter.shingle.min_shingle_size", 2)
+                .put("index.analysis.filter.shingle.max_shingle_size", 3);
+
+        Settings.Builder historyIndexSettings =  Settings.builder()
+                .put("index.number_of_shards", 1)
+                .put("index.number_of_replicas", 1)
+
+                .put("index.analysis.analyzer.autocomplete.tokenizer", "autocomplete")
+                .put("index.analysis.analyzer.autocomplete.filter", "lowercase")
+                .put("index.analysis.analyzer.autocomplete_search.tokenizer", "lowercase")
+                .put("index.analysis.tokenizer.autocomplete.type", "edge_ngram")
+                .put("index.analysis.tokenizer.autocomplete.min_gram", 1)
+                .put("index.analysis.tokenizer.autocomplete.max_gram", 30)
+                .put("index.analysis.tokenizer.autocomplete.token_chars", "letter")
+
+                ;
+
+        XContentBuilder fileIndexBuilder = XContentFactory.jsonBuilder();
+        fileIndexBuilder.startObject();
+        {
+            fileIndexBuilder.startObject("properties");
+            {
+                fileIndexBuilder.startObject("id");
+                {
+                    fileIndexBuilder.field("type", "keyword");
+                    fileIndexBuilder.field("index", "true");
+                }
+                fileIndexBuilder.endObject();
+                fileIndexBuilder.startObject("thumbnail");
+                {
+                    fileIndexBuilder.field("type", "text");
+                    fileIndexBuilder.field("index", "false");
+                }
+                fileIndexBuilder.endObject();
+                fileIndexBuilder.startObject("text");
+                {
+                    fileIndexBuilder.field("type", "text");
+                    fileIndexBuilder.field("analyzer", "french");
+                    fileIndexBuilder.startObject("fields");
+                    {
+                        fileIndexBuilder.startObject("suggestion");
+                        {
+                            fileIndexBuilder.field("type", "text");
+                            fileIndexBuilder.field("analyzer", "trigram");
+                        }
+                        fileIndexBuilder.endObject();
+                    }
+                    fileIndexBuilder.endObject();
+
+                }
+                fileIndexBuilder.endObject();
+            }
+            fileIndexBuilder.endObject();
         }
-        return this.elasticSearchClient.putMapping(this.fileIndex, this.fileIndexType);
+        fileIndexBuilder.endObject();
+
+        XContentBuilder historyIndexBuilder = XContentFactory.jsonBuilder();
+        historyIndexBuilder.startObject();
+        {
+            historyIndexBuilder.startObject("properties");
+            {
+                historyIndexBuilder.startObject("history");
+                {
+                    historyIndexBuilder.field("type", "text");
+                    historyIndexBuilder.field("analyzer", "autocomplete");
+                    historyIndexBuilder.field("search_analyzer", "autocomplete_search");
+                }
+                historyIndexBuilder.endObject();
+            }
+            historyIndexBuilder.endObject();
+        }
+        historyIndexBuilder.endObject();
+
+        if (!this.elasticSearchClient.indexExists(this.fileIndex)) {
+            this.elasticSearchClient.createIndex(this.fileIndex, fileIndexSettings);
+        }
+        if (!this.elasticSearchClient.indexExists(this.historyIndex)) {
+            this.elasticSearchClient.createIndex(this.historyIndex, historyIndexSettings);
+        }
+        boolean ok =  this.elasticSearchClient.putMapping(this.fileIndex, this.fileIndexType, fileIndexBuilder);
+        ok = ok && this.elasticSearchClient.putMapping(this.historyIndex, this.historyIndextype, historyIndexBuilder );
+        return ok;
     }
 
 }

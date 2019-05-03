@@ -22,6 +22,7 @@ import tn.insat.pfe.filemanagementservice.entities.File;
 import tn.insat.pfe.filemanagementservice.mq.Constants;
 import tn.insat.pfe.filemanagementservice.mq.payloads.*;
 import tn.insat.pfe.filemanagementservice.mq.producers.IRabbitProducer;
+import tn.insat.pfe.filemanagementservice.repositories.IFileMongoRepository;
 import tn.insat.pfe.filemanagementservice.repositories.IFileRepository;
 import tn.insat.pfe.filemanagementservice.services.utils.FileServiceUtils;
 import tn.insat.pfe.filemanagementservice.utils.JsonUtils;
@@ -45,6 +46,7 @@ public class FileService implements IFileService{
     private final IRabbitProducer ftpExplorerProducer;
     private final IRabbitProducer notificationProducer;
     private final IRabbitProducer fileDeleteProducer;
+    private final IFileMongoRepository fileMongoRepository;
 
     @Value("${pfe_hdfs_save-directory}")
     private String saveDirectory;
@@ -54,7 +56,8 @@ public class FileService implements IFileService{
                        @Qualifier("WebScrapingProducer") IRabbitProducer webScrapingProducer,
                        @Qualifier("FtpExplorerProducer") IRabbitProducer ftpExplorerProducer,
                        @Qualifier("FileDeleteProducer") IRabbitProducer fileDeleteProducer,
-                       @Qualifier("NotificationProducer") IRabbitProducer notificationProducer) {
+                       @Qualifier("NotificationProducer") IRabbitProducer notificationProducer,
+                       IFileMongoRepository fileMongoRepository) {
         this.fileRepository = fileRepository;
         this.fileMapper = fileMapper;
         this.fileHdfsClient = fileHdfsClient;
@@ -62,6 +65,7 @@ public class FileService implements IFileService{
         this.ftpExplorerProducer = ftpExplorerProducer;
         this.fileDeleteProducer = fileDeleteProducer;
         this.notificationProducer = notificationProducer;
+        this.fileMongoRepository = fileMongoRepository;
     }
 
     @Override
@@ -243,10 +247,11 @@ public class FileService implements IFileService{
 
 
     @Override
-    public Map<String , Long> indexingStats(){
-        Map<String, Long> stats  = new HashMap<>();
+    public Map<String , Object> indexingStats(){
+        Map<String, Object> stats  = new HashMap<>();
         stats.put("notIndexed", this.fileRepository.countByIsIndexed(false));
         stats.put("files", this.fileRepository.count());
+        stats.put("fileTypes", this.fileMongoRepository.countFileTypes());
         return stats;
     }
 

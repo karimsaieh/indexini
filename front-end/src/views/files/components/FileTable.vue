@@ -30,7 +30,7 @@
           label="Téleversement"
         >
           <template slot-scope="{row}">
-            {{ row.bulkSaveOperationTimestamp | formatDate }}
+            {{ row.bulkSaveOperationTimestamp | formatDateFromTimestampMilli }}
           </template>
         </el-table-column>
         <el-table-column
@@ -110,14 +110,9 @@ import _ from 'lodash'
 import { findAll, readFile, deleteFileByUrl, deleteMultipleFilesByUrl } from '@/api/file'
 export default {
   name: 'FileTable',
-  filters: {
-    formatDate: function(value) {
-      return new Date(value).toLocaleString()
-    }
-  },
   data() {
     return {
-      loading: true,
+      loading: false,
       tableData: [],
       selectedData: [],
       total: 0,
