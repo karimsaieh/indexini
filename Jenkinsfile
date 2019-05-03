@@ -14,8 +14,10 @@ pipeline {
     }
     stage('Push Images') {
       steps {
-        docker.withRegistry("", "gcr:docker-hub-cred") {
+        script{
+          docker.withRegistry("", "gcr:docker-hub-cred") {
           sh 'docker-compose push'
+          }
         }
       }
     }
