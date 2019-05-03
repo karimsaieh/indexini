@@ -14,7 +14,7 @@ pipeline {
     }
     stage('Push Images') {
       steps {
-        sh 'docker-compose push'
+        sh 'docker login && docker-compose push'
       }
     }
   }
