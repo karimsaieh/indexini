@@ -17,7 +17,7 @@ public class SparkManagerEndpoint {
 
     private final ISparkManagerService sparkManagerService;
     @Autowired
-    public SparkManagerEndpoint(SparkManagerService sparkManagerService) {
+    public SparkManagerEndpoint(ISparkManagerService sparkManagerService) {
         this.sparkManagerService =sparkManagerService;
     }
 

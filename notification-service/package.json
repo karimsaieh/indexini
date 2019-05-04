@@ -2,11 +2,11 @@
   "name": "notification-service",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "start-prod": "node index.js | pino-socket -s ./pino-settings.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "start-prod": "node server.js | pino-socket -s ./pino-settings.js",
+    "test": "jest --coverage",
     "genlint": "eslint -f json -o report.json .",
     "lint": "eslint  ."
   },
@@ -19,7 +19,10 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4",
-    "nodemon": "^1.18.10"
+    "jest": "^24.7.1",
+    "nodemon": "^1.18.10",
+    "superagent": "^5.0.5",
+    "supertest": "^4.0.2"
   },
   "dependencies": {
     "amqplib": "^0.5.3",

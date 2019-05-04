@@ -1,5 +1,7 @@
 package tn.insat.pfe.sparkmanagerservice.dtos;
 
+import java.util.Objects;
+
 public class SubmitJobDto {
 
     private int suggestionPrecision;
@@ -37,5 +39,20 @@ public class SubmitJobDto {
 
     public void setFiles(int files) {
         this.files = files;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SubmitJobDto that = (SubmitJobDto) o;
+        return suggestionPrecision == that.suggestionPrecision &&
+                topicsNumber == that.topicsNumber &&
+                files == that.files;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(suggestionPrecision, topicsNumber, files);
     }
 }

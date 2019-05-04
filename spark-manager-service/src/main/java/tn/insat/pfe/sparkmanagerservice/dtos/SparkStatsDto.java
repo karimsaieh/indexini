@@ -1,6 +1,7 @@
 package tn.insat.pfe.sparkmanagerservice.dtos;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class SparkStatsDto {
     private long numberOfJobs;
@@ -48,5 +49,21 @@ public class SparkStatsDto {
 
     public void setCurrentTopicsNumber(int currentTopicsNumber) {
         this.currentTopicsNumber = currentTopicsNumber;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SparkStatsDto that = (SparkStatsDto) o;
+        return numberOfJobs == that.numberOfJobs &&
+                currentSuggestionPrecision == that.currentSuggestionPrecision &&
+                currentTopicsNumber == that.currentTopicsNumber &&
+                Objects.equals(lastJobDate, that.lastJobDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(numberOfJobs, lastJobDate, currentSuggestionPrecision, currentTopicsNumber);
     }
 }

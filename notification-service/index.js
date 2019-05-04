@@ -7,7 +7,7 @@ const express = require('express');
 
 const app = express();
 const amqp = require('amqplib/callback_api');
-const logger = require('./logger.js');
+
 const sse = require('./sse');
 const cors = require('./cors');
 require('./logger');
@@ -50,6 +50,8 @@ app.get('/notifs-ms/api/v1/notifs/stream', (req, res) => {
   });
 });
 
-app.listen(3010, () => {
-  logger.info('node js notification working');
+app.get('/', (req, res) => {
+  res.status(200).send('Hello World!');
 });
+
+module.exports = app;
