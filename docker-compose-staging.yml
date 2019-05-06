@@ -50,8 +50,8 @@ services:
     environment:
       - spring_profiles_active=staging
 
-  front-end:
-    image: karimsaieh/pfe-front-end
+  front-end-staging:
+    image: karimsaieh/pfe-front-end-staging
     ports:
       - "3000:3000"
     # entrypoint: you wait here for gateway

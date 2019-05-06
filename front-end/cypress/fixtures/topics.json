@@ -1,0 +1,47 @@
+[
+    {
+        "id": "0",
+        "description": [
+            "certificat",
+            "logement",
+            "zone",
+            "droit",
+            "frais",
+            "prix",
+            "licenciement",
+            "médical",
+            "locataire",
+            "revenu"
+        ]
+    },
+    {
+        "id": "2",
+        "description": [
+            "marché",
+            "choix",
+            "boamp",
+            "publication",
+            "formulaire",
+            "aide",
+            "forfait",
+            "boampfr",
+            "publier",
+            "avis"
+        ]
+    },
+    {
+        "id": "1",
+        "description": [
+            "gratification",
+            "stage",
+            "droit",
+            "usufruit",
+            "stagiaire",
+            "minimal",
+            "logement",
+            "zone",
+            "certificat",
+            "propriété"
+        ]
+    }
+]

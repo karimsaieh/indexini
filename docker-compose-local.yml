@@ -41,7 +41,7 @@ services:
 
   file-management-service:
     build: file-management-service
-    image: karimsaieh/pfe-file-management-service
+    image: karimsaieh/pfe-file-management-service:local
     ports:
       - "3011:3011"
     entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
@@ -53,7 +53,7 @@ services:
 
   front-end:
     build: front-end
-    image: karimsaieh/pfe-front-end
+    image: karimsaieh/pfe-front-end:local
     ports:
       - "3000:3000"
     # entrypoint: you wait here for gateway
@@ -64,7 +64,7 @@ services:
     build: 
       context: front-end
       dockerfile: Dockerfile-staging
-    image: karimsaieh/pfe-front-end-staging
+    image: karimsaieh/pfe-front-end-staging:local
     ports:
       - "3000:3000"
     # entrypoint: you wait here for gateway
@@ -73,7 +73,7 @@ services:
 
   ftp-explorer-service:
     build: ftp-explorer-service
-    image: karimsaieh/pfe-ftp-explorer-service
+    image: karimsaieh/pfe-ftp-explorer-service:local
     entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
     command: "python ./Main.py"
     environment:
@@ -82,7 +82,7 @@ services:
 
   hadoop-docker-node:
     build: hadoop-docker-node
-    image: karimsaieh/pfe-hadoop-docker-node
+    image: karimsaieh/pfe-hadoop-docker-node:local
     ports:
       - "8020:8020"
       - "50070:50070"
@@ -99,7 +99,7 @@ services:
 
   hystrix-dashboard:
     build: hystrix-dashboard
-    image: karimsaieh/pfe-hystrix-dashboard
+    image: karimsaieh/pfe-hystrix-dashboard:local
     ports:
       - "3014:3014"
     environment:
@@ -107,7 +107,7 @@ services:
 
   notification-service:
     build: notification-service
-    image: karimsaieh/pfe-notification-service
+    image: karimsaieh/pfe-notification-service:local
     ports:
       - "3010:3010"
     entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
@@ -120,7 +120,7 @@ services:
 
   search-service:
     build: search-service
-    image: karimsaieh/pfe-search-service
+    image: karimsaieh/pfe-search-service:local
     ports:
       - "3012:3012"
     entrypoint: /wait-for-it.sh redis:6379 -t 1000 -- /wait-for-it.sh elasticsearch:9200 -t 1000 -- /wait-for-it.sh rabbitmq:5672 -t 1000 --
@@ -132,7 +132,7 @@ services:
 
   spark-manager-service:
     build: spark-manager-service
-    image: karimsaieh/pfe-spark-manager-service
+    image: karimsaieh/pfe-spark-manager-service:local
     ports:
       - "3013:3013"
     # entrypoint: you could wait for livy to start
@@ -144,7 +144,7 @@ services:
 
   web-scraping-service:
     build: web-scraping-service
-    image: karimsaieh/pfe-web-scraping-service
+    image: karimsaieh/pfe-web-scraping-service:local
     entrypoint: /wait-for-it.sh rabbitmq:5672 -t 1000 --
     command: "python ./Main.py"
     environment:
@@ -247,7 +247,7 @@ services:
 
   logstash:
     build: logstash
-    image: karimsaieh/pfe-logstash
+    image: karimsaieh/pfe-logstash:local
     ports:
       - "5044:5044"
       - "9600:9600"
