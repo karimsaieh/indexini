@@ -12,6 +12,7 @@
     "lint": "eslint --ext .js,.vue src",
     "test:unit": "vue-cli-service test:unit",
     "test:ci": "npm run lint && npm run test:unit",
+    "cypress:open": "cypress open",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
     "new": "plop"
   },
@@ -92,6 +93,7 @@
     "chalk": "2.4.2",
     "chokidar": "2.1.5",
     "connect": "3.6.6",
+    "cypress": "^3.2.0",
     "eslint": "5.15.3",
     "eslint-plugin-vue": "5.2.2",
     "html-webpack-plugin": "3.2.0",

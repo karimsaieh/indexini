@@ -2,7 +2,6 @@
   <div class="fixed-width-page-parent-container">
     <div class="fixed-width-page-container">
       <div>
-
         <el-row :gutter="20">
           <el-col :sm="18">
             <el-autocomplete
@@ -22,7 +21,6 @@
                 <div class="search-as-you-type-suggestion" v-html="item.highlight" />
               </template>
             </el-autocomplete>
-
           </el-col>
           <el-col :sm="6">
             <el-button type="primary" icon="el-icon-search" @click="doSearch()">Rechercher</el-button>
@@ -32,20 +30,25 @@
         <div class="tip">
           <template v-if="suggestions!=null && Object.keys(suggestions).length !== 0">
             Essayez avec:
-            <span v-for="(value, path, index) in suggestions" :key="`suggestions-${index}`" class="suggestion-highlight link-type">
+            <span
+              v-for="(value, path, index) in suggestions"
+              :key="`suggestions-${index}`"
+              class="suggestion-highlight link-type"
+            >
               <span class="link-type" @click="searchUsingSuggestion(path)" v-html="value" />
             </span>
           </template>
         </div>
         <div v-loading="loading" style="margin-top:30px">
           <template v-if="filesData.length==0">
-            <el-card>
-              Aucune resultat
-            </el-card>
+            <el-card>Aucune resultat</el-card>
           </template>
           <template v-else>
-
-            <div v-for="(file) in filesData" :key="`files-sr-${file.id}`" style="margin-top:30px;margin-bottom:30px">
+            <div
+              v-for="(file) in filesData"
+              :key="`files-sr-${file.id}`"
+              style="margin-top:30px;margin-bottom:30px"
+            >
               <file-search-card
                 :id="file.id"
                 :words="file.mostCommonWords"
@@ -75,7 +78,6 @@
         </div>
 
         <back-to-top :visibility-height="300" :back-position="50" transition-name="fade" />
-
       </div>
     </div>
   </div>
@@ -111,23 +113,30 @@ export default {
   },
 
   created() {
-    if (this.$route.query.query !== undefined &&
-    this.$route.query.page !== undefined &&
-    this.$route.query.size !== undefined) {
+    if (
+      this.$route.query.query !== undefined &&
+      this.$route.query.page !== undefined &&
+      this.$route.query.size !== undefined
+    ) {
+      const CancelToken = axios.CancelToken
+      const source = CancelToken.source()
+      this.cancelFind = source.cancel
       this.loading = true
       this.query = Object.assign({}, this.$route.query)
       const query = Object.assign({}, this.query)
       query.page -= 1
-      find(query).then((result) => {
+      find(query).then(result => {
         this.setData(result)
       })
     }
   },
 
   beforeRouteUpdate(to, from, next) {
-    if (to.query.query !== undefined &&
-    to.query.page !== undefined &&
-    to.query.size !== undefined) {
+    if (
+      to.query.query !== undefined &&
+      to.query.page !== undefined &&
+      to.query.size !== undefined
+    ) {
       if (this.loading === true) {
         this.cancelFind('canceling current search on favor of a new one')
       }
@@ -138,7 +147,7 @@ export default {
       this.query = Object.assign({}, to.query)
       const query = Object.assign({}, this.query)
       query.page -= 1
-      find(query, source.token).then((result) => {
+      find(query, source.token).then(result => {
         this.setData(result)
         next()
       })
@@ -183,9 +192,9 @@ export default {
       const source = CancelToken.source()
       this.cancelSearchAsYouType = source.cancel
 
-      const query = { 'searchAsYouType': queryString }
+      const query = { searchAsYouType: queryString }
 
-      find(query, source.token).then((result) => {
+      find(query, source.token).then(result => {
         const suggestions = result.data
         this.cancelSearchAsYouType = null
         cb(suggestions)
@@ -196,19 +205,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.tip{
+.tip {
   font-size: 12px;
   color: #606266;
-  height:15px;
+  height: 15px;
 }
-.search-as-you-type-suggestion{
+.search-as-you-type-suggestion {
   /deep/ em {
     font-weight: bold;
     font-style: normal;
   }
 }
 .suggestion-highlight {
-    /deep/ em {
+  /deep/ em {
     font-weight: bold;
     font-style: normal;
   }
