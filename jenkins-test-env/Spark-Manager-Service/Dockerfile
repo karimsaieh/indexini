@@ -15,3 +15,4 @@ RUN apt-get install -y systemd
 RUN mkdir -p /data/db
 RUN mongod --version
 RUN apt-get install -y netcat
+RUN chmod 777 /data/db

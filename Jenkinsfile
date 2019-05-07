@@ -19,6 +19,7 @@ pipeline {
               dir(path: 'spark-manager-service') {
                 sh '(mongod &) && sleep 30 && echo "done waiting for mongo"'
                 sh '(mvn spring-boot:run -Dspring.profiles.active=dev &) && (while ! echo "waiting" | nc localhost 3013; do sleep 1 && echo waiting; done) && (echo "gatling will start soon" && sleep 10) && (mvn gatling:test)'
+                gatlingArchive()
                 sh 'mvn test -Dspring.profiles.active=dev'
               }
             }
