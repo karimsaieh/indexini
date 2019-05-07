@@ -33,6 +33,10 @@ pipeline {
                 image 'karimsaieh/jenkins-pfe-vue-test-env'
               }
             }
+            environment {
+              HOME = '.'
+              npm_config_cache = 'npm-cache'
+            }
             steps {
               dir(path: 'front-end') {
                 sh 'npm install'
@@ -45,6 +49,10 @@ pipeline {
               docker {
                 image 'node:11.13.0-alpine'
               }
+            }
+            environment {
+              HOME = '.'
+              npm_config_cache = 'npm-cache'
             }
             steps {
               dir(path: 'notification-service') {
