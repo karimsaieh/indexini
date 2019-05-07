@@ -6,7 +6,7 @@ pipeline {
           stage('Test-Spark-Manager-Service') {
             agent {
               docker {
-                image 'karimsaieh/jenkins-pfe-spark-manager-service-test-env',
+                image 'karimsaieh/jenkins-pfe-spark-manager-service-test-env'
                 args '-v /root/.m2:/root/.m2' 
               }
             }
