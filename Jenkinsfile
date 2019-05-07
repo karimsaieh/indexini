@@ -18,6 +18,8 @@ pipeline {
               dir(path: 'spark-manager-service') {
                 sh 'ls'
                 sh 'mvn test -Dspring.profiles.active=dev'
+                sh 'mvn spring-boot:run'
+                sh 'mvn gatling:test'
               }
             }
           }
