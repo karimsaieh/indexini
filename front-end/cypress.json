@@ -4,7 +4,7 @@
   "screenshotOnRunFailure": false,
   "reporter": "junit",
   "reporterOptions": {
-    "mochaFile": "cypress/junit/cypress-report.xml",
+    "mochaFile": "cypress/junit/cypress-report-[hash].xml",
     "toConsole": true
   }
 }
