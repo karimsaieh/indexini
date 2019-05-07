@@ -17,13 +17,7 @@ pipeline {
             }
             steps {
               dir(path: 'spark-manager-service') {
-                sh 'mvn spring-boot:run -Dspring.profiles.active=dev'
-                waitUntil {
-                  script {
-                    def r = sh script: 'wget -q http://localhost:3013/spark-mg-ms/api/v1/spark-manager/func/sparkStats -O /dev/null', returnStatus: true
-                    return (r == 0);
-                  }
-                }
+                sh 'mvn spring-boot:start -Dspring.profiles.active=dev'
                 sh 'mvn gatling:test'
                 sh 'mvn test -Dspring.profiles.active=dev'
               }
