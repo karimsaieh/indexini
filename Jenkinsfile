@@ -16,7 +16,7 @@ pipeline {
             }
             steps {
               dir(path: 'spark-manager-service') {
-                sh 'mvn spring-boot:run'
+                sh 'mvn spring-boot:run -Dspring.profiles.active=dev'
                 sh 'mvn gatling:test'
                 sh 'mvn test -Dspring.profiles.active=dev'
               }
