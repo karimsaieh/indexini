@@ -3,6 +3,18 @@ pipeline {
     stages {
       stage('Test') {
         parallel {
+          stage('Test-Front-End') {
+            agent {
+              docker {
+                image 'node:11.13.0-alpine'
+              }
+            }
+            steps {
+              dir(path: 'front-end') {
+                sh 'npm run test:unit'
+              }
+            }
+          }
           stage('Test-File-Management-Service') {
             agent {
               docker {
