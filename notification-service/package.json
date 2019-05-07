@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon server.js",
     "start-prod": "node server.js | pino-socket -s ./pino-settings.js",
-    "test": "jest --coverage",
+    "test": "jest --coverage --reporters=default --reporters=jest-junit",
     "genlint": "eslint -f json -o report.json .",
     "lint": "eslint  ."
   },
@@ -20,6 +20,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4",
     "jest": "^24.7.1",
+    "jest-junit": "^6.4.0",
     "nodemon": "^1.18.10",
     "superagent": "^5.0.5",
     "supertest": "^4.0.2"
@@ -31,5 +32,9 @@
     "pino": "^5.12.2",
     "pino-socket": "^2.0.0",
     "winston": "^2.4.4"
+  },
+  "jest-junit": {
+    "output": "coverage/junit/junit.xml",
+    "usePathForSuiteName": "true"
   }
 }

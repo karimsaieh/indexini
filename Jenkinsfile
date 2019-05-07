@@ -43,6 +43,11 @@ pipeline {
                 sh 'npm run test:unit'
               }
             }
+            post {
+              always {
+                junit 'coverage/junit/junit.xml'
+              }
+            }
           }
           stage('Test-Notification-Service') {
             agent {
@@ -58,6 +63,11 @@ pipeline {
               dir(path: 'notification-service') {
                 sh 'npm install'
                 sh 'npm run test'
+              }
+            }
+            post {
+              always {
+                junit 'coverage/junit/junit.xml'
               }
             }
           }
@@ -119,26 +129,6 @@ pipeline {
                 sh 'ls'
                 sh 'mvn test -Dspring.profiles.active=dev'
               }
-            }
-          }
-          stage('pardfghal3___') {
-            steps {
-              echo 'dfgs'
-            }
-          }
-          stage('pargffghddhal3') {
-            steps {
-              echo 'dfgs'
-            }
-          }
-          stage('pdharafgdhl3') {
-            steps {
-              echo 'dfgs'
-            }
-          }
-          stage('parfdhdal3') {
-            steps {
-              echo 'dfgs'
             }
           }
         }

@@ -34,5 +34,6 @@ module.exports = {
     'cobertura',
     'json-summary'
   ],
+  'reporters': ['default', 'jest-junit'],
   testURL: 'http://localhost/'
 }
