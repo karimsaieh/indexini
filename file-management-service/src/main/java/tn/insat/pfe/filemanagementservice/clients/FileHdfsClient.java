@@ -5,6 +5,7 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.security.UserGroupInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ public class FileHdfsClient implements IFileHdfsClient{
 
     @PostConstruct
     public void init() throws IOException {
+        UserGroupInformation.setLoginUser(UserGroupInformation.createRemoteUser("karim"));
         Configuration conf  = this.hdfsProvider.getConf();
         this.fileSystem = FileSystem.get(conf);
     }
