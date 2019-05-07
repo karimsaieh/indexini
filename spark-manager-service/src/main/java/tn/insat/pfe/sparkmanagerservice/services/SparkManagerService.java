@@ -82,9 +82,11 @@ public class SparkManagerService implements ISparkManagerService {
         SparkStatsDto sparkStatsDto = new SparkStatsDto();
         Job lastJob = this.jobRepository.findFirst1ByOrderByDateDesc();
         //should have used mapStruct
-        sparkStatsDto.setCurrentSuggestionPrecision(lastJob.getSuggestionPrecision());
-        sparkStatsDto.setCurrentTopicsNumber(lastJob.getTopicsNumber());
-        sparkStatsDto.setLastJobDate(lastJob.getDate());
+        if(lastJob !=null) {
+            sparkStatsDto.setCurrentSuggestionPrecision(lastJob.getSuggestionPrecision());
+            sparkStatsDto.setCurrentTopicsNumber(lastJob.getTopicsNumber());
+            sparkStatsDto.setLastJobDate(lastJob.getDate());
+        }
         sparkStatsDto.setNumberOfJobs(this.jobRepository.count());
         return sparkStatsDto;
     }

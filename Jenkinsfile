@@ -3,6 +3,24 @@ pipeline {
     stages {
       stage('Test') {
         parallel {
+          stage('Test-Spark-Manager-Service') {
+            agent {
+              docker {
+                image 'karimsaieh/jenkins-pfe-spark-manager-service-test-env'
+              }
+            }
+            post {
+              always {
+                junit 'spark-manager-service/target/surefire-reports/*.xml'
+              }
+            }
+            steps {
+              dir(path: 'spark-manager-service') {
+                sh 'ls'
+                sh 'mvn test -Dspring.profiles.active=dev'
+              }
+            }
+          }
           stage('Test-Front-End') {
             agent {
               docker {
@@ -124,14 +142,12 @@ pipeline {
           stage('Test-Spark-Manager-Service') {
             agent {
               docker {
-                image 'maven:3-alpine'
-                args '-v /root/.m2:/root/.m2'
+                image 'karimsaieh/jenkins-pfe-spark-manager-service-test-env'
               }
             }
             post {
               always {
                 junit 'spark-manager-service/target/surefire-reports/*.xml'
-  
               }
             }
             steps {
