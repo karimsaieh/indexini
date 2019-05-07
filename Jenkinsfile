@@ -11,7 +11,14 @@ pipeline {
             }
             steps {
               dir(path: 'web-scraping-service') {
-                sh 'python -m unittest'
+                sh 'pip install coverage'
+                sh 'pip install unittest-xml-reporting'
+                sh 'coverage run -m xmlrunner discover -o junit'
+              }
+            }
+            post {
+              always {
+                junit 'web-scraping-service/junit/*.xml'
               }
             }
           }
