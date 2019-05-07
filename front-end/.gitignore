@@ -26,3 +26,4 @@ coverage
 
 cypress/screenshots/*
 cypress/videos/*
+cypress/junit/*

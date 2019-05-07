@@ -3,6 +3,30 @@ pipeline {
     stages {
       stage('Test') {
         parallel {
+          stage('Test-Front-End') {
+            agent {
+              docker {
+                image 'karimsaieh/jenkins-pfe-vue-test-env'
+              }
+            }
+            environment {
+              HOME = '/tmp'
+              npm_config_cache = 'npm-cache'
+            }
+            steps {
+              dir(path: 'front-end') {
+                sh 'npm install'
+                sh 'npm run test:unit'
+                sh 'npm run test:cy'
+              }
+            }
+            post {
+              always {
+                junit 'front-end/coverage/junit/junit.xml'
+                junit 'front-end/cypress/junit/cypress-report.xml'
+              }
+            }
+          }
           stage('Test-Web-Scraping-Service') {
             agent {
               docker {
@@ -32,28 +56,6 @@ pipeline {
             steps {
               dir(path: 'ftp-explorer-service') {
                 sh 'python -m unittest tests.test_utils'
-              }
-            }
-          }
-          stage('Test-Front-End') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-vue-test-env'
-              }
-            }
-            environment {
-              HOME = '/tmp'
-              npm_config_cache = 'npm-cache'
-            }
-            steps {
-              dir(path: 'front-end') {
-                sh 'npm install'
-                sh 'npm run test:unit'
-              }
-            }
-            post {
-              always {
-                junit 'front-end/coverage/junit/junit.xml'
               }
             }
           }
