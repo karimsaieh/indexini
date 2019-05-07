@@ -6,12 +6,24 @@ pipeline {
           stage('Test-Front-End') {
             agent {
               docker {
-                image 'node:11.13.0-alpine'
+                image 'karimsaieh/jenkins-pfe-vue-test-env'
               }
             }
             steps {
               dir(path: 'front-end') {
                 sh 'npm run test:unit'
+              }
+            }
+          }
+          stage('Test-Notification-Service') {
+            agent {
+              docker {
+                image 'node:11.13.0-alpine'
+              }
+            }
+            steps {
+              dir(path: 'notification-service') {
+                sh 'npm run test'
               }
             }
           }
