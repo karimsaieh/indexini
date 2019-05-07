@@ -51,7 +51,7 @@ pipeline {
               }
             }
             environment {
-              HOME = '.'
+              HOME = '/tmp'
               npm_config_cache = 'npm-cache'
             }
             steps {
