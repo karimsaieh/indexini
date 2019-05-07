@@ -3,6 +3,30 @@ pipeline {
     stages {
       stage('Test') {
         parallel {
+          stage('Test-Web-Scraping-Service') {
+            agent {
+              docker {
+                image 'python:3.7.3'
+              }
+            }
+            steps {
+              dir(path: 'web-scraping-service') {
+                sh 'python -m unittest'
+              }
+            }
+          }
+          stage('Test-Ftp-Explorer-Service') {
+            agent {
+              docker {
+                image 'python:3.7.3'
+              }
+            }
+            steps {
+              dir(path: 'ftp-explorer-service') {
+                sh 'python -m unittest tests.test_utils'
+              }
+            }
+          }
           stage('Test-Front-End') {
             agent {
               docker {
