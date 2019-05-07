@@ -23,7 +23,7 @@ pipeline {
             post {
               always {
                 junit 'front-end/coverage/junit/junit.xml'
-                junit 'front-end/cypress/junit/cypress-report.xml'
+                junit 'front-end/cypress/junit/*.xml'
               }
             }
           }
