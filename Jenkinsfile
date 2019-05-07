@@ -6,7 +6,7 @@ pipeline {
           stage('Test-Web-Scraping-Service') {
             agent {
               docker {
-                image 'python:3.7.3'
+                image 'karimsaieh/jenkins-pfe-python-test-env'
               }
             }
             environment {
@@ -14,8 +14,6 @@ pipeline {
             }
             steps {
               dir(path: 'web-scraping-service') {
-                sh 'pip install coverage'
-                sh 'pip install unittest-xml-reporting'
                 sh 'coverage run -m xmlrunner discover -o junit'
               }
             }
@@ -28,7 +26,7 @@ pipeline {
           stage('Test-Ftp-Explorer-Service') {
             agent {
               docker {
-                image 'python:3.7.3'
+                image 'karimsaieh/jenkins-pfe-python-test-env'
               }
             }
             steps {
