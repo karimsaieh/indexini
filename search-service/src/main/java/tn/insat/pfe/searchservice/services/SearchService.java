@@ -81,7 +81,6 @@ public class SearchService  extends SearchServiceCacheFallback implements ISearc
     }
 
 
-
     @HystrixCommand(fallbackMethod = "cachedFind")
     @Override
     public SearchDto find(String query, Pageable pageable) throws IOException {

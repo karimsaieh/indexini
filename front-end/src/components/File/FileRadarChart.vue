@@ -82,7 +82,7 @@ export default {
                 const topic = this.ldaTopicsDescription.find(x => +x.id === index)
                 // console.log(topic.description)
                 this.topic = topic.description.join(', ')
-                this.topic = 'Thème ' + (index+1) + ': ' + series.series[0][series.dataPointIndex] + '% ' + this.topic
+                this.topic = 'Thème ' + (index + 1) + ': ' + series.series[0][series.dataPointIndex] + '% ' + this.topic
                 this.$emit('update:topic', this.topic)
                 return ''
               }

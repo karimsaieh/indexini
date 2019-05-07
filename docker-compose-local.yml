@@ -51,14 +51,14 @@ services:
     environment:
       - spring_profiles_active=staging
 
-  front-end:
-    build: front-end
-    image: karimsaieh/pfe-front-end:local
-    ports:
-      - "3000:3000"
-    # entrypoint: you wait here for gateway
-    labels:
-      - "traefik.http.routers.front.rule=(Host(`pfe.localhost`) && PathPrefix(`/`))"
+  # front-end:
+  #   build: front-end
+  #   image: karimsaieh/pfe-front-end:local
+  #   ports:
+  #     - "3000:3000"
+  #   # entrypoint: you wait here for gateway
+  #   labels:
+  #     - "traefik.http.routers.front.rule=(Host(`pfe.localhost`) && PathPrefix(`/`))"
   
   front-end-staging:
     build: 
