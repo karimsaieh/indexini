@@ -11,6 +11,7 @@ pipeline {
             }
             steps {
               dir(path: 'front-end') {
+                sh 'npm install'
                 sh 'npm run test:unit'
               }
             }
@@ -23,6 +24,7 @@ pipeline {
             }
             steps {
               dir(path: 'notification-service') {
+                sh 'npm install'
                 sh 'npm run test'
               }
             }
