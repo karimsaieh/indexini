@@ -13,5 +13,5 @@ RUN apt update
 RUN apt install -y mongodb-org
 RUN apt-get install -y systemd
 RUN mkdir -p /data/db
-RUN (mongod &) && sleep 20
 RUN mongod --version
+RUN apt-get install -y netcat
