@@ -9,6 +9,9 @@ pipeline {
                 image 'python:3.7.3'
               }
             }
+            environment {
+              HOME = '/tmp'
+            }
             steps {
               dir(path: 'web-scraping-service') {
                 sh 'pip install coverage'
