@@ -45,7 +45,7 @@ pipeline {
             }
             post {
               always {
-                junit 'coverage/junit/junit.xml'
+                junit 'front-end/coverage/junit/junit.xml'
               }
             }
           }
@@ -67,7 +67,7 @@ pipeline {
             }
             post {
               always {
-                junit 'coverage/junit/junit.xml'
+                junit 'notification-service/coverage/junit/junit.xml'
               }
             }
           }
