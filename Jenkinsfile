@@ -6,7 +6,7 @@ pipeline {
           stage('Test-Front-End') {
             agent {
               docker {
-                image 'karimsaieh/jenkins-pfe-vue-test-env'
+                image 'karimsaieh/jenkins-pfe-vue-test-env:cy'
               }
             }
             environment {
