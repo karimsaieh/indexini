@@ -4,7 +4,7 @@ pipeline {
       stage('Sonarqube') {
         steps {
           dir(path: 'spark-manager-service') {
-            sh 'mvn clean package sonar:sonar'
+            sh 'mvn clean package -Dspring.profiles.active=dev sonar:sonar'
           }
         }
       }
