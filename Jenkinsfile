@@ -2,6 +2,11 @@ pipeline {
     agent any
     stages {
       stage('Sonarqube') {
+        agent {
+          docker {
+            image 'maven:3-alpine'
+          }
+        }
         steps {
           dir(path: 'spark-manager-service') {
             sh 'mvn clean package -Dspring.profiles.active=dev sonar:sonar'
