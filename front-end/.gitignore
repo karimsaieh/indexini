@@ -25,7 +25,7 @@ yarn.lock
 .scannerwork
 
 coverage
-
+report.json
 cypress/screenshots/*
 cypress/videos/*
 cypress/junit/*

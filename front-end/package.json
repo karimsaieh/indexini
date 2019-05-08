@@ -18,7 +18,8 @@
     "start": "vue-cli-service serve",
     "cy:run": "cypress run --record --key 11c7ff1b-4557-47e7-ae6d-128cae6e8d2f",
     "test:cy": "start-server-and-test start http://localhost:9527 cy:run",
-    "sonar": "sonar-scanner"
+    "sonar": "sonar-scanner",
+    "lintJSON": "eslint -f json -o report.json --ext .js,.vue src"
   },
   "husky": {
     "hooks": {

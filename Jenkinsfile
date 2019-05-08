@@ -9,6 +9,59 @@ pipeline {
       }
       stage('Test') {
         parallel {
+          stage('Test-Notification-Service') {
+            agent {
+              docker {
+                image 'node:11.13.0'
+                args '--network="host"' 
+              }
+            }
+            environment {
+              HOME = '.'
+              npm_config_cache = 'npm-cache'
+            }
+            steps {
+              dir(path: 'notification-service') {
+                sh 'npm install'
+                sh 'npm run test'
+                sh 'npm run lintJSON'
+                sh 'npm run sonar'
+              }
+            }
+            post {
+              always {
+                junit 'notification-service/coverage/junit/junit.xml'
+              }
+            }
+          }
+          stage('Test-Front-End') {
+            agent {
+              docker {
+                image 'karimsaieh/jenkins-pfe-vue-test-env:cy'
+                args '--network="host"'
+                reuseNode true
+              }
+            }
+            environment {
+              HOME = '/tmp'
+              npm_config_cache = 'npm-cache'
+            }
+            steps {
+              dir(path: 'front-end') {
+                sh 'npm install'
+                sh 'npm run test:unit'
+                sh 'npm run test:cy'
+                sh 'npm run lintJSON'
+                sh 'npm run sonar'
+              }
+            }
+            post {
+              always {
+                junit 'front-end/coverage/junit/junit.xml'
+                junit 'front-end/cypress/junit/*.xml'
+              }
+            }
+          }
           stage('Test-Web-Scraping-Service') {
             agent {
               docker {
@@ -43,57 +96,6 @@ pipeline {
               dir(path: 'ftp-explorer-service') {
                 sh 'python -m unittest tests.test_utils'
                 sh '/usr/local/sonar/sonar-scanner-3.3.0.1492-linux/bin/sonar-scanner'
-              }
-            }
-          }
-          stage('Test-Front-End') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-vue-test-env:cy'
-                args '--network="host"'
-                reuseNode true
-              }
-            }
-            environment {
-              HOME = '/tmp'
-              npm_config_cache = 'npm-cache'
-            }
-            steps {
-              dir(path: 'front-end') {
-                sh 'npm install'
-                sh 'npm run test:unit'
-                sh 'npm run test:cy'
-                sh 'npm run sonar'
-              }
-            }
-            post {
-              always {
-                junit 'front-end/coverage/junit/junit.xml'
-                junit 'front-end/cypress/junit/*.xml'
-              }
-            }
-          }
-          stage('Test-Notification-Service') {
-            agent {
-              docker {
-                image 'node:11.13.0'
-                args '--network="host"' 
-              }
-            }
-            environment {
-              HOME = '.'
-              npm_config_cache = 'npm-cache'
-            }
-            steps {
-              dir(path: 'notification-service') {
-                sh 'npm install'
-                sh 'npm run test'
-                sh 'npm run sonar'
-              }
-            }
-            post {
-              always {
-                junit 'notification-service/coverage/junit/junit.xml'
               }
             }
           }
