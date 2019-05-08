@@ -9,6 +9,33 @@ pipeline {
       // }
       stage('Test') {
         parallel {
+          stage('Test-Notification-Service') {
+            agent {
+              docker {
+                image 'node:11.13.0-alpine'
+                args "-v ${scannerHome}/bin/sonar-scanner:${scannerHome}/bin/sonar-scanner"
+              }
+            }
+            environment {
+              HOME = '.'
+              npm_config_cache = 'npm-cache'
+              scannerHome = tool 'SonarQubeScanner'
+            }
+            steps {
+              dir(path: 'notification-service') {
+                sh 'npm install'
+                sh 'npm run test'
+                withSonarQubeEnv('sonarqube') {
+                  sh "${scannerHome}/bin/sonar-scanner"
+                }
+              }
+            }
+            post {
+              always {
+                junit 'notification-service/coverage/junit/junit.xml'
+              }
+            }
+          }
           stage('Test-Spark-Manager-Service') {
             agent {
               docker {
@@ -91,32 +118,7 @@ pipeline {
               }
             }
           }
-          stage('Test-Notification-Service') {
-            agent {
-              docker {
-                image 'node:11.13.0-alpine'
-              }
-            }
-            environment {
-              HOME = '.'
-              npm_config_cache = 'npm-cache'
-              scannerHome = tool 'SonarQubeScanner'
-            }
-            steps {
-              dir(path: 'notification-service') {
-                sh 'npm install'
-                sh 'npm run test'
-                withSonarQubeEnv('sonarqube') {
-                  sh "${scannerHome}/bin/sonar-scanner"
-                }
-              }
-            }
-            post {
-              always {
-                junit 'notification-service/coverage/junit/junit.xml'
-              }
-            }
-          }
+
           stage('Test-File-Management-Service') {
             agent {
               docker {
