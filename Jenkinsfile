@@ -1,16 +1,46 @@
 pipeline {
     agent any
     stages {
-      stage('Sonarqube') {
-        agent {
-          docker {
-            image 'maven:3-alpine'
-            args '-v $HOME/.m2:/root/.m2 --network="host"'
+      stage('SonarQube QA') {
+        parallel {
+          stage('Spark-Manager-Service') {
+            agent {
+              docker {
+                image 'maven:3-alpine'
+                args '-v /home/karim/.m2:/root/.m2 --network="host"'
+              }
+            }
+            steps {
+              dir(path: 'spark-manager-service') {
+                sh 'mvn clean package -Dspring.profiles.active=dev sonar:sonar'
+              }
+            }
           }
-        }
-        steps {
-          dir(path: 'spark-manager-service') {
-            sh 'mvn clean package -Dspring.profiles.active=dev sonar:sonar'
+          stage('File-Management-Service') {
+            agent {
+              docker {
+                image 'maven:3-alpine'
+                args '-v /home/karim/.m2:/root/.m2 --network="host"'
+              }
+            }
+            steps {
+              dir(path: 'file-management-service') {
+                sh 'mvn clean package -Dspring.profiles.active=dev sonar:sonar'
+              }
+            }
+          }
+          stage('Search-Service') {
+            agent {
+              docker {
+                image 'maven:3-alpine'
+                args '-v /home/karim/.m2:/root/.m2 --network="host"'
+              }
+            }
+            steps {
+              dir(path: 'search-service') {
+                sh 'mvn clean package -Dspring.profiles.active=dev sonar:sonar'
+              }
+            }
           }
         }
       }
