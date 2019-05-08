@@ -12,8 +12,7 @@ pipeline {
           stage('Test-Notification-Service') {
             agent {
               docker {
-                image 'node:11.13.0-alpine'
-                args "-v ${scannerHome}/bin/sonar-scanner:${scannerHome}/bin/sonar-scanner"
+                image 'node:11.13.0'
               }
             }
             environment {
@@ -25,9 +24,7 @@ pipeline {
               dir(path: 'notification-service') {
                 sh 'npm install'
                 sh 'npm run test'
-                withSonarQubeEnv('sonarqube') {
-                  sh "${scannerHome}/bin/sonar-scanner"
-                }
+                sh 'npm run sonar'
               }
             }
             post {
