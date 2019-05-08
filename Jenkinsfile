@@ -1,6 +1,24 @@
 pipeline {
     agent any
     stages {
+      stage('Sonarqube') {
+        environment {
+          scannerHome = tool 'SonarQubeScanner'
+        }
+        steps {
+          dir(path: 'spark-manager-service') {
+            withSonarQubeEnv('sonarqube') {
+              sh "${scannerHome}/bin/sonar-scanner"
+            }
+          }
+        }
+      }
+      stage('docker-compose build') {
+        steps {
+          echo 'I am using docker-compose to build images :D'
+          sh 'docker-compose build'
+        }
+      }
       stage('Test') {
         parallel {
           stage('Test-Spark-Manager-Service') {
@@ -140,6 +158,15 @@ pipeline {
                 sh 'ls'
                 sh 'mvn test -Dspring.profiles.active=dev'
               }
+            }
+          }
+        }
+      }
+      stage('Push Images') {
+        steps {
+          script{
+            docker.withRegistry("", "docker-hub-cred") {
+            sh 'docker-compose push'
             }
           }
         }
