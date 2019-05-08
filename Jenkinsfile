@@ -2,14 +2,9 @@ pipeline {
     agent any
     stages {
       stage('Sonarqube') {
-        environment {
-          scannerHome = tool 'SonarQubeScanner'
-        }
         steps {
           dir(path: 'spark-manager-service') {
-            withSonarQubeEnv('sonarqube') {
-              sh "${scannerHome}/bin/sonar-scanner"
-            }
+            sh 'mvn clean package sonar:sonar'
           }
         }
       }
