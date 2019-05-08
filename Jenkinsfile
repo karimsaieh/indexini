@@ -13,6 +13,7 @@ pipeline {
             agent {
               docker {
                 image 'node:11.13.0'
+                args '--network="host"' 
               }
             }
             environment {
