@@ -4,4 +4,7 @@ venv
 .idea
 __pycache__
 htmlcov
+.scannerwork
 .coverage
+junit
+coverage.xml

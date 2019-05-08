@@ -9,6 +9,43 @@ pipeline {
       // }
       stage('Test') {
         parallel {
+          stage('Test-Web-Scraping-Service') {
+            agent {
+              docker {
+                image 'karimsaieh/jenkins-pfe-python-test-env'
+                args '--network="host"'
+              }
+            }
+            environment {
+              HOME = '/tmp'
+            }
+            steps {
+              dir(path: 'web-scraping-service') {
+                sh 'coverage run -m xmlrunner discover -o junit'
+                sh 'coverage xml'
+                sh 'sonar-scanner'
+              }
+            }
+            post {
+              always {
+                junit 'web-scraping-service/junit/*.xml'
+              }
+            }
+          }
+          stage('Test-Ftp-Explorer-Service') {
+            agent {
+              docker {
+                image 'karimsaieh/jenkins-pfe-python-test-env'
+                args '--network="host"'
+              }
+            }
+            steps {
+              dir(path: 'ftp-explorer-service') {
+                sh 'python -m unittest tests.test_utils'
+                sh 'sonar-scanner'
+              }
+            }
+          }
           stage('Test-Front-End') {
             agent {
               docker {
@@ -81,40 +118,6 @@ pipeline {
               }
             }
           }
-
-          stage('Test-Web-Scraping-Service') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-python-test-env'
-              }
-            }
-            environment {
-              HOME = '/tmp'
-            }
-            steps {
-              dir(path: 'web-scraping-service') {
-                sh 'coverage run -m xmlrunner discover -o junit'
-              }
-            }
-            post {
-              always {
-                junit 'web-scraping-service/junit/*.xml'
-              }
-            }
-          }
-          stage('Test-Ftp-Explorer-Service') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-python-test-env'
-              }
-            }
-            steps {
-              dir(path: 'ftp-explorer-service') {
-                sh 'python -m unittest tests.test_utils'
-              }
-            }
-          }
-
           stage('Test-File-Management-Service') {
             agent {
               docker {
