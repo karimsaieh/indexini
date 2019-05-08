@@ -23,7 +23,7 @@ pipeline {
               dir(path: 'web-scraping-service') {
                 sh 'coverage run -m xmlrunner discover -o junit'
                 sh 'coverage xml'
-                sh 'sonar-scanner'
+                sh '/usr/local/sonar/sonar-scanner-3.3.0.1492-linux/bin/sonar-scanner'
               }
             }
             post {
@@ -42,7 +42,7 @@ pipeline {
             steps {
               dir(path: 'ftp-explorer-service') {
                 sh 'python -m unittest tests.test_utils'
-                sh 'sonar-scanner'
+                sh '/usr/local/sonar/sonar-scanner-3.3.0.1492-linux/bin/sonar-scanner'
               }
             }
           }
