@@ -1,7 +1,6 @@
 #!/bin/bash
 kubectl apply -f ./kubernetes/volumes/mongo.yaml
 kubectl apply -f ./kubernetes/volumes/elasticsearch.yaml 
-
 kubectl apply -f ./kubernetes/ConfigMaps/web-scraping-service-config-map.yaml 
 kubectl apply -f ./kubernetes/ConfigMaps/spark-manager-service-config-map.yaml
 kubectl apply -f ./kubernetes/ConfigMaps/search-service-config-map.yaml 
