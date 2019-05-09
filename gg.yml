@@ -9,4 +9,4 @@
     debug:
       msg: Hello, world!
   - name: kubectl test
-    shell: kubectl apply -f ./kubernetes/front-end-service-deployment.yaml
+    shell: kubectl apply -f kubernetes/front-end-service-deployment.yaml
