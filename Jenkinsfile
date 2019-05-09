@@ -174,6 +174,7 @@ pipeline {
         }
         steps {
           script{
+            // git update-index --chmod=+x staging-deploy.sh
             sh './staging-deploy.sh'
           }
         }
