@@ -66,17 +66,17 @@ services:
   #     - pfe_rabbitmq_host=rabbitmq
   #     - pfe_logstash_host=logstash
 
-  # hadoop-docker-node:
-  #   image: karimsaieh/pfe-hadoop-docker-node
-  #   ports:
-  #     - "8020:8020"
-  #     - "50070:50070"
-  #     - "4040:4040"
-  #     - "8998:8998"
-  #     - "8088:8088"
-  #   # tty: true
-  #   volumes:
-  #     - "hadoop-volume:/usr/local/hadoop_store/hdfs/"
+  hadoop-docker-node:
+    image: karimsaieh/pfe-hadoop-docker-node
+    ports:
+      - "8020:8020"
+      - "50070:50070"
+      - "4040:4040"
+      - "8998:8998"
+      - "8088:8088"
+    # tty: true
+    volumes:
+      - "hadoop-volume:/usr/local/hadoop_store/hdfs/"
   #   environment:
   #     - pfe_tika_host=tika
   #     - pfe_env=staging

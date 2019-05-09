@@ -177,7 +177,7 @@ pipeline {
             sh 'wget https://github.com/karimsaieh/indexini/blob/develop/docker-compose-staging.yml'
             sh 'docker-compose -f docker-compose-staging.yml stop'
             sh 'docker-compose -f docker-compose-staging.yml build'
-            sh 'docker-compose -f docker-compose-staging.yml up'
+            sh 'docker-compose -f docker-compose-staging.yml up &'
           }
         }
       }
