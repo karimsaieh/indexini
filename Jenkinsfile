@@ -1,12 +1,12 @@
 pipeline {
     agent any
     stages {
-      stage('docker-compose build') {
-        steps {
-          echo 'I am using docker-compose to build images :D'
-          sh 'docker-compose build'
-        }
-      }
+      // stage('docker-compose build') {
+      //   steps {
+      //     echo 'I am using docker-compose to build images :D'
+      //     sh 'docker-compose build'
+      //   }
+      // }
       // stage('Test') {
       //   parallel {
       //     stage('Test-Notification-Service') {
@@ -159,22 +159,22 @@ pipeline {
       //     }
       //   }
       // }
-      stage('Push Images') {
-        steps {
-          script{
-            docker.withRegistry("", "docker-hub-cred") {
-            sh 'docker-compose push'
-            }
-          }
-        }
-      }
+      // stage('Push Images') {
+      //   steps {
+      //     script{
+      //       docker.withRegistry("", "docker-hub-cred") {
+      //       sh 'docker-compose push'
+      //       }
+      //     }
+      //   }
+      // }
       stage('Deploy staging') {
         when {
           branch 'develop'
         }
         steps {
           script{
-            sh 'bash staging-deploy.sh'
+            sh 'staging-deploy.sh'
           }
         }
       }
