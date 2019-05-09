@@ -174,9 +174,10 @@ pipeline {
         }
         steps {
           script{
-            sh 'docker-compose -f /media/karim/FastData/Mega/pfe/Code/Project/docker-compose-staging.yml stop'
-            sh 'docker-compose -f /media/karim/FastData/Mega/pfe/Code/Project/docker-compose-staging.yml build'
-            sh 'docker-compose -f /media/karim/FastData/Mega/pfe/Code/Project/docker-compose-staging.yml up'
+            sh 'curl https://github.com/karimsaieh/indexini/blob/develop/docker-compose-staging.yml'
+            sh 'docker-compose -f docker-compose-staging.yml stop'
+            sh 'docker-compose -f build'
+            sh 'docker-compose -f up'
           }
         }
       }
