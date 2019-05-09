@@ -12,5 +12,6 @@ COPY --from=build /usr/src/app/target/search-service-0.0.1-SNAPSHOT.jar /usr/app
 EXPOSE 3012
 RUN apk add --no-cache bash
 ADD ./wait-for-it.sh /wait-for-it.sh
+RUN chmod 777 /wait-for-it.sh
 RUN apk add --no-cache bash
 CMD ["java","-jar","/usr/app/search-service-0.0.1-SNAPSHOT.jar"]

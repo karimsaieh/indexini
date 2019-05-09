@@ -8,6 +8,7 @@ RUN npm install
 COPY . .
 
 ADD ./wait-for-it.sh /wait-for-it.sh
+RUN chmod 777 /wait-for-it.sh
 RUN apk add --no-cache bash
 
 EXPOSE 3010

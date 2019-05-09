@@ -16,5 +16,6 @@ RUN apk add --no-cache bash
 COPY . .
 
 ADD ./wait-for-it.sh /wait-for-it.sh
+RUN chmod 777 /wait-for-it.sh
 
 CMD [ "python", "./Main.py" ]

@@ -24,6 +24,7 @@ RUN npm install
 COPY ./server .
 COPY --from=build-stage /app/dist /usr/src/app/dist
 ADD ./wait-for-it.sh /wait-for-it.sh
+RUN chmod 777 /wait-for-it.sh
 RUN apk add --no-cache bash
 EXPOSE 3000
 CMD [ "npm", "start" ]

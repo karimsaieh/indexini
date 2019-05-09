@@ -12,6 +12,7 @@ COPY --from=build /usr/src/app/target/spark-manager-service-0.0.1-SNAPSHOT.jar /
 EXPOSE 3013
 RUN apk add --no-cache bash
 ADD ./wait-for-it.sh /wait-for-it.sh
+RUN chmod 777 /wait-for-it.sh
 RUN apk add --no-cache bash
 
 CMD ["java","-jar","/usr/app/spark-manager-service-0.0.1-SNAPSHOT.jar"]
