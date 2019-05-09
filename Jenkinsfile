@@ -168,14 +168,14 @@ pipeline {
       //     }
       //   }
       // }
-      stage('Deploy staging') {
+      stage('Deployment') {
         when {
           branch 'develop'
         }
         steps {
           script{
             // git update-index --chmod=+x staging-deploy.sh
-            sh './staging-deploy.sh'
+            sh './deploy-prod.sh'
           }
         }
       }
