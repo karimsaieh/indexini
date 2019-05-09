@@ -174,7 +174,7 @@ pipeline {
         }
         steps {
           script{
-            sh 'curl https://github.com/karimsaieh/indexini/blob/develop/docker-compose-staging.yml'
+            sh 'wget https://github.com/karimsaieh/indexini/blob/develop/docker-compose-staging.yml'
             sh 'docker-compose -f docker-compose-staging.yml stop'
             sh 'docker-compose -f build'
             sh 'docker-compose -f up'
