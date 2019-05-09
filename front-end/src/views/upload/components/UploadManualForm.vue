@@ -9,7 +9,7 @@
         v-loading="loading"
         element-loading-background="rgba(0, 0, 0, 0.1)"
         class="upload-demo"
-        action="http://localhost:3011/files-ms/api/v1/files"
+        :action="actionUrl"
         :auto-upload="false"
         name="multipartFile"
         :on-success="handleSuccess"
@@ -42,6 +42,7 @@ export default {
   data: function() {
     return {
       loading: false,
+      actionUrl: '',
       fileList: [],
       data: {
         'bulkSaveOperationUuid': 'uuid',
@@ -49,6 +50,9 @@ export default {
       },
       fileTypesConsts: fileTypesConsts
     }
+  },
+  created() {
+    this.actionUrl = `${process.env.VUE_APP_FILE_HOST}/files-ms/api/v1/files`
   },
   methods: {
     submitUpload: function() {

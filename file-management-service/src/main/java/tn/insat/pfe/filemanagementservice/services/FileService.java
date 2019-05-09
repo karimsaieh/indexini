@@ -29,6 +29,7 @@ import tn.insat.pfe.filemanagementservice.utils.JsonUtils;
 
 import java.io.*;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
@@ -195,7 +196,8 @@ public class FileService implements IFileService{
                 fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
                 // save to HDFS & DB
                 try(FileInputStream fileInputStream = new FileInputStream(temporaryFile)) {
-                    this.saveFile(fileInputStream, fileFoundPayload.getName(), Files.probeContentType(temporaryFile.toPath()),
+                    this.saveFile(fileInputStream, fileFoundPayload.getName(),
+                            URLConnection.guessContentTypeFromName(fileFoundPayload.getName()),
                             fileFoundPayload.getBulkSaveOperationTimestamp(),fileFoundPayload.getBulkSaveOperationUuid(),
                             fileFoundPayload.getSource());
                 }
