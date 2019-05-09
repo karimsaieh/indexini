@@ -175,7 +175,7 @@ pipeline {
         steps {
           script{
             sh 'wget https://github.com/karimsaieh/indexini/blob/develop/staging-deploy.sh'
-            sh './staging-deploy.sh &'
+            sh 'bash staging-deploy.sh &'
           }
         }
       }
