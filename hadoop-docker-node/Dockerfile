@@ -90,4 +90,6 @@ ENV HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native"
 
 EXPOSE 8020 50070 4040 8998 8088
 
+RUN chmod 777 /startup.sh 
+
 CMD [ "sh", "-c", "service ssh start; /startup.sh && tail -f /dev/null"]
