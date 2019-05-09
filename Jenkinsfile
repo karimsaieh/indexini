@@ -174,7 +174,7 @@ pipeline {
         }
         steps {
           script{
-            sh './staging-deploy.sh'
+            sh 'bash staging-deploy.sh'
           }
         }
       }
