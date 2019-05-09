@@ -1,0 +1,3 @@
+chef-solo -c /media/karim/FastData/Mega/pfe/local_workspace/chef/chef_cookbook_staging/solo.rb -o "recipe[chef_cookbook_staging]"
+berks install 
+berks vendor
