@@ -101,16 +101,16 @@ services:
   #     - pfe_rabbitmq_host=rabbitmq
   #     - pfe_logstash_host=logstash
 
-  search-service:
-    image: karimsaieh/pfe-search-service
-    ports:
-      - "3012:3012"
-    entrypoint: /wait-for-it.sh redis:6379 -t 1000 -- /wait-for-it.sh elasticsearch:9200 -t 1000 -- /wait-for-it.sh rabbitmq:5672 -t 1000 --
-    command: "java -jar /usr/app/search-service-0.0.1-SNAPSHOT.jar"
-    labels:
-      - "traefik.http.routers.search.rule=(Host(`pfe.localhost`) && PathPrefix(`/search-ms`))"
-    environment:
-      - spring_profiles_active=staging
+  # search-service:
+  #   image: karimsaieh/pfe-search-service
+  #   ports:
+  #     - "3012:3012"
+  #   entrypoint: /wait-for-it.sh redis:6379 -t 1000 -- /wait-for-it.sh elasticsearch:9200 -t 1000 -- /wait-for-it.sh rabbitmq:5672 -t 1000 --
+  #   command: "java -jar /usr/app/search-service-0.0.1-SNAPSHOT.jar"
+  #   labels:
+  #     - "traefik.http.routers.search.rule=(Host(`pfe.localhost`) && PathPrefix(`/search-ms`))"
+  #   environment:
+  #     - spring_profiles_active=staging
 
   # spark-manager-service:
   #   image: karimsaieh/pfe-spark-manager-service
