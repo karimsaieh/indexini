@@ -22,7 +22,7 @@ spec:
             - containerPort: 3014
           env:
             - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
-              value: "will be csddshanged during build dooofghgfhodjiuerh"
+              value: 'FORCE_REDEPLOY_VALUE'
           envFrom:
             - configMapRef:
                 name: hystrix-dashboard-config

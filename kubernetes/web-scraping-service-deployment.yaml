@@ -20,7 +20,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
-              value: "wigdfsgds"
+              value: 'FORCE_REDEPLOY_VALUE'
           envFrom:
             - configMapRef:
                 name: web-scraping-service-config

@@ -176,7 +176,9 @@ pipeline {
           script{
             // git update-index --chmod=+x staging-deploy.sh
             // sh './deploy-prod.sh || exit 0'
-            sh 'ansible-playbook gg.yml'
+            sh 'sed -ie "s/FORCE_REDEPLOY_VALUE/$(date)/g" *.yml'
+            sh 'cat ./kubernetes/web-scraping-service-deployment.yaml'
+            sh 'ansible-playbook playbook.yml'
           }
         }
       }

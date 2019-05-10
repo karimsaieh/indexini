@@ -22,7 +22,7 @@ spec:
             - containerPort: 3012
           env:
             - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
-              value: "will azeazssdfosdfdjiuerh"
+              value: 'FORCE_REDEPLOY_VALUE'
           envFrom:
             - configMapRef:
                 name: search-service-config

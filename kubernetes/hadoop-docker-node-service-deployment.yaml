@@ -26,7 +26,7 @@ spec:
             - containerPort: 8998
           env:
             - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
-              value: "will bsdsde changqsqsed during build doooodjiuerh"
+              value: 'FORCE_REDEPLOY_VALUE'
           envFrom:
             - configMapRef:
                 name: hadoop-docker-node-config

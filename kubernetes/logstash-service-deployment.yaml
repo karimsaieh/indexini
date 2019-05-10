@@ -24,7 +24,7 @@ spec:
             - containerPort: 5000
           env:
             - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
-              value: "wiqsdll qsdbssdfsddfsqfhhgfqsqsjiuerh"
+              value: 'FORCE_REDEPLOY_VALUE'
 
 ---
 apiVersion: v1

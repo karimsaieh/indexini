@@ -22,7 +22,7 @@ spec:
             - containerPort: 3013
           env:
             - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
-              value: "will be chsdsgzrqsjiuerh"
+              value: 'FORCE_REDEPLOY_VALUE'
           envFrom:
             - configMapRef:
                 name: spark-manager-service-config
