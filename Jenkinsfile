@@ -176,7 +176,7 @@ pipeline {
           script{
             // git update-index --chmod=+x staging-deploy.sh
             // sh './deploy-prod.sh || exit 0'
-            sh 'sed -ie "s/FORCE_REDEPLOY_VALUE/$(date)/g" *.yaml'
+            sh 'sed -ie "s/FORCE_REDEPLOY_VALUE/$(date)/g" kubernetes/*.yaml'
             sh 'cat ./kubernetes/web-scraping-service-deployment.yaml'
             sh 'ansible-playbook playbook.yml'
           }
