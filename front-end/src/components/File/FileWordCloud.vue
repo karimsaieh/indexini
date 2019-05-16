@@ -50,6 +50,11 @@ export default {
         '#ff4e69', '#461e47']
     }
   },
+  computed: {
+    maxWieght: function() {
+      return Math.max.apply(Math, this.words.map(function(o) { return o[1] }))
+    }
+  },
   watch: {
     progress: function(currentProgress, previousProgres) {
       if (previousProgres) {
@@ -59,48 +64,22 @@ export default {
   },
   methods: {
     pickColor: function([, weight]) {
-      if (weight < 1) {
+      if (weight / this.maxWieght < 0.1) {
         return this.colors[0]
       }
-      if (weight < 2) {
-        return this.colors[1]
-      }
-      if (weight < 4) {
-        return this.colors[2]
-      }
-      if (weight < 8) {
-        return this.colors[3]
-      }
-      if (weight < 16) {
-        return this.colors[4]
-      }
-      if (weight < 32) {
-        return this.colors[5]
-      }
-      if (weight < 64) {
-        return this.colors[6]
-      }
-      if (weight < 128) {
+      if (weight / this.maxWieght < 0.2) {
         return this.colors[7]
       }
-      if (weight < 256) {
-        return this.colors[8]
+      if (weight / this.maxWieght < 0.4) {
+        return this.colors[5]
       }
-      if (weight < 512) {
-        return this.colors[9]
+      if (weight / this.maxWieght < 0.8) {
+        return this.colors[3]
       }
-      if (weight < 1024) {
+      if (weight / this.maxWieght <= 1) {
         return this.colors[10]
       }
-      if (weight < 2048) {
-        return this.colors[11]
-      }
-      if (weight < 4096) {
-        return this.colors[12]
-      }
-      return this.colors[13]
     }
   }
-
 }
 </script>
