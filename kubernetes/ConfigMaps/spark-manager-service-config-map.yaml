@@ -10,3 +10,7 @@ data:
   pfe_livy_host: hadoop-docker-node
   pfe_logstash_host: logstash
   spring_profiles_active: prod
+  JAEGER_SERVICE_NAME: spark-manager-service
+  JAEGER_AGENT_HOST: jaeger
+  JAEGER_AGENT_PORT: 6831
+  JAEGER_SAMPLER_MANAGER_HOST_PORT: jaeger:5778
