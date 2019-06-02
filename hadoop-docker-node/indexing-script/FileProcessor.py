@@ -25,6 +25,7 @@ class FileProcessor:
         # spacy loaded for each row which is heavy,
         # use for each partition instead ?
         nlp_spacy = spacy.load("fr")
+        nlp_spacy.max_length = 3000000
 
         url = file[0]
         binary = file[1]

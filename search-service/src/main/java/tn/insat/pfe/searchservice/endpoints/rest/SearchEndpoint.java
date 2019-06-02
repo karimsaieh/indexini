@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import tn.insat.pfe.searchservice.dtos.*;
 import tn.insat.pfe.searchservice.services.ISearchService;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +41,7 @@ public class SearchEndpoint {
     //use case: get file info
     @GetMapping(params = "id")
     public FileGetDto findById(@RequestParam String id) throws IOException {
+        id =  URLDecoder.decode(id, StandardCharsets.UTF_8.toString());
         return this.searchService.findById(id);
     }
 

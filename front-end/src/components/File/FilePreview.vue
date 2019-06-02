@@ -5,7 +5,7 @@
     @click="handleClick()"
   >
 
-    <img id="vvv-img" v-img :alt="alt" :src="imageSrc" style="visibility: hidden;width:100%">
+    <img :id="alt" v-img :alt="alt" :src="imageSrc" style="visibility: hidden;width:100%">
   </div>
 
 </template>
@@ -59,7 +59,7 @@ export default {
   },
   methods: {
     handleClick() {
-      document.getElementById('vvv-img').click()
+      document.getElementById(this.alt).click()
     }
   }
 }
