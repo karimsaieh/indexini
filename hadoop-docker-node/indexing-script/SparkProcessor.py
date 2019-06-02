@@ -44,7 +44,7 @@ class SparkProcessor:
     #     return transformed_df
 
     def do_lda_with_count_vectorizer(self, k, rescaled_data, vocab):
-        lda = LDA(k=k, seed=1, maxIter=100, optimizer="em", featuresCol="features", topicConcentration=8)
+        lda = LDA(k=k, seed=1, maxIter=100, optimizer="em", featuresCol="features", topicConcentration=5)
         lda_model = lda.fit(rescaled_data)
         transformed_df = lda_model.transform(rescaled_data).select("url", "topicDistribution")
         topics_description = lda_model.describeTopics().rdd\

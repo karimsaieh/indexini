@@ -5,10 +5,10 @@
       <div style="height:30px;">
         <div style="float: right; ">
           <el-tooltip class="item" effect="dark" content="Télécharger" placement="top">
-             <el-button style="padding:6px !important; margin:0px !important"  @click="handleReadFile()">Ouvrir</el-button>
+            <el-button style="padding:6px !important; margin:0px !important" @click="handleReadFile()">Ouvrir</el-button>
 
           </el-tooltip>
-     
+
         </div>
         <div style="float: left; margin-right:20px; margin-top: 0px;">
           <img :src="contentTypeIcon(contentType)" class="content-type-icon">
@@ -84,12 +84,12 @@
         <file-similar-files :current-file-id="id" :bisecting-kmeans-prediction="bisectingKmeansPrediction" style="margin:5px;" />
 
       </el-row>
- <div style="float: right; ">
-    
-          <el-tooltip class="item" effect="dark" content="Supprimer" placement="top">
-            <i class="fas el-icon-fa-trash remove-icon" @click="removeFile()" />
-          </el-tooltip>
-        </div>
+      <div style="float: right; ">
+
+        <el-tooltip class="item" effect="dark" content="Supprimer" placement="top">
+          <i class="fas el-icon-fa-trash remove-icon" @click="removeFile()" />
+        </el-tooltip>
+      </div>
     </el-card>
 
   </div>

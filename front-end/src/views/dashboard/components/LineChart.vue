@@ -42,11 +42,11 @@ export default {
           }
         },
         legend: {
-          data: ['nbr search']
+          data: ['recherches']
         },
         series: [
           {
-            name: 'nbr search',
+            name: 'recherches',
             smooth: true,
             type: 'line',
             itemStyle: {

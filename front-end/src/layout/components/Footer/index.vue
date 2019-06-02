@@ -46,11 +46,7 @@ export default {
   bottom: 0px;
   position: fixed;
   width:100%;
-  background-color: rgb(246, 238, 253);
-}
-.footer{
-}
-.toggle{
+  background-color:#fcf9ff;
 }
 </style>
 
