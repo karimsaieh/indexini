@@ -1,7 +1,7 @@
 pipeline {
     agent any
     stages {
-      stage('docker-compose build') {
+      stage('docker build') {
          parallel {
           stage('Build-Notification-Service') {
             agent {
@@ -30,6 +30,9 @@ pipeline {
             environment {
               HOME = '/tmp'
               npm_config_cache = 'npm-cache'
+            }
+            when {
+              branch 'jenkins'
             }
             steps {
               dir(path: 'front-end') {
@@ -136,6 +139,9 @@ pipeline {
             environment {
               HOME = '/tmp'
               npm_config_cache = 'npm-cache'
+            }
+            when {
+              branch 'jenkins'
             }
             steps {
               dir(path: 'front-end') {
