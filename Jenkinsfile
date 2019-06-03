@@ -21,11 +21,7 @@ pipeline {
             }
             steps {
               dir(path: 'notification-service') {
-              }
-            }
-            post {
-              always {
-                junit 'notification-service/coverage/junit/junit.xml'
+                echo 'hello'
               }
             }
           }
@@ -42,12 +38,7 @@ pipeline {
             }
             steps {
               dir(path: 'front-end') {
-              }
-            }
-            post {
-              always {
-                junit 'front-end/coverage/junit/junit.xml'
-                junit 'front-end/cypress/junit/*.xml'
+                echo 'hello'
               }
             }
           }
@@ -63,11 +54,7 @@ pipeline {
             }
             steps {
               dir(path: 'web-scraping-service') {
-              }
-            }
-            post {
-              always {
-                junit 'web-scraping-service/junit/*.xml'
+                echo 'hello'
               }
             }
           }
@@ -80,6 +67,7 @@ pipeline {
             }
             steps {
               dir(path: 'ftp-explorer-service') {
+                echo 'hello'
               }
             }
           }
@@ -90,13 +78,9 @@ pipeline {
                 args '-v /root/.m2:/root/.m2 --network="host"' 
               }
             }
-            post {
-              always {
-                junit 'spark-manager-service/target/surefire-reports/*.xml'
-              }
-            }
             steps {
               dir(path: 'spark-manager-service') {
+                echo 'hello'
               }
             }
           }
@@ -107,14 +91,9 @@ pipeline {
                 args '-v /root/.m2:/root/.m2 --network="host"'
               }
             }
-            post {
-              always {
-                junit 'file-management-service/target/surefire-reports/*.xml'
-  
-              }
-            }
             steps {
               dir(path: 'file-management-service') {
+                echo 'hello'
               }
             }
           }
@@ -125,14 +104,9 @@ pipeline {
                 args '-v /root/.m2:/root/.m2 --network="host"'
               }
             }
-            post {
-              always {
-                junit 'search-service/target/surefire-reports/*.xml'
-  
-              }
-            }
             steps {
               dir(path: 'search-service') {
+                echo 'hello'
               }
             }
           }
@@ -142,6 +116,7 @@ pipeline {
         steps {
           script{
             docker.withRegistry("", "docker-hub-cred") {
+              echo 'hello'
             }
           }
         }
