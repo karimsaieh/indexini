@@ -151,8 +151,7 @@ pipeline {
           branch 'develop'
         }
         steps {
-          script{
-          }
+          echo 'I am using docker-compose to build images :D'
         }
       }
     }
