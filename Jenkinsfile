@@ -8,34 +8,33 @@ pipeline {
         }
       }
       stage('Test') {
-        stage('Test-Front-End') {
-          agent {
-            docker {
-              image 'karimsaieh/jenkins-pfe-vue-test-env:cy'
-              args '--network="host"'
-            }
-          }
-          environment {
-            HOME = '/tmp'
-            npm_config_cache = 'npm-cache'
-          }
-          steps {
-            dir(path: 'front-end') {
-              // sh 'npm install'
-              // sh 'npm run test:unit'
-              // sh 'npm run test:cy'
-              // sh 'npm run lintJSON || exit 0'
-              // sh 'npm run sonar'
-              echo "i ama testing"
-            }
-          }
-          post {
-            always {
-              junit 'front-end/coverage/junit/junit.xml'
-              junit 'front-end/cypress/junit/*.xml'
-            }
+        agent {
+          docker {
+            image 'karimsaieh/jenkins-pfe-vue-test-env:cy'
+            args '--network="host"'
           }
         }
+        environment {
+          HOME = '/tmp'
+          npm_config_cache = 'npm-cache'
+        }
+        steps {
+          dir(path: 'front-end') {
+            // sh 'npm install'
+            // sh 'npm run test:unit'
+            // sh 'npm run test:cy'
+            // sh 'npm run lintJSON || exit 0'
+            // sh 'npm run sonar'
+            echo "i ama testing"
+          }
+        }
+        post {
+          always {
+            junit 'front-end/coverage/junit/junit.xml'
+            junit 'front-end/cypress/junit/*.xml'
+          }
+        }
+        
       }
       stage('Push Image') {
         steps {
