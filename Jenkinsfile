@@ -3,7 +3,7 @@ pipeline {
     stages {
       stage('Docker build') {
         steps {
-          sh 'docker-compose build front-end'
+          echo "i'm deploying ."
         }
       }
       stage('Test') {
@@ -19,17 +19,7 @@ pipeline {
         }
         steps {
           dir(path: 'front-end') {
-            sh 'npm install'
-            sh 'npm run test:unit'
-            sh 'npm run test:cy'
-            sh 'npm run lintJSON || exit 0'
-            sh 'npm run sonar'
-          }
-        }
-        post {
-          always {
-            junit 'front-end/coverage/junit/*.xml'
-            junit 'front-end/cypress/junit/*.xml'
+            echo "i'm deploying ."
           }
         }
       }
@@ -37,7 +27,7 @@ pipeline {
         steps {
           script{
             docker.withRegistry("", "docker-hub-cred") {
-              sh 'docker-compose push front-end'
+              echo "i'm deploying ."
             }
           }
         }
