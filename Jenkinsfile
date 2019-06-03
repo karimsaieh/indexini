@@ -4,7 +4,6 @@ pipeline {
       stage('docker-compose build') {
         steps {
           echo 'I am using docker-compose to build images :D'
-          sh 'docker-compose build'
         }
       }
       stage('Test') {
@@ -22,10 +21,6 @@ pipeline {
             }
             steps {
               dir(path: 'notification-service') {
-                sh 'npm install'
-                sh 'npm run test'
-                sh 'npm run lintJSON || exit 0'
-                sh 'npm run sonar'
               }
             }
             post {
@@ -47,11 +42,6 @@ pipeline {
             }
             steps {
               dir(path: 'front-end') {
-                sh 'npm install'
-                sh 'npm run test:unit'
-                sh 'npm run test:cy'
-                sh 'npm run lintJSON || exit 0'
-                sh 'npm run sonar'
               }
             }
             post {
@@ -73,9 +63,6 @@ pipeline {
             }
             steps {
               dir(path: 'web-scraping-service') {
-                sh 'coverage run -m xmlrunner discover -o junit'
-                sh 'coverage xml'
-                sh '/usr/local/sonar/sonar-scanner-3.3.0.1492-linux/bin/sonar-scanner'
               }
             }
             post {
@@ -93,8 +80,6 @@ pipeline {
             }
             steps {
               dir(path: 'ftp-explorer-service') {
-                sh 'python -m unittest tests.test_utils'
-                sh '/usr/local/sonar/sonar-scanner-3.3.0.1492-linux/bin/sonar-scanner'
               }
             }
           }
@@ -112,10 +97,6 @@ pipeline {
             }
             steps {
               dir(path: 'spark-manager-service') {
-                sh '(mongod &) && sleep 30 && echo "done waiting for mongo"'
-                sh '(mvn spring-boot:run -Dspring.profiles.active=dev &) && (while ! echo "waiting" | nc localhost 3013; do sleep 1 && echo waiting; done) && (echo "gatling will start soon" && sleep 10) && (mvn gatling:test)'
-                gatlingArchive()
-                sh 'mvn clean package test -Dspring.profiles.active=dev sonar:sonar'
               }
             }
           }
@@ -134,7 +115,6 @@ pipeline {
             }
             steps {
               dir(path: 'file-management-service') {
-                sh 'mvn clean package test -Dspring.profiles.active=dev sonar:sonar'
               }
             }
           }
@@ -153,7 +133,6 @@ pipeline {
             }
             steps {
               dir(path: 'search-service') {
-                sh 'mvn clean package test -Dspring.profiles.active=dev sonar:sonar'
               }
             }
           }
@@ -163,7 +142,6 @@ pipeline {
         steps {
           script{
             docker.withRegistry("", "docker-hub-cred") {
-            sh 'docker-compose push'
             }
           }
         }
@@ -174,11 +152,6 @@ pipeline {
         }
         steps {
           script{
-            // git update-index --chmod=+x staging-deploy.sh
-            // sh './deploy-prod.sh || exit 0'
-            sh 'sed -ie "s/FORCE_REDEPLOY_VALUE/$(date)/g" kubernetes/*.yaml'
-            sh 'cat ./kubernetes/web-scraping-service-deployment.yaml'
-            sh 'ansible-playbook playbook.yml'
           }
         }
       }
