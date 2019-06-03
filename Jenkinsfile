@@ -1,7 +1,7 @@
 pipeline {
     agent any
     stages {
-      stage('docker build') {
+      stage('Docker build') {
         steps {
           sh 'docker-compose build front-end'
         }
@@ -42,7 +42,7 @@ pipeline {
           }
         }
       }
-      stage('Deployment') {
+      stage('Deploy') {
         steps {
           script{
             echo "i'm deploying"
