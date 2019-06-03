@@ -47,9 +47,6 @@ pipeline {
         }
       }
       stage('Deployment') {
-        when {
-          branch 'develop'
-        }
         steps {
           script{
             // git update-index --chmod=+x staging-deploy.sh
