@@ -2,247 +2,64 @@ pipeline {
     agent any
     stages {
       stage('docker build') {
-         parallel {
-          stage('Build-Notification-Service') {
-            agent {
-              docker {
-                image 'node:11.13.0'
-                args '--network="host"' 
-              }
-            }
-            environment {
-              HOME = '.'
-              npm_config_cache = 'npm-cache'
-            }
-            steps {
-              dir(path: 'notification-service') {
-                echo 'hello'
-              }
-            }
-          }
-          stage('Build-Front-End') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-vue-test-env:cy'
-                args '--network="host"'
-              }
-            }
-            environment {
-              HOME = '/tmp'
-              npm_config_cache = 'npm-cache'
-            }
-            when {
-              branch 'jenkins'
-            }
-            steps {
-              dir(path: 'front-end') {
-                echo 'hello'
-              }
-            }
-          }
-          stage('Build-Web-Scraping-Service') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-python-test-env'
-                args '--network="host"'
-              }
-            }
-            environment {
-              HOME = '/tmp'
-            }
-            steps {
-              dir(path: 'web-scraping-service') {
-                echo 'hello'
-              }
-            }
-          }
-          stage('BUild-Ftp-Explorer-Service') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-python-test-env'
-                args '--network="host"'
-              }
-            }
-            steps {
-              dir(path: 'ftp-explorer-service') {
-                echo 'hello'
-              }
-            }
-          }
-          stage('Build-Spark-Manager-Service') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-spark-manager-service-test-env'
-                args '-v /root/.m2:/root/.m2 --network="host"' 
-              }
-            }
-            steps {
-              dir(path: 'spark-manager-service') {
-                echo 'hello'
-              }
-            }
-          }
-          stage('Build-File-Management-Service') {
-            agent {
-              docker {
-                image 'maven:3-alpine'
-                args '-v /root/.m2:/root/.m2 --network="host"'
-              }
-            }
-            steps {
-              dir(path: 'file-management-service') {
-                echo 'hello'
-              }
-            }
-          }
-          stage('Build-Search-Service') {
-            agent {
-              docker {
-                image 'maven:3-alpine'
-                args '-v /root/.m2:/root/.m2 --network="host"'
-              }
-            }
-            steps {
-              dir(path: 'search-service') {
-                echo 'hello'
-              }
-            }
-          }
+        steps {
+          echo 'I am using docker-compose to build images :D'
+          // sh 'docker-compose build front-end'
         }
       }
       stage('Test') {
-        parallel {
-          stage('Test-Notification-Service') {
-            agent {
-              docker {
-                image 'node:11.13.0'
-                args '--network="host"' 
-              }
-            }
-            environment {
-              HOME = '.'
-              npm_config_cache = 'npm-cache'
-            }
-            steps {
-              dir(path: 'notification-service') {
-                echo 'hello'
-              }
+        stage('Test-Front-End') {
+          agent {
+            docker {
+              image 'karimsaieh/jenkins-pfe-vue-test-env:cy'
+              args '--network="host"'
             }
           }
-          stage('Test-Front-End') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-vue-test-env:cy'
-                args '--network="host"'
-              }
-            }
-            environment {
-              HOME = '/tmp'
-              npm_config_cache = 'npm-cache'
-            }
-            when {
-              branch 'jenkins'
-            }
-            steps {
-              dir(path: 'front-end') {
-                echo 'hello'
-              }
+          environment {
+            HOME = '/tmp'
+            npm_config_cache = 'npm-cache'
+          }
+          steps {
+            dir(path: 'front-end') {
+              // sh 'npm install'
+              // sh 'npm run test:unit'
+              // sh 'npm run test:cy'
+              // sh 'npm run lintJSON || exit 0'
+              // sh 'npm run sonar'
+              echo "i ama testing"
             }
           }
-          stage('Test-Web-Scraping-Service') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-python-test-env'
-                args '--network="host"'
-              }
-            }
-            environment {
-              HOME = '/tmp'
-            }
-            steps {
-              dir(path: 'web-scraping-service') {
-                echo 'hello'
-              }
-            }
-          }
-          stage('Test-Ftp-Explorer-Service') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-python-test-env'
-                args '--network="host"'
-              }
-            }
-            steps {
-              dir(path: 'ftp-explorer-service') {
-                echo 'hello'
-              }
-            }
-          }
-          stage('Test-Spark-Manager-Service') {
-            agent {
-              docker {
-                image 'karimsaieh/jenkins-pfe-spark-manager-service-test-env'
-                args '-v /root/.m2:/root/.m2 --network="host"' 
-              }
-            }
-            steps {
-              dir(path: 'spark-manager-service') {
-                echo 'hello'
-              }
-            }
-          }
-          stage('Test-File-Management-Service') {
-            agent {
-              docker {
-                image 'maven:3-alpine'
-                args '-v /root/.m2:/root/.m2 --network="host"'
-              }
-            }
-            steps {
-              dir(path: 'file-management-service') {
-                echo 'hello'
-              }
-            }
-          }
-          stage('Test-Search-Service') {
-            agent {
-              docker {
-                image 'maven:3-alpine'
-                args '-v /root/.m2:/root/.m2 --network="host"'
-              }
-            }
-            steps {
-              dir(path: 'search-service') {
-                echo 'hello'
-              }
+          post {
+            always {
+              junit 'front-end/coverage/junit/junit.xml'
+              junit 'front-end/cypress/junit/*.xml'
             }
           }
         }
       }
-      stage('Push Images') {
+      stage('Push Image') {
         steps {
           script{
             docker.withRegistry("", "docker-hub-cred") {
-              echo 'hello'
+            // sh 'docker-compose push front-end'
+            echo "i aa m pushing"
             }
           }
         }
       }
-
-      stage('Deploy to staging') {
+      stage('Deployment') {
         when {
           branch 'develop'
         }
         steps {
-          echo 'I am using docker-compose to build images :D'
-        }
-      }
-      stage('Deploy to production') {
-        when {
-          branch 'jenkins'
-        }
-        steps {
-          echo 'I am using docker-compose to build images :D'
+          script{
+            // git update-index --chmod=+x staging-deploy.sh
+            // sh './deploy-prod.sh || exit 0'
+            // sh 'sed -ie "s/FORCE_REDEPLOY_VALUE/$(date)/g" kubernetes/*.yaml'
+            // sh 'cat ./kubernetes/web-scraping-service-deployment.yaml'
+            // sh 'ansible-playbook playbook.yml'
+            echo "i'm deploying"
+          }
         }
       }
     }
