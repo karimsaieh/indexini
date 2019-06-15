@@ -4,11 +4,10 @@
   connection: local
 
   tasks:
-  - name: INSTALL DOCKER
-    debug:
-      msg: 'TODO: install docker'
-  - name: INSTALL MINIKUBE
-    debug:
-      msg: 'TODO: install minikube'
+  # - name: INSTALL DOCKER
+  #   apt: name=docker.io state=present
+  # - name: INSTALL MINIKUBE
+  #   debug:
+  #     msg: 'TODO: install minikube'
   - name: Deploying the app to K8S
     shell: ./deploy.sh
