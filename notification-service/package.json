@@ -33,6 +33,7 @@
     "express": "^4.16.4",
     "pino": "^5.12.2",
     "pino-socket": "^2.0.0",
+    "rethinkdb": "^2.3.3",
     "winston": "^2.4.4"
   },
   "jest-junit": {
