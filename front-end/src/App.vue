@@ -15,6 +15,12 @@ export default {
     evtSource.onmessage = function(e) {
       _this.pushNotification(JSON.parse(e.data))
     }
+            this.$notify({
+          title: 'Info',
+          message: "L'opération d'indexation s'est terminée",
+          duration: 0
+        });
+ 
   },
   methods: {
     ...mapActions('notification', [

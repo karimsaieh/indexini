@@ -29,11 +29,11 @@ const actions = {
       let msg = ''
       switch (notification.event) {
         case NOTIF_CONSTANTS.FILE_FOUND:
-          msg = `Fichier trouvé: ${notification.fileUrl}`
+          msg = `Fichier trouvé: ${notification.fileUrl.substring(notification.fileUrl.lastIndexOf('/')+1)}`
           color = colors[0]
           break
         case NOTIF_CONSTANTS.FILE_DOWNLOADED:
-          msg = `Fichier téléchargé: ${notification.fileUrl}`
+          msg = `Fichier téléchargé: ${notification.fileUrl.substring(notification.fileUrl.lastIndexOf('/')+1)}`
           color = colors[1]
           break
         case NOTIF_CONSTANTS.PROCESSING_STARTED:
@@ -49,7 +49,7 @@ const actions = {
           color = colors[3]
           break
         case NOTIF_CONSTANTS.FILE_INDEXED:
-          msg = `Fichier indexé: ${notification.fileUrl}`
+          msg = `Fichier indexé: ${notification.fileUrl.substring(notification.fileUrl.lastIndexOf('/')+1)}`
           color = colors[4]
           break
         case NOTIF_CONSTANTS.INGESTION_STARTED:
@@ -60,8 +60,8 @@ const actions = {
           msg = ''
           break
       }
-      msg = `[${new Date().toLocaleString()}] ${msg}`
-      notification = { msg, color }
+      msg = `[${new Date(notification.timestamp).toLocaleString()}] ${msg}`
+      notification = { msg, color}
       commit('PUSH_NOTIFICATION', notification)
       if (state.notifications.length === 300) {
         commit('SHIFT_NOTIFICATION')

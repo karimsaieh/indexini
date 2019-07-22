@@ -73,7 +73,7 @@ amqp.connect(`amqp://${process.env.pfe_rabbitmq_host}`, (_errCon, conn) => {
 
 app.get('/notifs-ms/api/v1/notifs/stream', (req, res) => {
   res.sseSetup();
-  r.db('test').table('notifs').orderBy({ index: r.desc('timestamp') }).limit(10)
+  r.db('test').table('notifs').orderBy({ index: r.desc('timestamp') }).limit(100)
     .run(connection, (err, data) => {
       const lastXresult = [];
       data.each((errr, row) => {
