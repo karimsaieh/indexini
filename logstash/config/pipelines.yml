@@ -1,0 +1,2 @@
+  - pipeline.id: microservices_pipe
+    path.config: "/usr/share/logstash/config/logstash.conf"

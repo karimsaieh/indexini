@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hystrix-dashboard-config
+  namespace: default
+data:
+  nothing: no_vars_yet_for_hystrix_dashboard

@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hystrix-dashboard
+  labels:
+    app: hystrix-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hystrix-dashboard
+  template:
+    metadata:
+      labels:
+        app: hystrix-dashboard
+    spec:
+      containers:
+        - name: hystrix-dashboard
+          image: karimsaieh/pfe-hystrix-dashboard
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3014
+          env:
+            - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
+              value: 'FORCE_REDEPLOY_VALUE'
+          envFrom:
+            - configMapRef:
+                name: hystrix-dashboard-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hystrix-dashboard
+spec:
+  selector:
+    app: hystrix-dashboard
+  type: NodePort
+  ports:
+    - port: 3014
+###

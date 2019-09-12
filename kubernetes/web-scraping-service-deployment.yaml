@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: web-scraping-service
+  labels:
+    app: web-scraping-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-scraping-service
+  template:
+    metadata:
+      labels:
+        app: web-scraping-service
+    spec:
+      containers:
+        - name: web-scraping-service
+          image: karimsaieh/pfe-web-scraping-service
+          imagePullPolicy: Always
+          env:
+            - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
+              value: 'FORCE_REDEPLOY_VALUE'
+          envFrom:
+            - configMapRef:
+                name: web-scraping-service-config

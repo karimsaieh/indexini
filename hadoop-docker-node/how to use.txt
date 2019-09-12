@@ -1,0 +1,15 @@
+docker run --name hadoop-yarn-spark -p 8020:8020 -p 8998:8998  -p 8042:8042 -p 4040:4040 -p 50070:50070 -p 8088:8088 -it karimsaieh/hadoop-docker-node
+docker cp . hadoop-yarn-spark:/
+/usr/local/livy/bin/livy-server stop
+export TIKA_HOST=yika
+export ENV=staging
+export RABBITMQ_HOST=rabbitmq
+spark-submit --master yarn --total-executor-cores 2 --conf spark.executorEnv.TIKA_HOST=$TIKA_HOST --conf spark.executorEnv.RABBITMQ_HOST=$RABBITMQ_HOST --conf spark.executorEnv.ENV=$ENV /main.py 
+spark-submit --master local[2] /main.py
+spark-submit --master yarn --total-executor-cores 2 --conf spark.executorEnv.pfe_tika_host=tika --conf spark.executorEnv.pfe_rabbitmq_host=rabbitmq /main.py 
+
+spark-submit --master yarn --total-executor-cores 2 --conf spark.executorEnv.pfe_tika_host=tika --conf spark.executorEnv.pfe_rabbitmq_host=rabbitmq /main.py
+
+WARNING: 
+stop-yarn.sh && stop-dfs.sh  && /usr/local/livy/bin/livy-server stop
+NB: WAit a little bit after startup so you dont get an error (safe mode etc ...)

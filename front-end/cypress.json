@@ -1,0 +1,10 @@
+{
+  "projectId": "a2bu4x",
+  "video": false,
+  "screenshotOnRunFailure": false,
+  "reporter": "junit",
+  "reporterOptions": {
+    "mochaFile": "cypress/junit/cypress-report-[hash].xml",
+    "toConsole": true
+  }
+}

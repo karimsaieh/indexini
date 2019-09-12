@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hadoop-docker-node
+  labels:
+    app: hadoop-docker-node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hadoop-docker-node
+  template:
+    metadata:
+      labels:
+        app: hadoop-docker-node
+    spec:
+      containers:
+        - name: hadoop-docker-node
+          image: karimsaieh/pfe-hadoop-docker-node
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8020
+            - containerPort: 50070
+            - containerPort: 4040
+            - containerPort: 8088
+            - containerPort: 8998
+          env:
+            - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
+              value: 'FORCE_REDEPLOY_VALUE'
+          envFrom:
+            - configMapRef:
+                name: hadoop-docker-node-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hadoop-docker-node
+spec:
+  selector:
+    app: hadoop-docker-node
+  type: NodePort
+  ports:
+    - name: "8020"
+      port: 8020
+    - name: "50070"
+      port: 50070
+    - name: "4040"
+      port: 4040
+    - name: "8088"
+      port: 8088
+    - name: "8998"
+      port: 8998
+###

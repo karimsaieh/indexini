@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hadoop-docker-node-config
+  namespace: default
+data:
+  pfe_tika_host: tika
+  pfe_env: staging
+  pfe_rabbitmq_host: rabbitmq

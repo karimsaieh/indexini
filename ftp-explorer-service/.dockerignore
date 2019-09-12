@@ -1,0 +1,7 @@
+Dockerfile
+.dockerignore
+.idea
+__pycache__
+venv
+.scannerwork
+

@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: logstash
+  labels:
+    app: logstash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+        - name: logstash
+          image: karimsaieh/pfe-logstash
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5044
+            - containerPort: 9600
+            - containerPort: 5000
+          env:
+            - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
+              value: 'FORCE_REDEPLOY_VALUE'
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+spec:
+  selector:
+    app: logstash
+  type: NodePort
+  ports:
+    - name: "5044"
+      port: 5044
+    - name: "9600"
+      port: 9600
+    - name: "5000"
+      port: 5000
+###

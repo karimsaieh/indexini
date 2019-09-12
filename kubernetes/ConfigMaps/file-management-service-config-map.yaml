@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: file-management-service-config
+  namespace: default
+data:
+  spring.data.mongodb.host: mongo
+  spring.rabbitmq.host: rabbitmq
+  pfe_hdfs_path: hdfs://hadoop-docker-node
+  pfe_logstash_host: logstash
+  spring_profiles_active: prod

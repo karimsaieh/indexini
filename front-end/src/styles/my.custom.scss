@@ -1,0 +1,51 @@
+// editor karim
+// Import Font Awesome 5 Free
+$fa-css-prefix: 'el-icon-fa';
+$fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
+
+@import '~@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '~@fortawesome/fontawesome-free/scss/solid.scss';
+@import '~@fortawesome/fontawesome-free/scss/brands.scss';
+
+// Override Element UI's icon font
+.fas {
+  font-family: 'Font Awesome 5 Free' !important;
+}
+
+.fab {
+  font-family: 'Font Awesome 5 Brands' !important;
+}
+
+
+// Use Font Awesome icons without a prefix
+[class^="el-icon-fa"],
+[class*=" el-icon-fa"] {
+  font-family: 'Font Awesome 5 Free' !important; // Change this to 'Font Awesome 5 Pro' for pro
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  font-size: inherit;
+  text-rendering: auto;
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+};
+
+.page-container {
+  padding: 32px;
+  background-color: rgb(240, 242, 245); 
+  position: relative;
+}
+
+.fixed-width-page-container {
+  max-width: 1200px;
+  margin:auto;
+}
+
+.fixed-width-page-parent-container {
+  // background-color: #f9f9f9; 
+  padding-top: 30px;
+  padding-bottom:40px;
+  padding-right:10px;
+  padding-left:10px;
+}

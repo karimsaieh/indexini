@@ -1,0 +1,25 @@
+<configuration debug="true">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <springProfile name="staging">
+        <property resource="application-staging.properties" />
+    </springProfile>
+
+    <springProfile name="staging,prod">
+        <springProperty scope="context" name="pfe_logstash_host" source="pfe_logstash_host"/>
+        <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+            <param name="Encoding" value="UTF-8"/>
+            <remoteHost>${pfe_logstash_host}</remoteHost>
+            <port>5000</port>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <provider class="net.logstash.logback.composite.loggingevent.ArgumentsJsonProvider"/>
+                <customFields>{"serviceName":"search-service"}</customFields>
+            </encoder>
+        </appender>
+        <root level="INFO">
+            <appender-ref ref="logstash"/>
+        </root>
+    </springProfile>
+
+</configuration>

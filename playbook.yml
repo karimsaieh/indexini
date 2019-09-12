@@ -1,0 +1,13 @@
+---
+- name: Echo 
+  hosts: all
+  connection: local
+
+  tasks:
+  # - name: INSTALL DOCKER
+  #   apt: name=docker.io state=present
+  # - name: INSTALL MINIKUBE
+  #   debug:
+  #     msg: 'TODO: install minikube'
+  - name: Deploying the app to K8S
+    shell: ./deploy.sh

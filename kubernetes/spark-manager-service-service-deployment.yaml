@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: spark-manager-service
+  labels:
+    app: spark-manager-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark-manager-service
+  template:
+    metadata:
+      labels:
+        app: spark-manager-service
+    spec:
+      containers:
+        - name: spark-manager-service
+          image: karimsaieh/pfe-spark-manager-service
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3013
+          env:
+            - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
+              value: 'FORCE_REDEPLOY_VALUE'
+          envFrom:
+            - configMapRef:
+                name: spark-manager-service-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-manager-service
+spec:
+  selector:
+    app: spark-manager-service
+  type: NodePort
+  ports:
+    - port: 3013
+###

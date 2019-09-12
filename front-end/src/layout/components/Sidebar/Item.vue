@@ -1,0 +1,35 @@
+<script>
+export default {
+  name: 'MenuItem',
+  functional: true,
+  props: {
+    icon: {
+      type: String,
+      default: ''
+    },
+    title: {
+      type: String,
+      default: ''
+    }
+  },
+  render(h, context) {
+    const { icon, title } = context.props
+    const vnodes = []
+
+    if (icon) {
+      if (icon.startsWith('el')) {
+        vnodes.push(<i class={icon}/>)
+      } else if (icon.startsWith('fab') || icon.startsWith('fas')) {
+        vnodes.push(<i style='width:40px !important' class={icon}/>)
+      } else {
+        vnodes.push(<svg-icon icon-class={icon}/>)
+      }
+    }
+
+    if (title) {
+      vnodes.push(<span slot='title'>{(title)}</span>)
+    }
+    return vnodes
+  }
+}
+</script>

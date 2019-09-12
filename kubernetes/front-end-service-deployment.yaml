@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: front-end
+  labels:
+    app: front-end
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front-end
+  template:
+    metadata:
+      labels:
+        app: front-end
+    spec:
+      containers:
+        - name: front-end
+          image: karimsaieh/pfe-front-end
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: "FORCE_REDEPLOY" ## https://github.com/kubernetes/kubernetes/issues/33664
+              value: 'FORCE_REDEPLOY_VALUE'
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-end
+spec:
+  selector:
+    app: front-end
+  type: NodePort
+  ports:
+    - port: 3000
+###

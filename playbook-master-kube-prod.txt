@@ -1,0 +1,77 @@
+sudo apt-get update && sudo apt-get install -y apt-transport-https
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubectl
+
+
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+  && chmod +x minikube
+sudo cp minikube /usr/local/bin && rm minikube
+
+
+sudo apt install libvirt-clients libvirt-daemon-system qemu-kvm
+sudo systemctl enable libvirtd.service
+sudo systemctl start libvirtd.service
+sudo systemctl status libvirtd.service
+sudo usermod -a -G libvirt $(whoami)
+newgrp libvirt
+curl -LO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 \
+  && sudo install docker-machine-driver-kvm2 /usr/local/bin/
+
+
+minikube start --memory=10000 --vm-driver=kvm2
+
+## for kube-prometheus
+minikube start --memory=10000 --vm-driver=kvm2 --bootstrapper=kubeadm --extra-config=kubelet.authentication-token-webhook=true --extra-config=kubelet.authorization-mode=Webhook --extra-config=scheduler.address=0.0.0.0 --extra-config=controller-manager.address=0.0.0.0
+
+
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+
+kubectl apply -f kubernetes/volumes/mongo.yaml
+kubectl apply -f kubernetes/volumes/elasticsearch.yaml 
+
+kubectl apply -f kubernetes/ConfigMaps/web-scraping-service-config-map.yaml 
+kubectl apply -f kubernetes/ConfigMaps/spark-manager-service-config-map.yaml
+kubectl apply -f kubernetes/ConfigMaps/search-service-config-map.yaml 
+kubectl apply -f kubernetes/ConfigMaps/notification-service-config-map.yaml
+kubectl apply -f kubernetes/ConfigMaps/hystrix-dashboard-config-map.yaml
+kubectl apply -f kubernetes/ConfigMaps/hadoop-docker-node-config-map.yaml 
+kubectl apply -f kubernetes/ConfigMaps/ftp-explorer-service-config-map.yaml
+kubectl apply -f kubernetes/ConfigMaps/file-management-service-config-map.yaml 
+
+
+kubectl apply -f kubernetes/elasticsearch-service-statefulset.yaml 
+kubectl apply -f kubernetes/mongo-service-statefulset.yaml 
+
+kubectl apply -f kubernetes/redis-service-deployment.yaml 
+kubectl apply -f kubernetes/tika-service-deployment.yaml 
+kubectl apply -f kubernetes/rabbitmq-service-deployment.yaml 
+kubectl apply -f kubernetes/web-scraping-service-deployment.yaml 
+kubectl apply -f kubernetes/spark-manager-service-service-deployment.yaml
+kubectl apply -f kubernetes/notification-service-service-deployment.yaml
+kubectl apply -f kubernetes/hystrix-dashboard-service-deployment.yaml
+kubectl apply -f kubernetes/ftp-explorer-service-deployment.yaml
+kubectl apply -f kubernetes/front-end-service-deployment.yaml
+kubectl apply -f kubernetes/search-service-service-deployment.yaml
+kubectl apply -f kubernetes/file-management-service-service-deployment.yaml
+kubectl apply -f kubernetes/hadoop-docker-node-service-deployment.yaml
+
+kubectl create -f https://raw.githubusercontent.com/jaegertracing/jaeger-kubernetes/master/all-in-one/jaeger-all-in-one-template.yml
+
+kubectl apply -f kubernetes/traefik/deployments.yaml 
+kubectl apply -f kubernetes/traefik/services.yaml
+kubectl apply -f kubernetes/traefik/ingress.yaml 
+kubectl apply -f kubernetes/traefik/routes.yaml
+
+kubectl apply -f "https://cloud.weave.works/k8s/scope.yaml?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+kubectl apply -f kubernetes/kibana-service-deployment.yaml
+kubectl apply -f kubernetes/logstash-service-deployment.yaml
+
+### to view  weave scope 
+kubectl port-forward -n weave "$(kubectl get -n weave pod --selector=weave-scope-component=app -o jsonpath='{.items..metadata.name}')" 4040
+
+
